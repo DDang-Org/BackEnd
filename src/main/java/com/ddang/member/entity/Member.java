@@ -1,5 +1,6 @@
 package com.ddang.member.entity;
 
+import com.ddang.family.entity.Family;
 import com.ddang.global.entity.BaseEntity;
 import com.nimbusds.openid.connect.sdk.claims.Gender;
 import jakarta.persistence.*;
