@@ -18,15 +18,15 @@ public class DayOfWeek extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Day day;
+    private WeekDay weekDay;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "walk_schedule_id",nullable = false)
     private WalkSchedule walkSchedule;
 
     @Builder
-    private DayOfWeek(Day day, WalkSchedule walkSchedule) {
-        this.day = day;
+    private DayOfWeek(WeekDay weekDay, WalkSchedule walkSchedule) {
+        this.weekDay = weekDay;
         this.walkSchedule = walkSchedule;
     }
 }

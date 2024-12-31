@@ -2,7 +2,7 @@ package com.ddang.member.entity;
 
 import com.ddang.family.entity.Family;
 import com.ddang.global.entity.BaseEntity;
-import com.nimbusds.openid.connect.sdk.claims.Gender;
+import com.ddang.global.entity.Gender;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

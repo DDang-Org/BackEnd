@@ -41,3 +41,9 @@ out/
 .DS_Store
 .AppleDouble
 .LSOverride
+
+## Querydsl
+/src/main/generated/
+
+## Resources
+/src/main/resources
