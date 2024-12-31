@@ -1,5 +1,6 @@
 package com.ddang.chat.entity;
 
+import com.ddang.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
