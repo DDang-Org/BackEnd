@@ -12,6 +12,12 @@ public enum ErrorCode {
     // 500 에러
     INTERNAL_SERVER_ERROR("E_SYS", "INTERNAL_SERVER_ERROR", "알 수 없는 오류가 발생했습니다."),
 
+    // S3
+    FILE_UPLOAD_FAIL("E_UPL", "BAD_REQUEST", "파일 업로드에 실패하였습니다."),
+    FILE_DOWNLOAD_FAIL("E_DOW", "BAD_REQUEST", "파일 다운로드에 실패하였습니다."),
+    FILE_TRANSACTION_FAIL("E_TRA", "BAD_REQUEST", "파일 변환에 실패하였습니다."),
+
+
     // Member
     MEMBER_NOT_FOUND("E_MEM", "NOT_FOUND", "Member not found"),
 
