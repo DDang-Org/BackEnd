@@ -25,6 +25,20 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadRequestException.class)
+    protected ApiResponse<Object> bindException(BadRequestException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        log.error("AuthenticationException : {}", e.getErrorCode());
+
+        return ApiResponse.of(
+                errorCode.getStatus(),
+                errorCode.getMessage(),
+                null,
+                errorCode.getCode()
+        );
+    }
+
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(AuthenticationException.class)
     public ApiResponse<Object> handleHandlerAuthenticationException(AuthenticationException e) {
