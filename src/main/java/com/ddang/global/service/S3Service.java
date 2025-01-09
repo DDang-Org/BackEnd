@@ -4,8 +4,8 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.ddang.global.exception.BadRequestException;
 import com.ddang.global.exception.ErrorCode;
-import com.ddang.global.exception.S3Exception;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +36,7 @@ public class S3Service {
         }
 
         File uploadFile = convert(multipartFile)
-                .orElseThrow(() -> new S3Exception(ErrorCode.FILE_TRANSACTION_FAIL));
+                .orElseThrow(() -> new BadRequestException(ErrorCode.FILE_TRANSACTION_FAIL));
 
         return upload(uploadFile, dirName);
     }
@@ -114,7 +114,7 @@ public class S3Service {
             return true;
         } catch (Exception e) {
             log.error("파일 업로드 실패: 버킷={}, 키={}, 에러={}", bucket, keyName, e.getMessage());
-            throw new S3Exception(ErrorCode.FILE_UPLOAD_FAIL);
+            throw new BadRequestException(ErrorCode.FILE_UPLOAD_FAIL);
         }
     }
 
@@ -128,7 +128,7 @@ public class S3Service {
             return tempFile;
         } catch (Exception e) {
             log.error("파일 다운로드 실패: 버킷={}, 키={}, 에러={}", bucket, keyName, e.getMessage());
-            throw new S3Exception(ErrorCode.FILE_DOWNLOAD_FAIL);
+            throw new BadRequestException(ErrorCode.FILE_DOWNLOAD_FAIL);
         }
     }
 }
