@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record UpdateDogServiceRequest(
-        Long dogId,
         String dogName,
         String dogBreed,
         LocalDate dogBirthDate,
