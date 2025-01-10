@@ -30,9 +30,8 @@ public record UpdateDogRequest(
         @Size(max = 30, message = "코멘트는 최대 30자까지 입력 가능합니다.")
         String comment
 ) {
-    public UpdateDogServiceRequest toServiceRequest(Long dogId) {
+    public UpdateDogServiceRequest toServiceRequest() {
         return new UpdateDogServiceRequest(
-                dogId,
                 dogName,
                 dogBreed,
                 dogBirthDate,
