@@ -2,10 +2,14 @@ package com.ddang.global.exception;
 
 public enum ErrorCode {
 
+    //DOG
+    DOG_NOT_FOUND("E_DNF", "BAD_REQUEST", "개를 찾을 수 없습니다."),
+    MEMBER_NOT_HAVE_DOG("E_MND", "BAD_REQEUST", "멤버가 개를 소유하고 있지 않습니다."),
+
     // S3
-    FILE_UPLOAD_FAIL("E_UPL", "BAD_REQUEST", "파일 업로드에 실패하였습니다."),
-    FILE_DOWNLOAD_FAIL("E_DOW", "BAD_REQUEST", "파일 다운로드에 실패하였습니다."),
-    FILE_TRANSACTION_FAIL("E_TRA", "BAD_REQUEST", "파일 변환에 실패하였습니다."),
+    FILE_UPLOAD_FAIL("E_FUF", "BAD_REQUEST", "파일 업로드에 실패하였습니다."),
+    FILE_DOWNLOAD_FAIL("E_FDF", "BAD_REQUEST", "파일 다운로드에 실패하였습니다."),
+    FILE_TRANSACTION_FAIL("E_FTF", "BAD_REQUEST", "파일 변환에 실패하였습니다."),
 
     // 401 에러
     UNAUTHORIZED_ERROR("E_AUTH", "UNAUTHORIZED", "AccessToken is invalid"),

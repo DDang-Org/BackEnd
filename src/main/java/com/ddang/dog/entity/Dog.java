@@ -1,5 +1,6 @@
 package com.ddang.dog.entity;
 
+import com.ddang.dog.service.request.UpdateDogServiceRequest;
 import com.ddang.family.entity.Family;
 import com.ddang.global.entity.BaseEntity;
 import com.ddang.global.entity.Gender;
@@ -67,5 +68,16 @@ public class Dog extends BaseEntity {
         this.family = family;
         this.comment = comment;
         this.walkCount = 0;
+    }
+
+    public void update(UpdateDogServiceRequest request, String profileImg){
+        if (request.dogName() != null) this.name = request.dogName();
+        if (request.dogBreed() != null) this.breed = request.dogBreed();
+        if (request.dogBirthDate() != null) this.birthDate = request.dogBirthDate();
+        if (request.dogWeight() != null) this.weight = request.dogWeight();
+        if (request.dogGender() != null) this.gender = request.dogGender();
+        if (profileImg != null) this.profileImg = profileImg;
+        if (request.isNeutered() != null) this.isNeutered = request.isNeutered();
+        if (request.comment() != null) this.comment = request.comment();
     }
 }
