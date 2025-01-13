@@ -27,15 +27,15 @@ public record JoinRequest(
 
         @NotBlank(message = "이름을 입력해주세요.")
         @Schema(description = "이름", example = "홍길동")
-        String name,
+        String memberName,
 
         @NotNull(message = "성별을 입력해주세요.")
         @Schema(description = "성별", example = "MALE")
-        Gender gender,
+        Gender memberGender,
 
         @NotNull(message = "생일을 입력해주세요.")
         @Schema(description = "생일", example = "2000-01-01")
-        LocalDate birthDate,
+        LocalDate memberBirthDate,
 
         @NotBlank(message = " 주소를 입력해주세요.")
         @Schema(description = "주소", example = "서울시 강남구")
@@ -47,19 +47,19 @@ public record JoinRequest(
 
         @NotBlank(message = "프로필 이미지를 입력해주세요.")
         @Schema(description = "프로필 이미지", example = "https://example.com/profile.jpg")
-        String profileImg
+        String memberProfileImg
 ) {
 
     public JoinServiceRequest toServiceRequest() {
         return new JoinServiceRequest(
                 email,
                 provider,
-                name,
-                gender,
-                birthDate,
+                memberName,
+                memberGender,
+                memberBirthDate,
                 address,
                 familyRole,
-                profileImg,
+                memberProfileImg,
                 IsMatched.TRUE,
                 Role.USER
         );

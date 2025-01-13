@@ -21,23 +21,23 @@ public class Member extends BaseEntity {
     private Long memberId;
 
     @Column(nullable = false, length = 100)
-    private String name;
+    private String memberName;
 
     @Column(nullable = false, length = 100)
     private String email;
 
     @Column(nullable = false)
-    private LocalDate birthDate;
+    private LocalDate memberBirthDate;
 
     @Column(nullable = false)
     private String address;
 
     @Column(nullable = false)
-    private String profileImg;
+    private String memberProfileImg;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Gender gender;
+    private Gender memberGender;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -60,13 +60,13 @@ public class Member extends BaseEntity {
     private Role role;
 
     @Builder
-    public Member(String name, String email, LocalDate birthDate, String address, String profileImg, Gender gender, FamilyRole familyRole, IsMatched isMatched, Family family, Provider provider, Role role) {
-        this.name = name;
+    public Member(String memberName, String email, LocalDate memberBirthDate, String address, String memberProfileImg, Gender memberGender, FamilyRole familyRole, IsMatched isMatched, Family family, Provider provider, Role role) {
+        this.memberName = memberName;
         this.email = email;
-        this.birthDate = birthDate;
+        this.memberBirthDate = memberBirthDate;
         this.address = address;
-        this.profileImg = profileImg;
-        this.gender = gender;
+        this.memberProfileImg = memberProfileImg;
+        this.memberGender = memberGender;
         this.familyRole = familyRole;
         this.isMatched = isMatched;
         this.family = family;

@@ -8,12 +8,12 @@ import java.time.LocalDate;
 public record JoinServiceRequest(
         String email,
         Provider provider,
-        String name,
-        Gender gender,
-        LocalDate birthDate,
+        String memberName,
+        Gender memberGender,
+        LocalDate memberBirthDate,
         String address,
         FamilyRole familyRole,
-        String profileImg,
+        String memberProfileImg,
         IsMatched isMatched,
         Role role
 ) {
@@ -21,12 +21,12 @@ public record JoinServiceRequest(
         return Member.builder()
                 .email(email)
                 .provider(provider)
-                .name(name)
-                .gender(gender)
-                .birthDate(birthDate)
+                .memberName(memberName)
+                .memberGender(memberGender)
+                .memberBirthDate(memberBirthDate)
                 .address(address)
                 .familyRole(familyRole)
-                .profileImg(profileImg)
+                .memberProfileImg(memberProfileImg)
                 .isMatched(isMatched)
                 .provider(provider)
                 .role(role)

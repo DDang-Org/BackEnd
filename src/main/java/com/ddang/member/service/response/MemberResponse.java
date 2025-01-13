@@ -14,7 +14,7 @@ public record MemberResponse(
         Long memberId,
 
         @Schema(description = "회원 이름", example = "홍길동")
-        String name,
+        String memberName,
 
         @Schema(description = "회원 이메일", example = "test@naver.com")
         String email,
@@ -23,10 +23,10 @@ public record MemberResponse(
         Provider provider,
 
         @Schema(description = "회원 성별", example = "MALE")
-        Gender gender,
+        Gender memberGender,
 
         @Schema(description = "생일", example = "2000-01-01")
-        LocalDate birthDate,
+        LocalDate memberBirthDate,
 
         @Schema(description = "회원 주소", example = "서울시 강남구")
         String address,
@@ -35,18 +35,18 @@ public record MemberResponse(
         FamilyRole familyRole,
 
         @Schema(description = "회원 프로필 이미지 URL", example = "https://example.com/profile.jpg")
-        String profileImg
+        String memberProfileImg
 ) {
     public static MemberResponse from(Member member) {
         return new MemberResponse(
                 member.getMemberId(),
-                member.getName(),
+                member.getMemberName(),
                 member.getEmail(),
                 member.getProvider(),
-                member.getGender(),
-                member.getBirthDate(),
+                member.getMemberGender(),
+                member.getMemberBirthDate(),
                 member.getAddress(),
                 member.getFamilyRole(),
-                member.getProfileImg());
+                member.getMemberProfileImg());
     }
 }
