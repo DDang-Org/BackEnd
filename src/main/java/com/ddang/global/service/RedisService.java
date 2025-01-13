@@ -1,5 +1,7 @@
 package com.ddang.global.service;
 
+import com.ddang.global.exception.ErrorCode;
+import com.ddang.global.exception.RedisException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,7 +32,7 @@ public class RedisService {
 
     public void deleteValues(String key) {
         if(Boolean.FALSE.equals(redisTemplate.delete(key))){
-            throw new IllegalArgumentException("Redis 에서 정보를 삭제하지 못했습니다.");
+            throw new RedisException(ErrorCode.REDIS_DATA_DELETE_ERROR);
         }
     }
 }
