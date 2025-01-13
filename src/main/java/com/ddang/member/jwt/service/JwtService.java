@@ -2,6 +2,9 @@ package com.ddang.member.jwt.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.ddang.global.exception.ErrorCode;
+import com.ddang.global.exception.RedisException;
+import com.ddang.global.service.RedisService;
 import com.ddang.member.service.CookieService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,9 +12,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +44,7 @@ public class JwtService {
     private static final String BEARER = "Bearer ";
 
     private final CookieService cookieService;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisService redisService;
 
 
     /**
@@ -182,11 +185,11 @@ public class JwtService {
      */
     public void saveRefreshTokenToRedis(String email, String refreshToken) {
         if (refreshToken.length() > 4096 || email.length() > 256) {
-            throw new IllegalArgumentException("Redis에 저장할 데이터 크기가 허용치를 초과했습니다.");
+            throw new RedisException(ErrorCode.REDIS_DATA_SIZE_EXCEEDED_ERROR);
         }
 
         // 이메일을 키로 사용하여 RefreshToken 저장
-        redisTemplate.opsForValue().set(email, refreshToken, refreshTokenExpirationPeriod, TimeUnit.MILLISECONDS);
+        redisService.setValues(email, refreshToken, Duration.ofDays(TimeUnit.MILLISECONDS.toSeconds(refreshTokenExpirationPeriod)));
     }
 
     /**
@@ -194,7 +197,7 @@ public class JwtService {
      */
     public Optional<String> getRefreshTokenFromRedis(String email) {
         try {
-            String refreshToken = redisTemplate.opsForValue().get(email);
+            String refreshToken = redisService.getValues(email);
             return Optional.ofNullable(refreshToken);
         } catch (Exception e) {
             log.error("Redis에서 RefreshToken 조회 실패: {}", e.getMessage());
@@ -207,7 +210,7 @@ public class JwtService {
      */
     public void removeRefreshTokenFromRedis(String email) {
         try {
-            redisTemplate.delete(email);
+            redisService.deleteValues(email);
             log.info("Redis에서 RefreshToken 제거 완료: {}", email);
         } catch (Exception e) {
             log.error("Redis에서 RefreshToken 제거 실패: {}", e.getMessage());
