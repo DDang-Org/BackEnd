@@ -29,7 +29,6 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class DogServiceImpl implements DogService{
 
     private final DogRepository dogRepository;
@@ -41,6 +40,7 @@ public class DogServiceImpl implements DogService{
     private final static String DOG_PROFILE_DIR = "dog";
     private final static Integer MAX_DOG = 5;
 
+    @Transactional
     public DogResponse createDog(CreateDogServiceRequest request, Member member, MultipartFile profileImgFile) throws IOException {
         // TODO : 패밀리장인지 유효성 검사
 
@@ -63,6 +63,7 @@ public class DogServiceImpl implements DogService{
         return DogResponse.from(dog);
     }
 
+    @Transactional
     public DogResponse updateDog(UpdateDogServiceRequest request, Long dogId, Member member, MultipartFile profileImgFile) throws IOException {
         // TODO : 패밀리장인지 유효성 검사
 
@@ -76,6 +77,7 @@ public class DogServiceImpl implements DogService{
         return DogResponse.from(dog);
     }
 
+    @Transactional
     public void deleteDog(Long dogId, Member member) {
         // TODO : 패밀리장인지 유효성 검사
         throwIfOnlyOneDogExists(member);
@@ -113,6 +115,7 @@ public class DogServiceImpl implements DogService{
             family = familyRepository.save(family);
 
             member.updateFamily(family);
+            memberRepository.save(member);
         }
     }
 
