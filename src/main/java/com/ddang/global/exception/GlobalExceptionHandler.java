@@ -53,4 +53,17 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(MemberException.class)
+    protected ApiResponse<Object> handleMemberNotFoundException(MemberException e) {
+        ErrorCode errorCode = e.getErrorCode();
+        log.error("MemberException : {}", errorCode);
+
+        return ApiResponse.of(
+                HttpStatus.NOT_FOUND,
+                errorCode.getMessage(),
+                null,
+                errorCode.getCode()
+        );
+    }
 }
