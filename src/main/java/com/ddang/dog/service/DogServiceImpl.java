@@ -39,8 +39,13 @@ public class DogServiceImpl implements DogService{
     private final S3Service s3Service;
 
     private final static String DOG_PROFILE_DIR = "dog";
+    private final static Integer MAX_DOG = 5;
 
     public DogResponse createDog(CreateDogServiceRequest request, Member member, MultipartFile profileImgFile) throws IOException {
+        // TODO : 패밀리장인지 유효성 검사
+
+        throwIfExceedsMaxLimit(member);
+
         String profileImg = s3Service.upload(profileImgFile, DOG_PROFILE_DIR);
         createFamilyIfNotExists(member);
         Dog dog = request.toEntity(profileImg, member.getFamily());
@@ -58,9 +63,10 @@ public class DogServiceImpl implements DogService{
         return DogResponse.from(dog);
     }
 
-    public DogResponse updateDog(UpdateDogServiceRequest request, Long dogId, Long memberId, MultipartFile profileImgFile) throws IOException {
+    public DogResponse updateDog(UpdateDogServiceRequest request, Long dogId, Member member, MultipartFile profileImgFile) throws IOException {
+        // TODO : 패밀리장인지 유효성 검사
 
-        MemberDog memberDog = memberDogRepository.findByDogIdAndMemberId(dogId, memberId)
+        MemberDog memberDog = memberDogRepository.findByDogIdAndMemberId(dogId, member.getMemberId())
                 .orElseThrow(() -> new BadRequestException(ErrorCode.MEMBER_NOT_HAVE_DOG));
 
         Dog dog = memberDog.getDog();
@@ -70,9 +76,9 @@ public class DogServiceImpl implements DogService{
         return DogResponse.from(dog);
     }
 
-    public void deleteDog(Long dogId, Long memberId) {
-        memberDogRepository.findByDogIdAndMemberId(dogId, memberId)
-                .orElseThrow(() -> new BadRequestException(ErrorCode.MEMBER_NOT_HAVE_DOG));
+    public void deleteDog(Long dogId, Member member) {
+        // TODO : 패밀리장인지 유효성 검사
+        throwIfOnlyOneDogExists(member);
 
         memberDogRepository.softDeleteByDogId(dogId);
 
@@ -119,6 +125,18 @@ public class DogServiceImpl implements DogService{
                         .dog(dog)
                         .build())
                 .toList();
+    }
+
+    private void throwIfExceedsMaxLimit(Member member){
+        if(memberDogRepository.countAllByMember(member) > MAX_DOG){
+            throw new BadRequestException(ErrorCode.OVER_MAX_DOG);
+        }
+    }
+
+    private void throwIfOnlyOneDogExists(Member member){
+        if(memberDogRepository.countAllByMember(member) == 1){
+            throw new BadRequestException(ErrorCode.FAMILY_MUST_HAVE_ONE_DOG);
+        }
     }
 
 

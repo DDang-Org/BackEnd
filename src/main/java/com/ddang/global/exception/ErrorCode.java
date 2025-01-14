@@ -15,6 +15,8 @@ public enum ErrorCode {
     //DOG
     DOG_NOT_FOUND("E_DNF", "BAD_REQUEST", "개를 찾을 수 없습니다."),
     MEMBER_NOT_HAVE_DOG("E_MND", "BAD_REQEUST", "멤버가 개를 소유하고 있지 않습니다."),
+    OVER_MAX_DOG("E_OMD", "BAD_REQUEST", "멤버가 소유할 수 있는 최대의 개를 소유하고 있습니다."),
+    FAMILY_MUST_HAVE_ONE_DOG("E_HOD", "BAD_REQUEST", "패밀리는 최소 한 마리의 개를 소유해야 합니다."),
 
     // S3
     FILE_UPLOAD_FAIL("E_FUF", "BAD_REQUEST", "파일 업로드에 실패하였습니다."),

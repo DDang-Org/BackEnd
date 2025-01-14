@@ -54,8 +54,7 @@ public class DogController {
             @RequestPart(required = false) MultipartFile profileImgFile,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) throws IOException {
 
-        Long memberId = customOAuth2User.getMember().getMemberId();
-        DogResponse response = dogService.updateDog(request.toServiceRequest(), dogId, memberId, profileImgFile);
+        DogResponse response = dogService.updateDog(request.toServiceRequest(), dogId, customOAuth2User.getMember(), profileImgFile);
 
         return ApiResponse.ok(response);
     }
@@ -65,8 +64,7 @@ public class DogController {
             @PathVariable Long dogId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-        Long memberId = customOAuth2User.getMember().getMemberId();
-        dogService.deleteDog(dogId, memberId);
+        dogService.deleteDog(dogId, customOAuth2User.getMember());
 
         return ApiResponse.noContent();
     }

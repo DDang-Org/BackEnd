@@ -26,4 +26,7 @@ public interface MemberDogRepository extends JpaRepository<MemberDog, Long> {
     @Query("SELECT md FROM MemberDog md WHERE md.member = :member AND md.isDeleted = 'FALSE'")
     List<MemberDog> findAllByMember(@Param("member") Member member);
 
+    @Query("SELECT count(*) FROM MemberDog md WHERE md.member = :member AND md.isDeleted = 'FALSE'")
+    Integer countAllByMember(Member member);
+
 }

@@ -14,9 +14,9 @@ public interface DogService {
 
     DogResponse getDogByDogId(Long dogId);
 
-    DogResponse updateDog(UpdateDogServiceRequest request,Long dogId, Long memberId, MultipartFile profileImgFile) throws IOException;
+    DogResponse updateDog(UpdateDogServiceRequest request,Long dogId, Member member, MultipartFile profileImgFile) throws IOException;
 
-    void deleteDog(Long dogId, Long memberId);
+    void deleteDog(Long dogId, Member member);
 
     List<DogResponse> getDogsByMember(Member member);
 }
