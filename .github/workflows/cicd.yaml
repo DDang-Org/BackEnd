@@ -38,7 +38,18 @@ jobs:
           mkdir -p ./src/main/resources
           cd ./src/main/resources
           touch ./application.yaml
-          echo "${{ secrets.APPLICATION_YML }}" > ./application.yaml
+            echo "${{ secrets.APPLICATION_YAML }}" > ./application.yaml
+          
+          touch ./application-dep.yaml
+            echo "${{ secrets.APPLICATION_DEP_YAML }}" > ./application-dep.yaml
+        
+          touch ./application-jwt.yaml
+            echo "${{ secrets.APPLICATION_JWT_YAML }}" > ./application-jwt.yaml
+        
+          touch ./application-oauth.yml
+            echo "${{ secrets.APPLICATION_OAUTH_YAML }}" > ./application-oauth.yaml
+        
+     
 
         shell: bash
 
