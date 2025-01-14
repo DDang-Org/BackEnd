@@ -13,7 +13,7 @@ public record UpdateDogRequest(
         String dogName,
 
         @Size(max = 100, message = "품종은 최대 100자까지 입력 가능합니다.")
-        String dogBreed,
+        String breed,
 
         @Past(message = "생년월일은 과거 날짜여야 합니다.")
         LocalDate dogBirthDate,
@@ -33,7 +33,7 @@ public record UpdateDogRequest(
     public UpdateDogServiceRequest toServiceRequest() {
         return new UpdateDogServiceRequest(
                 dogName,
-                dogBreed,
+                breed,
                 dogBirthDate,
                 dogWeight,
                 dogGender,

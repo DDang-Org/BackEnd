@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public record DogResponse(
         Long dogId,
         String dogName,
-        String dogBreed,
+        String breed,
         LocalDate dogBirthDate,
         BigDecimal dogWeight,
         Gender dogGender,

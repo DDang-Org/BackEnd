@@ -14,7 +14,7 @@ public record CreateDogRequest(
         String dogName,
 
         @NotNull(message = "품종은 비워둘 수 없습니다.")
-        String dogBreed,
+        String breed,
 
         @PastOrPresent(message = "생년월일은 과거 혹은 현재 날짜여야 합니다.")
         LocalDate dogBirthDate,
@@ -36,7 +36,7 @@ public record CreateDogRequest(
     public CreateDogServiceRequest toServiceRequest() {
         return new CreateDogServiceRequest(
                 dogName,
-                dogBreed,
+                breed,
                 dogBirthDate,
                 dogWeight,
                 dogGender,
