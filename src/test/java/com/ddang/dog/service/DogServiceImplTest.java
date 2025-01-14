@@ -187,7 +187,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
                 "how kind of you");
 
         //when
-        DogResponse response = dogService.updateDog(request.toServiceRequest(), dog.getDogId(), member.getMemberId(), null);
+        DogResponse response = dogService.updateDog(request.toServiceRequest(), dog.getDogId(), member, null);
 
         //then
         assertThat(response)
@@ -204,8 +204,29 @@ class DogServiceImplTest extends IntegrationTestSupport {
         Member member = memberRepository.findByEmail("test2@naver.com").get();
         Dog dog = memberDogRepository.findAllByMember(member).get(0).getDog();
 
+        Dog dog2 = Dog.builder()
+                .name("choco")
+                .gender(Gender.MALE)
+                .profileImg("url")
+                .birthDate(LocalDate.of(2023,5,7))
+                .breed("sigol")
+                .family(member.getFamily())
+                .weight(BigDecimal.valueOf(3.7))
+                .comment("kind")
+                .isNeutered(IsNeutered.TRUE)
+                .build();
+
+        dogRepository.save(dog2);
+
+        MemberDog memberDog = MemberDog.builder()
+                .dog(dog2)
+                .member(member)
+                .build();
+
+        memberDogRepository.save(memberDog);
+
         //when
-        dogService.deleteDog(dog.getDogId(), member.getMemberId());
+        dogService.deleteDog(dog.getDogId(), member);
 
         //then
         assertThat(dogRepository.findActiveById(dog.getDogId())).isEmpty();
