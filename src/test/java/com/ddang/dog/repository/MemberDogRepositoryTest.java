@@ -96,17 +96,17 @@ class MemberDogRepositoryTest extends IntegrationTestSupport {
 
     private Member createAndSaveMember(Family family){
         Member member = Member.builder()
-                .name("test2")
+                .memberName("test2")
                 .email("test2@naver.com")
                 .role(Role.USER)
                 .isMatched(IsMatched.TRUE)
                 .address("test2Address")
-                .birthDate(LocalDate.of(2000,5,2))
-                .gender(Gender.FEMALE)
+                .memberBirthDate(LocalDate.of(2000,5,2))
+                .memberGender(Gender.FEMALE)
                 .familyRole(FamilyRole.ELDER_SISTER)
                 .family(family)
                 .provider(Provider.GOOGLE)
-                .profileImg("")
+                .memberProfileImg("")
                 .build();
 
         memberRepository.save(member);

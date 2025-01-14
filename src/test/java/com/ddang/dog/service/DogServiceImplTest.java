@@ -50,16 +50,16 @@ class DogServiceImplTest extends IntegrationTestSupport {
     @BeforeEach
     void createMember(){
         Member memberHasNoDog = Member.builder()
-                .name("test")
+                .memberName("test")
                 .email("test@naver.com")
                 .role(Role.USER)
-                .birthDate(LocalDate.of(1999,9,3))
+                .memberBirthDate(LocalDate.of(1999,9,3))
                 .isMatched(IsMatched.TRUE)
                 .address("testAddress")
-                .gender(Gender.MALE)
+                .memberGender(Gender.MALE)
                 .familyRole(FamilyRole.ELDER_BROTHER)
                 .provider(Provider.KAKAO)
-                .profileImg("")
+                .memberProfileImg("")
                 .build();
 
         Family family = Family.create();
@@ -79,17 +79,17 @@ class DogServiceImplTest extends IntegrationTestSupport {
                 .build();
 
         Member memberHasDog = Member.builder()
-                .name("test2")
+                .memberName("test2")
                 .email("test2@naver.com")
                 .role(Role.USER)
                 .isMatched(IsMatched.TRUE)
                 .address("test2Address")
-                .birthDate(LocalDate.of(2000,5,2))
-                .gender(Gender.FEMALE)
+                .memberBirthDate(LocalDate.of(2000,5,2))
+                .memberGender(Gender.FEMALE)
                 .familyRole(FamilyRole.ELDER_SISTER)
                 .family(family)
                 .provider(Provider.GOOGLE)
-                .profileImg("")
+                .memberProfileImg("")
                 .build();
 
         memberRepository.saveAll(Arrays.asList(memberHasNoDog, memberHasDog));
