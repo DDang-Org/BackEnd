@@ -43,11 +43,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     protected ApiResponse<Object> handleGenericException(Exception e) {
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
-        log.error("Unhandled Exception : {}", errorCode);
+        log.error("Unhandled Exception : {}", e.getMessage());
 
         return ApiResponse.of(
                 errorCode.getStatus(),
-                errorCode.getMessage(),
+                e.getMessage(),
                 null,
                 errorCode.getCode()
         );
