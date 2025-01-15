@@ -1,6 +1,4 @@
 package com.ddang.dog.service;
-//깃허브 데스크탑
-//테스트
 
 import com.ddang.dog.entity.Dog;
 import com.ddang.dog.entity.MemberDog;
@@ -46,7 +44,7 @@ public class DogServiceImpl implements DogService{
 
         throwIfExceedsMaxLimit(member);
 
-        String profileImg = s3Service.upload(profileImgFile, DOG_PROFILE_DIR);
+        String profileImg = getProfileImgUrlOrElseGetNull(profileImgFile);
         createFamilyIfNotExists(member);
         Dog dog = request.toEntity(profileImg, member.getFamily());
         List<MemberDog> memberDog = assignDogToFamilyMembers(member, dog);
