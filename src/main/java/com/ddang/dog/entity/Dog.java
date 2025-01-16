@@ -72,9 +72,9 @@ public class Dog extends BaseEntity {
 
     public void update(UpdateDogServiceRequest request, String profileImg){
         if (request.dogName() != null) this.name = request.dogName();
-        if (request.dogBreed() != null) this.breed = request.dogBreed();
+        if (request.breed() != null) this.breed = request.breed();
         if (request.dogBirthDate() != null) this.birthDate = request.dogBirthDate();
-        if (request.dogWeight() != null) this.weight = request.dogWeight();
+        if (request.weight() != null) this.weight = request.weight();
         if (request.dogGender() != null) this.gender = request.dogGender();
         if (profileImg != null) this.profileImg = profileImg;
         if (request.isNeutered() != null) this.isNeutered = request.isNeutered();
