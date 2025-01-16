@@ -1,6 +1,4 @@
 package com.ddang.dog.service;
-//깃허브 데스크탑
-//테스트
 
 import com.ddang.dog.entity.Dog;
 import com.ddang.dog.entity.MemberDog;
