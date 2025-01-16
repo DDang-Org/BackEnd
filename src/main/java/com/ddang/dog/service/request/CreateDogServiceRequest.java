@@ -12,9 +12,9 @@ import java.time.LocalDate;
 
 public record CreateDogServiceRequest(
         String dogName,
-        String dogBreed,
+        String breed,
         LocalDate dogBirthDate,
-        BigDecimal dogWeight,
+        BigDecimal weight,
         Gender dogGender,
         IsNeutered isNeutered,
         String comment
@@ -23,9 +23,9 @@ public record CreateDogServiceRequest(
 
         return Dog.builder()
                 .name(dogName)
-                .breed(dogBreed)
+                .breed(breed)
                 .birthDate(dogBirthDate)
-                .weight(dogWeight)
+                .weight(weight)
                 .gender(dogGender)
                 .isNeutered(isNeutered)
                 .profileImg(profileImg)

@@ -21,7 +21,7 @@ public record UpdateDogRequest(
         @DecimalMin(value = "1.00", message = "몸무게는 최소 1kg 이상이어야 합니다.")
         @DecimalMax(value = "100.00", message = "몸무게는 최대 100kg 이하여야 합니다.")
         @Digits(integer = 3, fraction = 2, message = "몸무게는 소수점 둘째 자리까지만 가능합니다.")
-        BigDecimal dogWeight,
+        BigDecimal weight,
 
         Gender dogGender,
 
@@ -35,7 +35,7 @@ public record UpdateDogRequest(
                 dogName,
                 breed,
                 dogBirthDate,
-                dogWeight,
+                weight,
                 dogGender,
                 isNeutered,
                 comment

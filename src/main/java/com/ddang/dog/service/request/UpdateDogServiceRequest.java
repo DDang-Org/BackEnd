@@ -8,9 +8,9 @@ import java.time.LocalDate;
 
 public record UpdateDogServiceRequest(
         String dogName,
-        String dogBreed,
+        String breed,
         LocalDate dogBirthDate,
-        BigDecimal dogWeight,
+        BigDecimal weight,
         Gender dogGender,
         IsNeutered isNeutered,
         String comment

@@ -13,7 +13,7 @@ public record DogResponse(
         String dogName,
         String breed,
         LocalDate dogBirthDate,
-        BigDecimal dogWeight,
+        BigDecimal weight,
         Gender dogGender,
         String dogProfileImg,
         IsNeutered isNeutered,
