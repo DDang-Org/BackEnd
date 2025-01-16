@@ -46,7 +46,7 @@ public class DogServiceImpl implements DogService{
 
         throwIfExceedsMaxLimit(member);
 
-        String profileImg = s3Service.upload(profileImgFile, DOG_PROFILE_DIR);
+        String profileImg = getProfileImgUrlOrElseGetNull(profileImgFile);
         createFamilyIfNotExists(member);
         Dog dog = request.toEntity(profileImg, member.getFamily());
         List<MemberDog> memberDog = assignDogToFamilyMembers(member, dog);

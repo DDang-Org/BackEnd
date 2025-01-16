@@ -17,11 +17,13 @@ public record CreateDogRequest(
         String breed,
 
         @PastOrPresent(message = "생년월일은 과거 혹은 현재 날짜여야 합니다.")
+        @NotNull(message = "생일은 반드시 입력해야 합니다.")
         LocalDate dogBirthDate,
 
         @DecimalMin(value = "1.00", message = "몸무게는 최소 1kg 이상이어야 합니다.")
         @DecimalMax(value = "100.00", message = "몸무게는 최대 100kg 이하여야 합니다.")
         @Digits(integer = 3, fraction = 2, message = "몸무게는 소수점 둘째 자리까지만 가능합니다.")
+        @NotNull(message = "몸무게는 반드시 입력해야 합니다.")
         BigDecimal weight,
 
         @NotNull(message = "성별은 반드시 입력해야 합니다.")
