@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -29,8 +29,27 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle
+      - name: Create application-test.yml
+        run: |
+          mkdir -p src/test/resources
+          echo "spring:" >> src/test/resources/application-test.yml
+          echo "  datasource:" >> src/test/resources/application-test.yml
+          echo "    url: jdbc:h2:mem:testdb" >> src/test/resources/application-test.yml
+          echo "    driver-class-name: org.h2.Driver" >> src/test/resources/application-test.yml
+          echo "    username: sa" >> src/test/resources/application-test.yml
+          echo "    password: " >> src/test/resources/application-test.yml
+          echo "  jpa:" >> src/test/resources/application-test.yml
+          echo "    hibernate:" >> src/test/resources/application-test.yml
+          echo "      ddl-auto: create-drop" >> src/test/resources/application-test.yml
+          echo "    show-sql: true" >> src/test/resources/application-test.yml
+          echo "  kafka:" >> src/test/resources/application-test.yml
+          echo "    bootstrap-servers: localhost:9092" >> src/test/resources/application-test.yml
+          echo "  data:" >> src/test/resources/application-test.yml
+          echo "    redis:" >> src/test/resources/application-test.yml
+          echo "      host: localhost" >> src/test/resources/application-test.yml
+          echo "      port: 6379" >> src/test/resources/application-test.yml
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
       - name: Build and analyze
