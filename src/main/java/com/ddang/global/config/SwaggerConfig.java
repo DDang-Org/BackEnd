@@ -56,6 +56,10 @@ public class SwaggerConfig {
         return (Operation operation, HandlerMethod handlerMethod) -> {
             SwaggerExceptionResponse swaggerExceptionResponse =
                     handlerMethod.getMethodAnnotation(SwaggerExceptionResponse.class);
+            if(swaggerExceptionResponse == null){
+                return operation;
+            }
+
             generateErrorCodeResponseExample(operation, swaggerExceptionResponse);
             return operation;
         };
