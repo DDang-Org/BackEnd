@@ -16,6 +16,9 @@ public class Family extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long familyId;
 
+    @Column(nullable = false)
+    private Long representativeMemberId;
+
     public static Family create() {
         return new Family();
     }
