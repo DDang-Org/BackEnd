@@ -4,7 +4,7 @@ name: CI/CD using github actions & docker
 # event trigger
 on:
   push:
-    branches: [ "feat/#7-cicd" ]
+    branches: [ "develop" ]
 
 permissions:
   contents: read
