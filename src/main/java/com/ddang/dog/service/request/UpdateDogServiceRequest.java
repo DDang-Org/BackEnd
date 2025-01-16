@@ -1,0 +1,18 @@
+package com.ddang.dog.service.request;
+
+import com.ddang.dog.entity.IsNeutered;
+import com.ddang.global.entity.Gender;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+public record UpdateDogServiceRequest(
+        String dogName,
+        String breed,
+        LocalDate dogBirthDate,
+        BigDecimal weight,
+        Gender dogGender,
+        IsNeutered isNeutered,
+        String comment
+) {}
+

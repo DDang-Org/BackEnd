@@ -16,5 +16,9 @@ public class Family extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long familyId;
 
+    public static Family create() {
+        return new Family();
+    }
+
 }
 // TODO : 나중에 더 추가할 예정

@@ -29,10 +29,6 @@ public class ApiResponse<T> {
         return of(httpStatus, httpStatus.name(), data, code);
     }
 
-    public static <T> ApiResponse<T> of(String httpStatus, String message, T data, String code) {
-        return new ApiResponse<>(httpStatus, message, data, code);
-    }
-
     public static <T> ApiResponse<T> ok(T data) {
         return of(HttpStatus.OK ,data, "SUC");
     }
