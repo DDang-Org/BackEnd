@@ -33,6 +33,10 @@ public enum ErrorCode {
     COMMENT_SIZE_EXCEED("E_CSE", BAD_REQUEST, "코멘트는 최대 30자까지 입력 가능합니다."),
     DOG_ALREADY_OWNED("E_DAO", BAD_REQUEST, "강아지는 한마리만 소유할 수 있습니다."),
 
+    //Family
+    FAMILY_NOT_FOUND("E_FNF", NOT_FOUND, "패밀리댕을 찾을 수 없습니다."),
+    MEMBER_NOT_IN_FAMILY("E_MNF", BAD_REQUEST, "패밀리댕에 속하지 않은 사용자입니다."),
+
 
     // S3
     FILE_UPLOAD_FAIL("E_FUF", BAD_REQUEST, "파일 업로드에 실패하였습니다."),
