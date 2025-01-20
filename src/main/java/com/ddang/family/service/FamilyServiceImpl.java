@@ -1,7 +1,12 @@
 package com.ddang.family.service;
 
+import com.ddang.dog.entity.Dog;
+import com.ddang.dog.entity.MemberDog;
+import com.ddang.dog.repository.DogRepository;
+import com.ddang.dog.repository.MemberDogRepository;
 import com.ddang.family.entity.Family;
 import com.ddang.family.repository.FamilyRepository;
+import com.ddang.family.service.response.FamilyResponse;
 import com.ddang.family.service.response.InviteCodeResponse;
 import com.ddang.global.exception.BadRequestException;
 import com.ddang.global.exception.ErrorCode;
@@ -11,8 +16,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -26,6 +33,8 @@ public class FamilyServiceImpl implements FamilyService {
     private final RedisTemplate<String, String> redisTemplate;
     private final MemberRepository memberRepository;
     private final FamilyRepository familyRepository;
+    private final MemberDogRepository memberDogRepository;
+    private final DogRepository dogRepository;
 
 
     @Override
@@ -43,6 +52,32 @@ public class FamilyServiceImpl implements FamilyService {
         return InviteCodeResponse.of(family.getFamilyId(), newInviteCode, Duration.ofMinutes(5).toSeconds());
     }
 
+    @Override
+    @Transactional
+    public FamilyResponse addMemberToFamily(String inviteCode, Member member) {
+        Member currentMember = validateMemberNotInFamily(member);
+        validateMemberWithoutDog(member);
+        Family family = getFamilyByInviteCode(inviteCode);
+        addMemberToFamilyAssociations(currentMember, family);
+        return FamilyResponse.from(family);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Helper Method
     private String findExistingInviteCode(Long familyId) {
 
         return Objects.requireNonNull(redisTemplate.keys(REDIS_INVITE_KEY_PREFIX + "*"))
@@ -51,6 +86,29 @@ public class FamilyServiceImpl implements FamilyService {
                 .findFirst()
                 .orElse(null);
     }
+
+    private Family getFamilyByInviteCode(String inviteCode) {
+        String familyIdStr = redisTemplate.opsForValue().get(REDIS_INVITE_KEY_PREFIX + inviteCode);
+        if (familyIdStr == null) {
+            throw new BadRequestException(ErrorCode.INVALID_INVITE_CODE);
+        }
+        Long familyId = Long.valueOf(familyIdStr);
+        return findFamilyByIdOrThrowException(familyId);
+    }
+
+    private void addMemberToFamilyAssociations(Member member, Family family) {
+        member.updateFamily(family);
+        List<Dog> dogs = dogRepository.findAllByFamilyId(family.getFamilyId());
+        dogs.forEach(dog -> memberDogRepository.save(
+                MemberDog.builder()
+                        .member(member)
+                        .dog(dog)
+                        .build()
+        ));
+    }
+
+
+    // second Helper Method
 
     private Long getFamilyIdFromKey(String key) {
         String familyIdStr = redisTemplate.opsForValue().get(key);
@@ -87,6 +145,20 @@ public class FamilyServiceImpl implements FamilyService {
             throw new BadRequestException(ErrorCode.MEMBER_NOT_IN_FAMILY);
         }
         return currentMember;
+    }
+
+    private Member validateMemberNotInFamily(Member member) {
+        Member currentMember = findMemberByEmailOrThrowException(member.getEmail());
+        if (currentMember.getFamily() != null) {
+            throw new BadRequestException(ErrorCode.MEMBER_IN_FAMILY);
+        }
+        return currentMember;
+    }
+
+    private void validateMemberWithoutDog(Member member) {
+        if (!memberDogRepository.findAllByMember(member).isEmpty()) {
+            throw new BadRequestException(ErrorCode.MEMBER_HAVE_DOG);
+        }
     }
 
     private Member findMemberByEmailOrThrowException(String email) {
