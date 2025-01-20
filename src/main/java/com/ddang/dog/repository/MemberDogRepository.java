@@ -29,4 +29,11 @@ public interface MemberDogRepository extends JpaRepository<MemberDog, Long> {
     @Query("SELECT count(*) FROM MemberDog md WHERE md.member = :member AND md.isDeleted = 'FALSE'")
     Integer countAllByMember(Member member);
 
+    @Modifying
+    @Query("""
+    UPDATE MemberDog md
+    SET md.isDeleted = 'TRUE'
+    WHERE md.member = :member
+    """)
+    void softDeleteByMember(@Param("member") Member member);
 }

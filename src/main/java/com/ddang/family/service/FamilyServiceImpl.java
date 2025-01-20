@@ -6,6 +6,7 @@ import com.ddang.dog.repository.DogRepository;
 import com.ddang.dog.repository.MemberDogRepository;
 import com.ddang.dog.service.response.DogResponse;
 import com.ddang.family.entity.Family;
+import com.ddang.family.entity.WalkSchedule;
 import com.ddang.family.entity.WeekDay;
 import com.ddang.family.repository.DayOfWeekRepository;
 import com.ddang.family.repository.FamilyRepository;
@@ -41,6 +42,7 @@ public class FamilyServiceImpl implements FamilyService {
     private final MemberDogRepository memberDogRepository;
     private final DogRepository dogRepository;
     private final DayOfWeekRepository dayOfWeekRepository;
+    private final WalkScheduleRepository walkScheduleRepository;
 //    private final WalkRepository walkRepository;
 
 
@@ -120,6 +122,38 @@ public class FamilyServiceImpl implements FamilyService {
                 .toList();
 
     }
+
+
+    @Override
+    @Transactional
+    public void removeMemberFromFamily(Long memberIdToRemove, Member member) {
+        Member currentMember = validateFamilyBoss(member);
+        Member removeMember = findMemberByIdOrThrowException(memberIdToRemove);
+
+        validateRemoveMember(currentMember, removeMember);
+
+        List<WalkSchedule> schedules = walkScheduleRepository.findByMemberId(removeMember.getMemberId());
+        schedules.forEach(dayOfWeekRepository::deleteByWalkSchedule);
+        walkScheduleRepository.deleteByMemberId(removeMember.getMemberId());
+
+        memberDogRepository.softDeleteByMember(removeMember);
+        removeMember.updateFamily(null);
+    }
+
+    @Override
+    @Transactional
+    public void leaveFamily(Member member) {
+        Member currentMember = validateMemberInFamily(member);
+        validateNotFamilyBossForLeaving(currentMember);
+
+        List<WalkSchedule> schedules = walkScheduleRepository.findByMemberId(member.getMemberId());
+        schedules.forEach(dayOfWeekRepository::deleteByWalkSchedule);
+        walkScheduleRepository.deleteByMemberId(member.getMemberId());
+
+        memberDogRepository.softDeleteByMember(member);
+        member.updateFamily(null);
+    }
+
 
 
     // Helper Method
@@ -245,6 +279,34 @@ public class FamilyServiceImpl implements FamilyService {
                 .toList();
     }
 
+    // validate method
+    private Member validateFamilyBoss(Member member) {
+        Member currentMember = validateMemberInFamily(member);
+        if (!currentMember.getFamily().getRepresentativeMemberId().equals(currentMember.getMemberId())) {
+            throw new BadRequestException(ErrorCode.MEMBER_NOT_FAMILY_BOSS);
+        }
+        return currentMember;
+    }
+
+    private void validateNotFamilyBossForLeaving(Member member) {
+        Family family = member.getFamily();
+        if (family.getRepresentativeMemberId().equals(member.getMemberId())) {
+            throw new BadRequestException(ErrorCode.INVALID_ACTION_FAMILY_BOSS);
+        }
+    }
+
+    private void validateRemoveMember(Member currentMember, Member removeMember) {
+        if (currentMember.getMemberId().equals(removeMember.getMemberId())) {
+            throw new BadRequestException(ErrorCode.SELF_REMOVE_NOT_ALLOWED);
+        }
+        if (removeMember.getFamily() == null) {
+            throw new BadRequestException(ErrorCode.MEMBER_NOT_IN_FAMILY);
+        }
+        if (!currentMember.getFamily().getFamilyId().equals(removeMember.getFamily().getFamilyId())) {
+            throw new BadRequestException(ErrorCode.INVALID_FAMILY_MEMBER);
+        }
+    }
+
     private Member validateMemberInFamily(Member member) {
         Member currentMember = findMemberByEmailOrThrowException(member.getEmail());
         if (currentMember.getFamily() == null) {
@@ -265,6 +327,14 @@ public class FamilyServiceImpl implements FamilyService {
         if (!memberDogRepository.findAllByMember(member).isEmpty()) {
             throw new BadRequestException(ErrorCode.MEMBER_HAVE_DOG);
         }
+    }
+
+    private Member findMemberByIdOrThrowException(Long id) {
+        return memberRepository.findActiveById(id)
+                .orElseThrow(() -> {
+                    log.warn(">>>> {} : {} <<<<", id, ErrorCode.MEMBER_NOT_FOUND);
+                    return new BadRequestException(ErrorCode.MEMBER_NOT_FOUND);
+                });
     }
 
     private Member findMemberByEmailOrThrowException(String email) {

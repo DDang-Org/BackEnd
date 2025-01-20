@@ -19,4 +19,8 @@ public interface FamilyService {
     List<FamilyDogResponse> getMyFamilyDogs(Member member);
 
     List<FamilyMemberResponse>getMyFamily(Member member);
+
+    void removeMemberFromFamily(Long memberIdToRemove, Member member);
+
+    void leaveFamily(Member member);
 }

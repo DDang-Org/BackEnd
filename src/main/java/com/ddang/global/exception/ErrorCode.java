@@ -39,6 +39,10 @@ public enum ErrorCode {
     MEMBER_IN_FAMILY("E_MIF", BAD_REQUEST, "패밀리댕에 이미 속해 있는 사용자입니다."),
     MEMBER_HAVE_DOG("E_MHD", BAD_REQUEST, "강아지를 소유하고 있다면 패밀리댕에 가입할 수 없습니다."),
     INVALID_INVITE_CODE("E_IIC", BAD_REQUEST, "유효하지 않은 초대 코드입니다."),
+    MEMBER_NOT_FAMILY_BOSS("E_MFB", BAD_REQUEST, "패밀리댕 대표가 아닌 사용자입니다."),
+    SELF_REMOVE_NOT_ALLOWED("E_SRA", BAD_REQUEST, "본인을 추방할 수 없습니다."),
+    INVALID_FAMILY_MEMBER("E_IFM", BAD_REQUEST, "잘못된 패밀리댕 사용자입니다."),
+    INVALID_ACTION_FAMILY_BOSS("E_IAF", BAD_REQUEST, "패밀리댕 대표는 할 수 없습니다."),
 
 
     // S3

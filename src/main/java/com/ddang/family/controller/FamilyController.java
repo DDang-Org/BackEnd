@@ -107,4 +107,33 @@ public class FamilyController {
         return ApiResponse.ok(response);
     }
 
+    @DeleteMapping("/members/{memberId}")
+    @Operation(
+            summary = "가족 유저 추방",
+            description = """
+                가족 소유자가 특정 유저를 가족에서 추방합니다.
+                추방 권한은 가족 소유자에게만 주어집니다.
+                """
+    )
+    public ApiResponse<Void> removeMember(
+            @PathVariable Long memberId,
+            @AuthenticationPrincipal CustomOAuth2User currentUser
+    ) {
+        familyService.removeMemberFromFamily(memberId, currentUser.getMember());
+        return ApiResponse.noContent();
+    }
+
+    @DeleteMapping("/leave")
+    @Operation(
+            summary = "가족 탈퇴",
+            description = """
+                현재 사용자가 가족에서 탈퇴합니다.
+                가족 소유자는 탈퇴할 수 없습니다.
+                """
+    )
+    public ApiResponse<Void> leaveFamily(@AuthenticationPrincipal CustomOAuth2User currentUser) {
+        familyService.leaveFamily(currentUser.getMember());
+        return ApiResponse.noContent();
+    }
+
 }
