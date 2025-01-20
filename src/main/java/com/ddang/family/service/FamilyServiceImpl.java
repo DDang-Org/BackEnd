@@ -7,6 +7,7 @@ import com.ddang.dog.repository.MemberDogRepository;
 import com.ddang.dog.service.response.DogResponse;
 import com.ddang.family.entity.Family;
 import com.ddang.family.repository.FamilyRepository;
+import com.ddang.family.service.response.FamilyDogResponse;
 import com.ddang.family.service.response.FamilyResponse;
 import com.ddang.family.service.response.InviteCodeResponse;
 import com.ddang.global.exception.BadRequestException;
@@ -15,14 +16,18 @@ import com.ddang.member.entity.Member;
 import com.ddang.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -36,6 +41,7 @@ public class FamilyServiceImpl implements FamilyService {
     private final FamilyRepository familyRepository;
     private final MemberDogRepository memberDogRepository;
     private final DogRepository dogRepository;
+//    private final WalkRepository walkRepository;
 
 
     @Override
@@ -75,12 +81,25 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DogResponse> getMyFamilyDogs(Member member){
+    public List<FamilyDogResponse> getMyFamilyDogs(Member member) {
         Member currentMember = validateMemberInFamily(member);
         Family family = currentMember.getFamily();
-        return dogRepository.findAllByFamilyId(family.getFamilyId())
-                .stream()
-                .map(DogResponse::from)
+
+        List<Dog> dogs = dogRepository.findAllByFamilyId(family.getFamilyId());
+        List<Long> dogIds = dogs.stream().map(Dog::getDogId).toList();
+        Map<Long, Integer> totalDistances = getTotalDistancesByDogIds(dogIds);
+
+        return dogs.stream()
+                .map(dog -> {
+                    int totalDistanceMeters = totalDistances.getOrDefault(dog.getDogId(), 0);
+                    double totalDistanceKilometers = totalDistanceMeters / 1000.0;
+                    int totalCalories = calculateCalorie(dog.getWeight(), totalDistanceMeters);
+                    return FamilyDogResponse.of(
+                            dog,
+                            totalDistanceKilometers,
+                            totalCalories
+                    );
+                })
                 .toList();
     }
 
@@ -113,6 +132,32 @@ public class FamilyServiceImpl implements FamilyService {
                         .dog(dog)
                         .build()
         ));
+    }
+
+    private Map<Long, Integer> getTotalDistancesByDogIds(List<Long> dogIds) {
+        // TODO : walkRepository에 추가하고 수정
+
+//        @Query("""
+//    SELECT w.dog.dogId, SUM(w.distanceInKilometers)
+//    FROM Walk w
+//    WHERE w.dog.dogId IN :dogIds
+//    GROUP BY w.dog.dogId
+//    """)
+//        List<Object[]> findTotalDistancesByDogIds(@Param("dogIds") List<Long> dogIds);
+
+
+//        List<Object[]> results = walkRepository.findTotalDistancesByDogIds(dogIds);
+//
+//        return results.stream()
+//                .collect(Collectors.toMap(
+//                        result -> (Long) result[0],
+//                        result -> (Double) result[1]
+//                ));
+        return null;
+    }
+
+    public int calculateCalorie(BigDecimal weight, int totalDistance){
+        return (int) (0.75 * weight.doubleValue() * totalDistance / 1000);
     }
 
 

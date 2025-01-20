@@ -3,6 +3,7 @@ package com.ddang.family.controller;
 import com.ddang.dog.service.response.DogResponse;
 import com.ddang.family.controller.request.FamilyJoinRequest;
 import com.ddang.family.service.FamilyService;
+import com.ddang.family.service.response.FamilyDogResponse;
 import com.ddang.family.service.response.FamilyResponse;
 import com.ddang.family.service.response.InviteCodeResponse;
 import com.ddang.global.api.ApiResponse;
@@ -47,7 +48,7 @@ public class FamilyController {
         return ApiResponse.created(response);
     }
 
-    @PostMapping(value = "/join-dogs", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/dogs", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @Operation(
             summary = "초대 코드를 입력하여 해당 패밀리댕이 보유한 강아지 정보 리스트를 받습니다.",
             description = """
@@ -77,7 +78,7 @@ public class FamilyController {
         return ApiResponse.ok(response);
     }
 
-    @GetMapping
+    @GetMapping("/my-dogs")
     @Operation(
             summary = "내 패밀리댕 강아지 목록 조회",
             description = """
@@ -85,9 +86,23 @@ public class FamilyController {
                 """
     )
     @SwaggerExceptionResponse({FAMILY_NOT_FOUND, MEMBER_NOT_IN_FAMILY, MEMBER_NOT_FOUND})
+    public ApiResponse<List<FamilyDogResponse>> getMyFamilyDogs(@AuthenticationPrincipal CustomOAuth2User currentUser) {
+        Member currentMember = currentUser.getMember();
+        List<FamilyDogResponse> response = familyService.getMyFamilyDogs(currentMember);
+        return ApiResponse.ok(response);
+    }
+
+    @GetMapping
+    @Operation(
+            summary = "내 패밀리댕 정보 조회",
+            description = """
+                로그인한 사용자가 속한 패밀리댕 정보를 조회합니다.
+                """
+    )
+    @SwaggerExceptionResponse({FAMILY_NOT_FOUND, MEMBER_NOT_IN_FAMILY, MEMBER_NOT_FOUND})
     public ApiResponse<List<DogResponse>> getMyFamily(@AuthenticationPrincipal CustomOAuth2User currentUser) {
         Member currentMember = currentUser.getMember();
-        List<DogResponse> response = familyService.getMyFamilyDogs(currentMember);
+        List<DogResponse> response = familyService.getMyFamily(currentMember);
         return ApiResponse.ok(response);
     }
 
