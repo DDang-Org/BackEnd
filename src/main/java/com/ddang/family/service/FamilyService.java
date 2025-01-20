@@ -13,4 +13,6 @@ public interface FamilyService {
     FamilyResponse addMemberToFamily(String inviteCode, Member member);
 
     List<DogResponse> getFamilyDogs(String inviteCode);
+
+    List<DogResponse> getMyFamilyDogs(Member member);
 }

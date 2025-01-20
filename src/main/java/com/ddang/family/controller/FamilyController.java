@@ -10,6 +10,10 @@ import com.ddang.global.exception.annotation.SwaggerExceptionResponse;
 import com.ddang.member.entity.Member;
 import com.ddang.member.oauth2.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -70,6 +74,20 @@ public class FamilyController {
                                                   @AuthenticationPrincipal CustomOAuth2User currentUser) {
         Member currentMember = currentUser.getMember();
         FamilyResponse response = familyService.addMemberToFamily(request.inviteCode(), currentMember);
+        return ApiResponse.ok(response);
+    }
+
+    @GetMapping
+    @Operation(
+            summary = "내 패밀리댕 강아지 목록 조회",
+            description = """
+                로그인한 사용자가 속한 패밀리댕 강아지 정보 목록을 조회합니다.
+                """
+    )
+    @SwaggerExceptionResponse({FAMILY_NOT_FOUND, MEMBER_NOT_IN_FAMILY, MEMBER_NOT_FOUND})
+    public ApiResponse<List<DogResponse>> getMyFamily(@AuthenticationPrincipal CustomOAuth2User currentUser) {
+        Member currentMember = currentUser.getMember();
+        List<DogResponse> response = familyService.getMyFamilyDogs(currentMember);
         return ApiResponse.ok(response);
     }
 

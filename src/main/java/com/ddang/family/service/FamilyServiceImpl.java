@@ -64,9 +64,20 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<DogResponse> getFamilyDogs(String inviteCode) {
         Family family = getFamilyByInviteCode(inviteCode);
+        return dogRepository.findAllByFamilyId(family.getFamilyId())
+                .stream()
+                .map(DogResponse::from)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DogResponse> getMyFamilyDogs(Member member){
+        Member currentMember = validateMemberInFamily(member);
+        Family family = currentMember.getFamily();
         return dogRepository.findAllByFamilyId(family.getFamilyId())
                 .stream()
                 .map(DogResponse::from)
