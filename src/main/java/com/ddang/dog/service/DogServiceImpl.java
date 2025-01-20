@@ -87,7 +87,7 @@ public class DogServiceImpl implements DogService{
     }
 
     public List<DogResponse> getDogsByMember(Member member) {
-        List<MemberDog> memberDogs = memberDogRepository.findAllByMember(member);
+        List<MemberDog> memberDogs = memberDogRepository.findAllByMember(member.getMemberId());
 
         return memberDogs.stream()
                 .map(memberDog -> DogResponse.from(memberDog.getDog()))
