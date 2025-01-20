@@ -4,6 +4,7 @@ import com.ddang.dog.service.response.DogResponse;
 import com.ddang.family.controller.request.FamilyJoinRequest;
 import com.ddang.family.service.FamilyService;
 import com.ddang.family.service.response.FamilyDogResponse;
+import com.ddang.family.service.response.FamilyMemberResponse;
 import com.ddang.family.service.response.FamilyResponse;
 import com.ddang.family.service.response.InviteCodeResponse;
 import com.ddang.global.api.ApiResponse;
@@ -100,9 +101,9 @@ public class FamilyController {
                 """
     )
     @SwaggerExceptionResponse({FAMILY_NOT_FOUND, MEMBER_NOT_IN_FAMILY, MEMBER_NOT_FOUND})
-    public ApiResponse<List<DogResponse>> getMyFamily(@AuthenticationPrincipal CustomOAuth2User currentUser) {
+    public ApiResponse<List<FamilyMemberResponse>> getMyFamily(@AuthenticationPrincipal CustomOAuth2User currentUser) {
         Member currentMember = currentUser.getMember();
-        List<DogResponse> response = familyService.getMyFamily(currentMember);
+        List<FamilyMemberResponse> response = familyService.getMyFamily(currentMember);
         return ApiResponse.ok(response);
     }
 

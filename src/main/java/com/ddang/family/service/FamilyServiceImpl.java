@@ -6,10 +6,11 @@ import com.ddang.dog.repository.DogRepository;
 import com.ddang.dog.repository.MemberDogRepository;
 import com.ddang.dog.service.response.DogResponse;
 import com.ddang.family.entity.Family;
+import com.ddang.family.entity.WeekDay;
+import com.ddang.family.repository.DayOfWeekRepository;
 import com.ddang.family.repository.FamilyRepository;
-import com.ddang.family.service.response.FamilyDogResponse;
-import com.ddang.family.service.response.FamilyResponse;
-import com.ddang.family.service.response.InviteCodeResponse;
+import com.ddang.family.repository.WalkScheduleRepository;
+import com.ddang.family.service.response.*;
 import com.ddang.global.exception.BadRequestException;
 import com.ddang.global.exception.ErrorCode;
 import com.ddang.member.entity.Member;
@@ -23,10 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -41,6 +40,7 @@ public class FamilyServiceImpl implements FamilyService {
     private final FamilyRepository familyRepository;
     private final MemberDogRepository memberDogRepository;
     private final DogRepository dogRepository;
+    private final DayOfWeekRepository dayOfWeekRepository;
 //    private final WalkRepository walkRepository;
 
 
@@ -103,6 +103,24 @@ public class FamilyServiceImpl implements FamilyService {
                 .toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<FamilyMemberResponse>getMyFamily(Member member){
+        Member currentMember = validateMemberInFamily(member);
+        Family family = currentMember.getFamily();
+
+        List<Member> familyMembers = memberRepository.findAllByFamily(family);
+        Map<Long, WalkScheduleInfo> walkSchedules = getWalkSchedulesWithDaysForMembers(familyMembers);
+        return familyMembers.stream()
+                .map(m -> {
+                    WalkScheduleInfo scheduleInfo = walkSchedules.getOrDefault(m.getMemberId(), null);
+                    boolean isRepresent = family.getRepresentativeMemberId().equals(m.getMemberId());
+                    return FamilyMemberResponse.of(m, scheduleInfo, isRepresent);
+                })
+                .toList();
+
+    }
+
 
     // Helper Method
     private String findExistingInviteCode(Long familyId) {
@@ -160,9 +178,34 @@ public class FamilyServiceImpl implements FamilyService {
         return (int) (0.75 * weight.doubleValue() * totalDistance / 1000);
     }
 
+    private Map<Long, WalkScheduleInfo> getWalkSchedulesWithDaysForMembers(List<Member> members) {
+        if (members.isEmpty()) {
+            return Map.of();
+        }
+
+        List<Long> memberIds = members.stream()
+                .map(Member::getMemberId)
+                .toList();
+
+        List<Object[]> results = dayOfWeekRepository.findSchedulesWithDaysByMemberIds(memberIds);
+
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (Long) result[0],
+                        result -> {
+                            Long walkScheduleId = (Long) result[1];
+                            String weekDayStr = (String) result[2];
+                            LocalTime walkTime = (LocalTime) result[3];
+
+                            List<WeekDay> weekDays = parseWeekDays(weekDayStr);
+
+                            return new WalkScheduleInfo(walkScheduleId, weekDays, walkTime);
+                        }
+                ));
+    }
+
 
     // second Helper Method
-
     private Long getFamilyIdFromKey(String key) {
         String familyIdStr = redisTemplate.opsForValue().get(key);
         return familyIdStr != null ? Long.valueOf(familyIdStr) : null;
@@ -190,6 +233,16 @@ public class FamilyServiceImpl implements FamilyService {
                 .replace("-", "")
                 .substring(0, 8)
                 .toUpperCase();
+    }
+
+    private List<WeekDay> parseWeekDays(String weekDayStr) {
+        if (weekDayStr == null || weekDayStr.isEmpty()) {
+            return List.of();
+        }
+
+        return Arrays.stream(weekDayStr.split(","))
+                .map(WeekDay::valueOf)
+                .toList();
     }
 
     private Member validateMemberInFamily(Member member) {
