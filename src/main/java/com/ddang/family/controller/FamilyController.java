@@ -1,5 +1,6 @@
 package com.ddang.family.controller;
 
+import com.ddang.dog.service.response.DogResponse;
 import com.ddang.family.controller.request.FamilyJoinRequest;
 import com.ddang.family.service.FamilyService;
 import com.ddang.family.service.response.FamilyResponse;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.ddang.global.exception.ErrorCode.*;
 
@@ -40,6 +43,19 @@ public class FamilyController {
         return ApiResponse.created(response);
     }
 
+    @PostMapping(value = "/join-dogs", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @Operation(
+            summary = "초대 코드를 입력하여 해당 패밀리댕이 보유한 강아지 정보 리스트를 받습니다.",
+            description = """
+                    초대 코드를 입력하여 가족의 강아지 정보 리스트를 받습니다.
+                    초대 코드가 유효하지 않거나 만료되었을 경우 오류를 반환합니다.
+                    """
+    )
+    @SwaggerExceptionResponse({INVALID_INVITE_CODE})
+    public ApiResponse<List<DogResponse>> getFamilyDogs(@RequestBody FamilyJoinRequest request) {
+        List<DogResponse> response = familyService.getFamilyDogs(request.inviteCode());
+        return ApiResponse.ok(response);
+    }
 
     @PostMapping(value = "/join", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @Operation(

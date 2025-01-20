@@ -4,6 +4,7 @@ import com.ddang.dog.entity.Dog;
 import com.ddang.dog.entity.MemberDog;
 import com.ddang.dog.repository.DogRepository;
 import com.ddang.dog.repository.MemberDogRepository;
+import com.ddang.dog.service.response.DogResponse;
 import com.ddang.family.entity.Family;
 import com.ddang.family.repository.FamilyRepository;
 import com.ddang.family.service.response.FamilyResponse;
@@ -62,19 +63,15 @@ public class FamilyServiceImpl implements FamilyService {
         return FamilyResponse.from(family);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    @Transactional
+    public List<DogResponse> getFamilyDogs(String inviteCode) {
+        Family family = getFamilyByInviteCode(inviteCode);
+        return dogRepository.findAllByFamilyId(family.getFamilyId())
+                .stream()
+                .map(DogResponse::from)
+                .toList();
+    }
 
 
     // Helper Method
