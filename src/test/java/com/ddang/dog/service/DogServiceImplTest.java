@@ -122,7 +122,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
         Dog dog = dogRepository.findById(response.dogId()).get();
 
         //then
-        assertThat(memberDogRepository.findAllByMember(member)).hasSize(1)
+        assertThat(memberDogRepository.findAllByMember(member.getMemberId())).hasSize(1)
                 .extracting("dog", "member")
                 .containsExactlyInAnyOrder(
                         tuple(dog, member)
@@ -148,7 +148,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
 
 
         //then
-        assertThat(memberDogRepository.findAllByMember(member)).hasSize(2)
+        assertThat(memberDogRepository.findAllByMember(member.getMemberId())).hasSize(2)
                 .extracting("dog", "member")
                 .containsExactlyInAnyOrder(
                         tuple(dogs.get(0), member),
@@ -181,7 +181,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
     void updateDog() throws IOException {
         //given
         Member member = memberRepository.findByEmail("test2@naver.com").get();
-        Dog dog = memberDogRepository.findAllByMember(member).get(0).getDog();
+        Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
         UpdateDogRequest request = new UpdateDogRequest("banana", null,
                 null, BigDecimal.valueOf(4.5), null, null,
                 "how kind of you");
@@ -202,7 +202,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
     void deleteDog() {
         //given
         Member member = memberRepository.findByEmail("test2@naver.com").get();
-        Dog dog = memberDogRepository.findAllByMember(member).get(0).getDog();
+        Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
 
         Dog dog2 = Dog.builder()
                 .name("choco")
@@ -237,7 +237,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
     void getDogsByMember() {
         //given
         Member member = memberRepository.findByEmail("test2@naver.com").get();
-        Dog dog = memberDogRepository.findAllByMember(member).get(0).getDog();
+        Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
 
         //when
         List<DogResponse> responses = dogService.getDogsByMember(member);
