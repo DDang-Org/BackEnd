@@ -32,6 +32,7 @@ public enum ErrorCode {
     NEUTERING_REQUIRED("E_NR", BAD_REQUEST, "중성화 여부는 반드시 입력해야 합니다."),
     COMMENT_SIZE_EXCEED("E_CSE", BAD_REQUEST, "코멘트는 최대 30자까지 입력 가능합니다."),
     DOG_ALREADY_OWNED("E_DAO", BAD_REQUEST, "강아지는 한마리만 소유할 수 있습니다."),
+    NOT_MEMBER_DOG("E_NMD", BAD_REQUEST, "강아지의 소유자가 아닙니다."),
 
 
     // S3
