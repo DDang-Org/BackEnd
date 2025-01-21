@@ -107,13 +107,13 @@ public class FamilyController {
         return ApiResponse.ok(response);
     }
 
-    @PutMapping("/representative/{memberId}")
+    @PatchMapping("/representative/{memberId}")
     @Operation(
             summary = "가족 대표 위임",
             description = """
-                현재 가족 대표가 다른 가족 구성원을 대표로 위임합니다.
-                대표는 동일한 가족 구성원만 위임 가능합니다.
-                """
+            현재 가족 대표가 다른 가족 구성원을 대표로 위임합니다.
+            대표는 동일한 가족 구성원만 위임 가능합니다.
+            """
     )
     @SwaggerExceptionResponse({FAMILY_NOT_FOUND, MEMBER_NOT_IN_FAMILY, MEMBER_NOT_FOUND, MEMBER_NOT_FAMILY_BOSS, INVALID_FAMILY_MEMBER})
     public ApiResponse<Void> assignRepresentative(
