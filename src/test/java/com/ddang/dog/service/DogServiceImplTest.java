@@ -167,7 +167,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
 
         //then
         assertThat(response)
-                .extracting("dogId" ,"dogName", "dogBreed", "dogBirthDate", "dogWeight", "dogGender", "isNeutered", "walkCount", "familyId", "comment")
+                .extracting("dogId" ,"dogName", "breed", "dogBirthDate", "weight", "dogGender", "isNeutered", "walkCount", "familyId", "comment")
                 .containsExactlyInAnyOrder(
                         dog.getDogId(), dog.getName(), dog.getBreed(),
                         dog.getBirthDate(), dog.getWeight(), dog.getGender(),
@@ -191,7 +191,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
 
         //then
         assertThat(response)
-                .extracting("dogName", "dogWeight", "comment")
+                .extracting("dogName", "weight", "comment")
                 .containsExactlyInAnyOrder(
                    "banana", BigDecimal.valueOf(4.5), "how kind of you"
                 );
@@ -244,7 +244,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
 
         //then
         assertThat(responses).hasSize(1)
-                .extracting("dogId" ,"dogName", "dogBreed", "dogBirthDate", "dogWeight", "dogGender", "isNeutered", "walkCount", "familyId", "comment")
+                .extracting("dogId" ,"dogName", "breed", "dogBirthDate", "weight", "dogGender", "isNeutered", "walkCount", "familyId", "comment")
                 .containsExactlyInAnyOrder(
                         tuple(dog.getDogId(), dog.getName(), dog.getBreed(),
                                 dog.getBirthDate(), dog.getWeight(), dog.getGender(),
