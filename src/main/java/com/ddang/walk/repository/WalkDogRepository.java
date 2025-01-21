@@ -3,9 +3,11 @@ package com.ddang.walk.repository;
 import com.ddang.walk.entity.Walk;
 import com.ddang.walk.entity.WalkDog;
 import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface WalkDogRepository extends JpaRepository<WalkDog, Long> {
@@ -48,5 +50,16 @@ public interface WalkDogRepository extends JpaRepository<WalkDog, Long> {
     AND YEAR(wd.createdAt) = :year
 """)
     List<Walk> findWalksByDogId(@Param("dogId") Long dogId, @Param("year") int year);
+
+ @EntityGraph(attributePaths = {"walk"})
+ @Query("""
+    SELECT wd.walk 
+    FROM WalkDog wd 
+    JOIN wd.walk w 
+    WHERE wd.dog.dogId = :dogId 
+    AND w.createdAt 
+    BETWEEN :startOfDay AND :endOfDay
+""")
+ List<Walk> findWalksByDogIdAndToday(@Param("dogId") Long dogId, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
 }

@@ -4,6 +4,7 @@ import com.ddang.dog.controller.request.CreateDogRequest;
 import com.ddang.dog.controller.request.UpdateDogRequest;
 import com.ddang.dog.service.DogService;
 import com.ddang.dog.service.response.DogResponse;
+import com.ddang.dog.service.response.DogWalkResponse;
 import com.ddang.global.api.ApiResponse;
 import com.ddang.global.exception.annotation.SwaggerExceptionResponse;
 import com.ddang.member.oauth2.CustomOAuth2User;
@@ -115,6 +116,17 @@ public class DogController {
         dogService.deleteDog(dogId, customOAuth2User.getMember());
 
         return ApiResponse.noContent();
+    }
+
+    @GetMapping("/{dogId}/walk")
+    @Operation(summary = "강아지 당일 산책 기록", description = "강아지의 당일 산책 기록을 조회합니다.")
+    @SwaggerExceptionResponse(DOG_NOT_FOUND)
+    public ApiResponse<DogWalkResponse> dogWalk(@PathVariable Long dogId,
+                                                @AuthenticationPrincipal CustomOAuth2User customOAuth2User){
+
+        DogWalkResponse response = dogService.dogWalk(customOAuth2User.getMember(), dogId);
+
+        return ApiResponse.ok(response);
     }
 }
 
