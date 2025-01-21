@@ -1,6 +1,7 @@
 package com.ddang.family.entity;
 
 import com.ddang.global.entity.BaseEntity;
+import com.ddang.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,6 +22,10 @@ public class Family extends BaseEntity {
 
     public static Family create() {
         return new Family();
+    }
+
+    public void updateRepresentative(Member newRepresentative) {
+        this.representativeMemberId = newRepresentative.getMemberId();
     }
 
 }

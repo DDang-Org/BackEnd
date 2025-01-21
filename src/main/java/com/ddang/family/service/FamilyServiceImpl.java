@@ -123,6 +123,20 @@ public class FamilyServiceImpl implements FamilyService {
 
     }
 
+    @Override
+    @Transactional
+    public void assignFamilyRepresentative(Member member, Long newRepresentativeId) {
+        Member currentMember = validateFamilyBoss(member);
+        Member newRepresentativeMember = findMemberByIdOrThrowException(newRepresentativeId);
+
+        if (!currentMember.getFamily().equals(newRepresentativeMember.getFamily())) {
+            throw new BadRequestException(ErrorCode.INVALID_FAMILY_MEMBER);
+        }
+
+        Family family = currentMember.getFamily();
+        family.updateRepresentative(newRepresentativeMember);
+    }
+
 
     @Override
     @Transactional

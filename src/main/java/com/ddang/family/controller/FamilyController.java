@@ -107,6 +107,23 @@ public class FamilyController {
         return ApiResponse.ok(response);
     }
 
+    @PutMapping("/representative/{memberId}")
+    @Operation(
+            summary = "가족 대표 위임",
+            description = """
+                현재 가족 대표가 다른 가족 구성원을 대표로 위임합니다.
+                대표는 동일한 가족 구성원만 위임 가능합니다.
+                """
+    )
+    @SwaggerExceptionResponse({FAMILY_NOT_FOUND, MEMBER_NOT_IN_FAMILY, MEMBER_NOT_FOUND, MEMBER_NOT_FAMILY_BOSS, INVALID_FAMILY_MEMBER})
+    public ApiResponse<Void> assignRepresentative(
+            @PathVariable Long memberId,
+            @AuthenticationPrincipal CustomOAuth2User currentUser
+    ) {
+        familyService.assignFamilyRepresentative(currentUser.getMember(), memberId);
+        return ApiResponse.noContent();
+    }
+
     @DeleteMapping("/members/{memberId}")
     @Operation(
             summary = "가족 유저 추방",
@@ -115,6 +132,7 @@ public class FamilyController {
                 추방 권한은 가족 소유자에게만 주어집니다.
                 """
     )
+    @SwaggerExceptionResponse({FAMILY_NOT_FOUND, MEMBER_NOT_IN_FAMILY, MEMBER_NOT_FOUND, MEMBER_NOT_FAMILY_BOSS, SELF_REMOVE_NOT_ALLOWED, INVALID_FAMILY_MEMBER})
     public ApiResponse<Void> removeMember(
             @PathVariable Long memberId,
             @AuthenticationPrincipal CustomOAuth2User currentUser
@@ -131,6 +149,7 @@ public class FamilyController {
                 가족 소유자는 탈퇴할 수 없습니다.
                 """
     )
+    @SwaggerExceptionResponse({FAMILY_NOT_FOUND, MEMBER_NOT_IN_FAMILY, MEMBER_NOT_FOUND, INVALID_ACTION_FAMILY_BOSS})
     public ApiResponse<Void> leaveFamily(@AuthenticationPrincipal CustomOAuth2User currentUser) {
         familyService.leaveFamily(currentUser.getMember());
         return ApiResponse.noContent();

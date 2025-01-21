@@ -20,6 +20,8 @@ public interface FamilyService {
 
     List<FamilyMemberResponse>getMyFamily(Member member);
 
+    void assignFamilyRepresentative(Member member, Long newRepresentativeId);
+
     void removeMemberFromFamily(Long memberIdToRemove, Member member);
 
     void leaveFamily(Member member);
