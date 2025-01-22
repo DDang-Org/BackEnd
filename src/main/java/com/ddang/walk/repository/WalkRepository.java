@@ -17,7 +17,7 @@ public interface WalkRepository extends JpaRepository<Walk, Long> {
         SELECT w
         FROM Walk w 
         WHERE w.member IN :members 
-        AND DATE(w.createdAt) = :date
+        AND DATE(w.startTime) = :date
        """)
     List<Walk> findAllByMembersAndDate(@Param("members") List<Member> members, @Param("date") LocalDate date);
 
