@@ -15,6 +15,7 @@ public interface WalkDogRepository extends JpaRepository<WalkDog, Long> {
    @Query("""
     SELECT wd
     FROM WalkDog wd
+    JOIN FETCH wd.walk
     WHERE wd.dog.dogId = :dogId
     AND wd.dog.isDeleted = 'FALSE'
 """)

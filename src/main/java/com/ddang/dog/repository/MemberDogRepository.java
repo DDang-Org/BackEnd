@@ -37,6 +37,6 @@ public interface MemberDogRepository extends JpaRepository<MemberDog, Long> {
             WHERE member_id = :memberId AND dog_id = :dogId AND is_deleted = 'FALSE'
             )
                     """, nativeQuery = true)
-    boolean existsByMemberAndDog(Long memberId, Long dogId);
+    long existsByMemberAndDog(Long memberId, Long dogId);
 
 }

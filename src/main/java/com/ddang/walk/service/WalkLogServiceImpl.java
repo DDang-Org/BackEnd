@@ -45,7 +45,7 @@ public class WalkLogServiceImpl implements WalkLogService{
         isMemberDog(member, dogId);
         List<WalkDog> walkList = walkDogRepository.findAllByDog_DogId(dogId);
 
-        return walkList.stream().map(walk -> walk.getCreatedAt().toLocalDate()).toList();
+        return walkList.stream().map(walk -> walk.getWalk().getStartTime().toLocalDate()).toList();
     }
 
     @Override
@@ -134,7 +134,7 @@ public class WalkLogServiceImpl implements WalkLogService{
     }
 
     private void isMemberDog(Member member, Long dogId){
-        if(memberDogRepository.existsByMemberAndDog(member.getMemberId(), dogId)){
+        if(memberDogRepository.existsByMemberAndDog(member.getMemberId(), dogId) == 0){
             throw new BadRequestException(ErrorCode.NOT_MEMBER_DOG);
         }
 
