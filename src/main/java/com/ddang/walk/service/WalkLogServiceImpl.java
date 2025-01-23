@@ -1,12 +1,8 @@
 package com.ddang.walk.service;
 
-import com.ddang.dog.entity.Dog;
-import com.ddang.dog.entity.MemberDog;
-import com.ddang.dog.repository.DogRepository;
 import com.ddang.dog.repository.MemberDogRepository;
 import com.ddang.global.exception.BadRequestException;
 import com.ddang.global.exception.ErrorCode;
-import com.ddang.global.exception.NotFoundException;
 import com.ddang.member.entity.Member;
 import com.ddang.member.repository.MemberRepository;
 import com.ddang.walk.entity.Walk;
@@ -16,12 +12,10 @@ import com.ddang.walk.repository.WalkRepository;
 import com.ddang.walk.service.response.log.WalkLogByFamilyResponse;
 import com.ddang.walk.service.response.log.WalkLogResponse;
 import com.ddang.walk.service.response.log.WalkStaticsResponse;
-import com.ddang.walk.util.WalkCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.Position;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.temporal.ChronoUnit;
@@ -37,7 +31,6 @@ public class WalkLogServiceImpl implements WalkLogService{
     private final MemberRepository memberRepository;
     private final WalkDogRepository walkDogRepository;
     private final WalkRepository walkRepository;
-    private final DogRepository dogRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -53,11 +46,9 @@ public class WalkLogServiceImpl implements WalkLogService{
     public List<WalkLogResponse> getWalkLogByDate(Member member, LocalDate date, Long dogId) {
         isMemberDog(member, dogId);
         List<Member> memberList = memberRepository.findAllByFamily(member.getFamily());
-        List<Walk> walks = walkRepository.findAllByMembersAndDate(memberList, date);
-        Dog dog = getDogFromDogId(dogId);
+        List<Walk> walks = walkDogRepository.findAllByMembersAndDateAndDogId(memberList, date, dogId);
 
-        return walks.stream().map(walk ->
-                        WalkLogResponse.of( walk, WalkCalculator.calculateCalorie(dog.getWeight(), walk.getTotalDistance()) ))
+        return walks.stream().map(WalkLogResponse::from)
                 .toList();
     }
 
@@ -101,7 +92,8 @@ public class WalkLogServiceImpl implements WalkLogService{
     @Transactional(readOnly = true)
     @Override
     public WalkStaticsResponse getTotalWalkLog(Member member, Long dogId) {
-        List<Walk> walkList = walkDogRepository.findWalksByDogIdFromMemberId(member.getMemberId(), dogId);
+        isMemberDog(member, dogId);
+        List<Walk> walkList = walkDogRepository.findWalksByDogId(dogId);
         long totalSeconds = 0;
         int totalDistanceMeter = 0;
         int totalWalkCount = walkList.size();
@@ -110,13 +102,14 @@ public class WalkLogServiceImpl implements WalkLogService{
             totalDistanceMeter += walk.getTotalDistance();
         }
 
-        return WalkStaticsResponse.of(totalSeconds, totalWalkCount, totalDistanceMeter/1000);
+        return WalkStaticsResponse.of(totalSeconds, totalWalkCount, totalDistanceMeter);
     }
 
     @Transactional(readOnly = true)
     @Override
     public WalkStaticsResponse getMonthlyTotalWalk(Member member, Long dogId) {
-        List<Walk> walkList = walkDogRepository.findWalksByDogIdAndMonthFromMemberId(member.getMemberId(), dogId, LocalDate.now().getMonthValue());
+        isMemberDog(member, dogId);
+        List<Walk> walkList = walkDogRepository.findWalksByDogIdAndMonth(dogId, LocalDate.now().getMonthValue());
         long totalSeconds = 0;
         int totalDistanceMeter = 0;
         int totalWalkCount = walkList.size();
@@ -125,12 +118,7 @@ public class WalkLogServiceImpl implements WalkLogService{
             totalDistanceMeter += walk.getTotalDistance();
         }
 
-        return WalkStaticsResponse.of(totalSeconds, totalWalkCount, totalDistanceMeter/1000);
-    }
-
-    private Dog getDogFromDogId(Long dogId){
-        return dogRepository.findActiveById(dogId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.DOG_NOT_FOUND));
+        return WalkStaticsResponse.of(totalSeconds, totalWalkCount, totalDistanceMeter);
     }
 
     private void isMemberDog(Member member, Long dogId){

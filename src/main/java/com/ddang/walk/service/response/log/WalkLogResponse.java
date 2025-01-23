@@ -26,12 +26,12 @@ public record WalkLogResponse(
         @Schema(description = "멤버 프로필 url", example = "/src/img/Avatar4.svg")
         String memberProfileImg
 ) {
-    public static WalkLogResponse of(Walk walk, int totalCalorie) {
+    public static WalkLogResponse from(Walk walk) {
         return new WalkLogResponse(
                 walk.getWalkImg(),
                 walk.getWalkId(),
                 TimeDuration.of(walk.getStartTime(), walk.getEndTime()),
-                totalCalorie,
+                walk.getTotalCalorie(),
                 walk.getTotalDistance(),
                 walk.getMember().getMemberName(),
                 walk.getMember().getMemberProfileImg()

@@ -11,11 +11,11 @@ public record WalkStaticsResponse(
         @Schema(description = "산책 횟수", example = "5")
         int walkCount,
 
-        @Schema(description = "총 거리(킬로미터)", example = "10")
-        int totalDistanceKilo
+        @Schema(description = "총 거리(미터)", example = "1000")
+        int totalDistanceMeter
 ) {
-    public static WalkStaticsResponse of(long totalSeconds, int walkCount, int totalDistanceKilo) {
-        return new WalkStaticsResponse(TimeDuration.from(totalSeconds), walkCount, totalDistanceKilo);
+    public static WalkStaticsResponse of(long totalSeconds, int walkCount, int totalDistanceMeter) {
+        return new WalkStaticsResponse(TimeDuration.from(totalSeconds), walkCount, totalDistanceMeter);
     }
 }
 
