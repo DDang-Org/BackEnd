@@ -41,7 +41,16 @@ public enum ErrorCode {
 
 
     // Member
-    MEMBER_NOT_FOUND("E_MEM", NOT_FOUND, "Member not found"),
+    MEMBER_NOT_FOUND("E_MEM", NOT_FOUND, "멤버를 찾을 수 없습니다."),
+    INVALID_EMAIL("E_IEM", BAD_REQUEST, "이메일 형식이 올바르지 않습니다."),
+    PROVIDER_NOT_NULL("E_PNN", BAD_REQUEST, "OAuth2 서버 제공자를 입력해주세요."),
+    MEMBER_NAME_NOT_NULL("E_MNN", BAD_REQUEST, "멤버 이름은 비워둘 수 없습니다."),
+    MEMBER_GENDER_NOT_NULL("E_MGN", BAD_REQUEST, "멤버 성별은 비워둘 수 없습니다."),
+    MEMBER_ADDRESS_NOT_NULL("E_MAN", BAD_REQUEST, "멤버 주소는 비워둘 수 없습니다."),
+    MEMBER_FAMILY_ROLE_NOT_NULL("E_MFR", BAD_REQUEST, "멤버 가족 역할은 비워둘 수 없습니다."),
+    MEMBER_PROFILE_IMG_NOT_NULL("E_MPI", BAD_REQUEST, "멤버 프로필 이미지는 비워둘 수 없습니다."),
+    MEMBER_BIRTH_DATE_MUST_BE_PAST_OR_PRESENT("E_MBD", BAD_REQUEST, "멤버 생년월일은 과거 혹은 현재 날짜여야 합니다."),
+    INVALID_IS_MATCHED("E_IIM", BAD_REQUEST, "isMatched는 반드시 TRUE 혹은 FALSE여야 합니다."),
 
     // Redis
     REDIS_DATA_SIZE_EXCEEDED_ERROR("E_REDIS", BAD_REQUEST, "Redis에 저장할 데이터 크기가 허용치를 초과했습니다."),
