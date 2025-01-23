@@ -15,7 +15,11 @@ import com.ddang.walk.entity.Walk;
 import com.ddang.walk.entity.WalkDog;
 import com.ddang.walk.repository.WalkDogRepository;
 import com.ddang.walk.repository.WalkRepository;
+import com.ddang.walk.service.response.log.WalkLogByFamilyResponse;
+import com.ddang.walk.service.response.log.WalkLogResponse;
+import com.ddang.walk.service.response.log.WalkStaticsResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
-
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
@@ -98,6 +100,7 @@ class WalkLogServiceImplTest extends IntegrationTestSupport {
     }
 
     @Test
+    @DisplayName("멤버와 강아지가 산책한 날짜를 조회합니다.")
     void getWalkLogs() {
         //given
         Member member = memberRepository.findByEmail("test2@naver.com").get();
@@ -127,26 +130,185 @@ class WalkLogServiceImplTest extends IntegrationTestSupport {
         //then
         assertThat(response).hasSize(1)
                 .containsExactlyInAnyOrder(LocalDate.of(2025,1,21));
-
     }
 
     @Test
+    @DisplayName("날짜를 기준으로 상세 정보를 조회합니다.")
     void getWalkLogByDate() {
+
+        //given
+        Member member = memberRepository.findByEmail("test2@naver.com").get();
+        Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
+
+        Walk walk = Walk.builder()
+                .walkImg("image")
+                .member(member)
+                .startTime(LocalDateTime.of(2025,1,21,9,30,0))
+                .endTime(LocalDateTime.of(2025,1,21,11,0,0))
+                .totalCalorie(300)
+                .totalDistance(3000)
+                .build();
+
+        walkRepository.save(walk);
+
+        WalkDog walkDog = WalkDog.builder()
+                .dog(dog)
+                .walk(walk)
+                .build();
+
+        walkDogRepository.save(walkDog);
+
+        //when
+        List<WalkLogResponse> response = walkLogService.getWalkLogByDate(member, LocalDate.of(2025, 1, 21), dog.getDogId());
+
+        //then
+        assertThat(response).hasSize(1)
+                .extracting("walkImg", "totalCalorie", "totalDistanceMeter")
+                .containsExactlyInAnyOrder(
+                        tuple("image", 300, 3000)
+                );
     }
 
     @Test
+    @DisplayName("올 한 해 강아지 산책 시킨 횟수를 조회합니다.")
     void getYearlyWalkLog() {
+        //given
+        Member member = memberRepository.findByEmail("test2@naver.com").get();
+        Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
+
+        Walk walk = Walk.builder()
+                .walkImg("image")
+                .member(member)
+                .startTime(LocalDateTime.of(2025,1,21,9,30,0))
+                .endTime(LocalDateTime.of(2025,1,21,11,0,0))
+                .totalCalorie(300)
+                .totalDistance(3000)
+                .build();
+
+        walkRepository.save(walk);
+
+        WalkDog walkDog = WalkDog.builder()
+                .dog(dog)
+                .walk(walk)
+                .build();
+
+        walkDogRepository.save(walkDog);
+
+        //when
+        List<Integer> response = walkLogService.getYearlyWalkLog(member, dog.getDogId());
+
+        //then
+        assertThat(response).hasSize(12)
+                .containsExactlyInAnyOrder(
+                        1,0,0,0,
+                        0,0,0,0,
+                        0,0,0,0
+                );
     }
 
     @Test
+    @DisplayName("가족들이 한 해 산책한 횟수를 조회합니다.")
     void getYearlyWalkLogByFamily() {
+        //given
+        Member member = memberRepository.findByEmail("test2@naver.com").get();
+        Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
+
+        Walk walk = Walk.builder()
+                .walkImg("image")
+                .member(member)
+                .startTime(LocalDateTime.of(2025,1,21,9,30,0))
+                .endTime(LocalDateTime.of(2025,1,21,11,0,0))
+                .totalCalorie(300)
+                .totalDistance(3000)
+                .build();
+
+        walkRepository.save(walk);
+
+        WalkDog walkDog = WalkDog.builder()
+                .dog(dog)
+                .walk(walk)
+                .build();
+
+        walkDogRepository.save(walkDog);
+
+        //when
+        List<WalkLogByFamilyResponse> response = walkLogService.getYearlyWalkLogByFamily(member, dog.getDogId());
+
+        //then
+        assertThat(response).hasSize(1)
+                .extracting("familyRole", "memberName", "count")
+                .containsExactlyInAnyOrder(
+                        tuple(FamilyRole.ELDER_SISTER, "test2", 1)
+                );
     }
 
     @Test
+    @DisplayName("모든 산책 정보를 조회합니다.")
     void getTotalWalkLog() {
+        //given
+        Member member = memberRepository.findByEmail("test2@naver.com").get();
+        Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
+
+        Walk walk = Walk.builder()
+                .walkImg("image")
+                .member(member)
+                .startTime(LocalDateTime.of(2025,1,21,9,30,0))
+                .endTime(LocalDateTime.of(2025,1,21,11,0,0))
+                .totalCalorie(300)
+                .totalDistance(3000)
+                .build();
+
+        walkRepository.save(walk);
+
+        WalkDog walkDog = WalkDog.builder()
+                .dog(dog)
+                .walk(walk)
+                .build();
+
+        walkDogRepository.save(walkDog);
+
+        //when
+        WalkStaticsResponse response = walkLogService.getTotalWalkLog(member, dog.getDogId());
+
+        //then
+        assertThat(response).extracting("walkCount", "totalDistanceMeter")
+                .containsExactlyInAnyOrder(
+                        1,3000
+                );
     }
 
     @Test
+    @DisplayName("이번 달 산책 내역을 조회합니다.")
     void getMonthlyTotalWalk() {
+        //given
+        Member member = memberRepository.findByEmail("test2@naver.com").get();
+        Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
+
+        Walk walk = Walk.builder()
+                .walkImg("image")
+                .member(member)
+                .startTime(LocalDateTime.of(2025,1,21,9,30,0))
+                .endTime(LocalDateTime.of(2025,1,21,11,0,0))
+                .totalCalorie(300)
+                .totalDistance(3000)
+                .build();
+
+        walkRepository.save(walk);
+
+        WalkDog walkDog = WalkDog.builder()
+                .dog(dog)
+                .walk(walk)
+                .build();
+
+        walkDogRepository.save(walkDog);
+
+        //when
+        WalkStaticsResponse response = walkLogService.getMonthlyTotalWalk(member, dog.getDogId());
+
+        //then
+        assertThat(response).extracting("walkCount", "totalDistanceMeter")
+                .containsExactlyInAnyOrder(
+                        1,3000
+                );
     }
 }
