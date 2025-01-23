@@ -43,6 +43,7 @@ public interface WalkDogRepository extends JpaRepository<WalkDog, Long> {
     FROM WalkDog wd
     WHERE wd.dog.dogId = :dogId
     And Month(wd.createdAt) = :month
+    AND Year(wd.createdAt) = Year(now())
 """)
     List<Walk> findWalksByDogIdAndMonth(@Param("dogId") Long dogId,
                                         @Param("month") int month);
@@ -66,7 +67,7 @@ public interface WalkDogRepository extends JpaRepository<WalkDog, Long> {
     AND w.createdAt 
     BETWEEN :startOfDay AND :endOfDay
 """)
- List<Walk> findWalksByDogIdAndToday(@Param("dogId") Long dogId,
+ List<Walk> findTodayWalksByDogId(@Param("dogId") Long dogId,
                                      @Param("startOfDay") LocalDateTime startOfDay,
                                      @Param("endOfDay") LocalDateTime endOfDay);
 

@@ -121,7 +121,7 @@ public class DogServiceImpl implements DogService {
         long totalSeconds = 0;
         long totalDistanceMeter = 0;
         long totalCalorie = 0;
-        List<Walk> walkList = findWalksByDogIdAndToday(dogId);
+        List<Walk> walkList = findTodayWalksByDogId(dogId);
 
         for (Walk walk : walkList) {
             totalCalorie += walk.getTotalCalorie();
@@ -136,11 +136,11 @@ public class DogServiceImpl implements DogService {
         return summary;
     }
 
-    private List<Walk> findWalksByDogIdAndToday(Long dogId) {
+    private List<Walk> findTodayWalksByDogId(Long dogId) {
         LocalDate today = LocalDate.now();
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.plusDays(1).atStartOfDay().minusNanos(1);
-        return walkDogRepository.findWalksByDogIdAndToday(dogId, startOfDay, endOfDay);
+        return walkDogRepository.findTodayWalksByDogId(dogId, startOfDay, endOfDay);
     }
 
 
