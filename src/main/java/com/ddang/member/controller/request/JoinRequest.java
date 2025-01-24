@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 
@@ -33,8 +34,8 @@ public record JoinRequest(
         @Schema(description = "성별", example = "MALE")
         Gender memberGender,
 
-        @NotNull(message = "생일을 입력해주세요.")
-        @Schema(description = "생일", example = "2000-01-01")
+        @PastOrPresent(message = "생년월일은 과거 혹은 현재 날짜여야 합니다.")
+        @NotNull(message = "생일은 반드시 입력해야 합니다.")
         LocalDate memberBirthDate,
 
         @NotBlank(message = " 주소를 입력해주세요.")
@@ -45,9 +46,9 @@ public record JoinRequest(
         @Schema(description = "가족 역할", example = "FATHER")
         FamilyRole familyRole,
 
-        @NotBlank(message = "프로필 이미지를 입력해주세요.")
+        @NotNull(message = "프로필 이미지를 입력해주세요.")
         @Schema(description = "프로필 이미지", example = "https://example.com/profile.jpg")
-        String memberProfileImg
+        int memberProfileImg
 ) {
 
     public JoinServiceRequest toServiceRequest() {
