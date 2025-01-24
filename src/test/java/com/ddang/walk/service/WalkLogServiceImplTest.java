@@ -75,17 +75,17 @@ class WalkLogServiceImplTest extends IntegrationTestSupport {
                 .build();
 
         Member memberHasDog = Member.builder()
-                .memberName("test2")
+                .name("test2")
                 .email("test2@naver.com")
                 .role(Role.USER)
                 .isMatched(IsMatched.TRUE)
                 .address("test2Address")
-                .memberBirthDate(LocalDate.of(2000,5,2))
-                .memberGender(Gender.FEMALE)
+                .birthDate(LocalDate.of(2000,5,2))
+                .gender(Gender.FEMALE)
                 .familyRole(FamilyRole.ELDER_SISTER)
                 .family(family)
                 .provider(Provider.GOOGLE)
-                .memberProfileImg("")
+                .profileImg("")
                 .build();
 
         memberRepository.save(memberHasDog);

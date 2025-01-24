@@ -311,14 +311,14 @@ class DogControllerTest extends ApiTestSupport {
 
     private Member setMemberToSecurity(){
         Member member = Member.builder()
-                .memberName("mjk")
+                .name("mjk")
                 .email("user@example.com")
                 .role(Role.USER)
                 .address("Incheon")
                 .isMatched(IsMatched.TRUE)
-                .memberGender(Gender.MALE)
+                .gender(Gender.MALE)
                 .provider(Provider.GOOGLE)
-                .memberProfileImg("profileImg1.png")
+                .profileImg("profileImg1.png")
                 .familyRole(FamilyRole.ELDER_BROTHER)
                 .build();
 

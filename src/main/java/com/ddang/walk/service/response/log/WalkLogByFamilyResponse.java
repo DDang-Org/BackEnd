@@ -19,7 +19,7 @@ public record WalkLogByFamilyResponse(
         int count
 ) {
         public static WalkLogByFamilyResponse of(Member member, int count){
-                return new WalkLogByFamilyResponse(member.getMemberId(), member.getFamilyRole(), member.getMemberName(), count);
+                return new WalkLogByFamilyResponse(member.getMemberId(), member.getFamilyRole(), member.getName(), count);
 
         }
 }

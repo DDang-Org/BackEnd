@@ -33,8 +33,8 @@ public record WalkLogResponse(
                 TimeDuration.of(walk.getStartTime(), walk.getEndTime()),
                 walk.getTotalCalorie(),
                 walk.getTotalDistance(),
-                walk.getMember().getMemberName(),
-                walk.getMember().getMemberProfileImg()
+                walk.getMember().getName(),
+                walk.getMember().getProfileImg()
         );
     }
 }
