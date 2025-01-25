@@ -3,6 +3,7 @@ package com.ddang.notification.entity;
 import com.ddang.global.entity.BaseEntity;
 import com.ddang.member.entity.Member;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,5 +35,9 @@ public class NotificationSettings extends BaseEntity {
         this.type = type;
         this.isAgreed = isAgreed;
         this.member = member;
+    }
+
+    public void updateIsAgreed(IsAgreed isAgreed) {
+        this.isAgreed = isAgreed;
     }
 }
