@@ -16,6 +16,9 @@ public enum ErrorCode {
     // 500 에러
     INTERNAL_SERVER_ERROR("E_SYS", HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류가 발생했습니다."),
 
+    //BAD_REQUEST
+    INVALID_PAGE_NUMBER("E_IPN", BAD_REQUEST, "페이지 번호는 0 이상이어야 합니다."),
+
     //DOG
     DOG_NOT_FOUND("E_DNF", NOT_FOUND, "개를 찾을 수 없습니다."),
     MEMBER_NOT_HAVE_DOG("E_MND", NOT_FOUND, "멤버가 개를 소유하고 있지 않습니다."),
@@ -51,6 +54,16 @@ public enum ErrorCode {
     MEMBER_PROFILE_IMG_NOT_NULL("E_MPI", BAD_REQUEST, "멤버 프로필 이미지는 비워둘 수 없습니다."),
     MEMBER_BIRTH_DATE_MUST_BE_PAST_OR_PRESENT("E_MBD", BAD_REQUEST, "멤버 생년월일은 과거 혹은 현재 날짜여야 합니다."),
     INVALID_IS_MATCHED("E_IIM", BAD_REQUEST, "isMatched는 반드시 TRUE 혹은 FALSE여야 합니다."),
+
+    // Block
+    BLOCK_NOT_FOUND("E_BNF", NOT_FOUND, "차단 내역을 찾을 수 없습니다."),
+    BLOCKED_MEMBER_IS_FAMILY_MEMBER("E_BFM", BAD_REQUEST, "가족 멤버는 차단할 수 없습니다."),
+    ALREADY_BLOCKED_MEMBER("E_ABM", BAD_REQUEST, "이미 차단된 멤버입니다."),
+
+    // NOTIFICATION
+    NOTIFICATION_SETTINGS_NOT_FOUND("E_NSNF", NOT_FOUND, "알림 설정을 찾을 수 없습니다."),
+    INVALID_NOTIFICATION_TYPE("E_INT", BAD_REQUEST, "알림 타입은 반드시 CHAT, FRIEND, WALK 중 하나여야 합니다."),
+    INVALID_IS_AGREED("E_IIA", BAD_REQUEST, "isAgreed는 반드시 TRUE 혹은 FALSE여야 합니다."),
 
     // Redis
     REDIS_DATA_SIZE_EXCEEDED_ERROR("E_REDIS", BAD_REQUEST, "Redis에 저장할 데이터 크기가 허용치를 초과했습니다."),
