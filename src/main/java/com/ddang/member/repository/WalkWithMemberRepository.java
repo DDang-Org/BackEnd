@@ -8,9 +8,10 @@ import org.springframework.data.repository.query.Param;
 public interface WalkWithMemberRepository extends JpaRepository<WalkWithMember, Long> {
 
     @Query("""
-            SELECT COALESCE(COUNT(w), 0)
-            FROM WalkWithMember w
-            WHERE w.sender.memberId = :memberId AND w.isDeleted = 'FALSE'
-            """)
+        SELECT COUNT(w)
+        FROM WalkWithMember w
+        WHERE w.sender.memberId = :memberId AND w.isDeleted = 'FALSE'
+        """)
     int countBySenderMemberId(@Param("memberId") Long memberId);
+
 }
