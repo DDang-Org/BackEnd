@@ -59,7 +59,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
                 .gender(Gender.MALE)
                 .familyRole(FamilyRole.ELDER_BROTHER)
                 .provider(Provider.KAKAO)
-                .profileImg("")
+                .profileImg(1)
                 .build();
 
         Family family = Family.create();
@@ -89,7 +89,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
                 .familyRole(FamilyRole.ELDER_SISTER)
                 .family(family)
                 .provider(Provider.GOOGLE)
-                .profileImg("")
+                .profileImg(1)
                 .build();
 
         memberRepository.saveAll(Arrays.asList(memberHasNoDog, memberHasDog));

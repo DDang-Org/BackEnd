@@ -24,7 +24,7 @@ public record WalkLogResponse(
         String memberName,
 
         @Schema(description = "멤버 프로필 url", example = "/src/img/Avatar4.svg")
-        String memberProfileImg
+        int memberProfileImg
 ) {
     public static WalkLogResponse from(Walk walk) {
         return new WalkLogResponse(

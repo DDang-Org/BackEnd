@@ -318,7 +318,7 @@ class DogControllerTest extends ApiTestSupport {
                 .isMatched(IsMatched.TRUE)
                 .gender(Gender.MALE)
                 .provider(Provider.GOOGLE)
-                .profileImg("profileImg1.png")
+                .profileImg(1)
                 .familyRole(FamilyRole.ELDER_BROTHER)
                 .build();
 

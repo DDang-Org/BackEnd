@@ -80,7 +80,7 @@ class WalkDogRepositoryTest extends IntegrationTestSupport {
                 .familyRole(FamilyRole.ELDER_SISTER)
                 .family(family)
                 .provider(Provider.GOOGLE)
-                .profileImg("")
+                .profileImg(1)
                 .build();
 
         memberRepository.save(memberHasDog);

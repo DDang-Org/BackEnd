@@ -94,7 +94,7 @@ class WalkLogControllerTest extends ApiTestSupport {
                 .andExpect(jsonPath("$.data[0].totalCalorie").value(300))
                 .andExpect(jsonPath("$.data[0].totalDistanceMeter").value(3000))
                 .andExpect(jsonPath("$.data[0].memberName").value("mjk"))
-                .andExpect(jsonPath("$.data[0].memberProfileImg").value("profileImg1.png"));
+                .andExpect(jsonPath("$.data[0].memberProfileImg").value(1));
 
     }
 
@@ -212,7 +212,7 @@ class WalkLogControllerTest extends ApiTestSupport {
                 .isMatched(IsMatched.TRUE)
                 .gender(Gender.MALE)
                 .provider(Provider.GOOGLE)
-                .profileImg("profileImg1.png")
+                .profileImg(1)
                 .familyRole(FamilyRole.ELDER_BROTHER)
                 .build();
 
