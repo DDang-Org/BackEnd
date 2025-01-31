@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class WalkLogServiceImpl implements WalkLogService{
 
     private final MemberDogRepository memberDogRepository;
@@ -33,7 +35,6 @@ public class WalkLogServiceImpl implements WalkLogService{
     private final WalkRepository walkRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public List<LocalDate> getWalkLogs(Member member, Long dogId) {
         isMemberDog(member, dogId);
         List<WalkDog> walkList = walkDogRepository.findAllByDog_DogId(dogId);
@@ -42,7 +43,6 @@ public class WalkLogServiceImpl implements WalkLogService{
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<WalkLogResponse> getWalkLogByDate(Member member, LocalDate date, Long dogId) {
         isMemberDog(member, dogId);
         List<Member> memberList = memberRepository.findAllByFamily(member.getFamily());
@@ -52,11 +52,11 @@ public class WalkLogServiceImpl implements WalkLogService{
                 .toList();
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<Integer> getYearlyWalkLog(Member member, Long dogId) {
         isMemberDog(member, dogId);
-        List<WalkDog> walkDogs = walkDogRepository.findWalkDogsByYearAndDogId(Year.now().getValue(), dogId);
+        LocalDateTime startYear = LocalDateTime.of(Year.now().getValue(), 1,1,0,0,0);
+        List<WalkDog> walkDogs = walkDogRepository.findWalkDogsByYearAndDogId(dogId, startYear, LocalDateTime.now());
         List<Integer> list = new ArrayList<>(Collections.nCopies(12,0));
 
         for(WalkDog walkDog : walkDogs){
@@ -67,11 +67,12 @@ public class WalkLogServiceImpl implements WalkLogService{
         return list;
     }
 
-    @Transactional(readOnly = true)
+
     @Override
     public List<WalkLogByFamilyResponse> getYearlyWalkLogByFamily(Member member, Long dogId) {
         isMemberDog(member, dogId);
-        List<Walk> walkList = walkDogRepository.findWalksByDogId(dogId, Year.now().getValue());
+        LocalDateTime startYear = LocalDateTime.of(Year.now().getValue(), 1,1,0,0,0);
+        List<Walk> walkList = walkDogRepository.findWalksByDogIdAndYear(dogId, startYear, LocalDateTime.now());
 
         Map<Member, Long> walkCountByMember = walkList.stream()
                 .collect(Collectors.groupingBy(Walk::getMember, Collectors.counting()));
@@ -89,7 +90,6 @@ public class WalkLogServiceImpl implements WalkLogService{
         return responseList;
     }
 
-    @Transactional(readOnly = true)
     @Override
     public WalkStaticsResponse getTotalWalkLog(Member member, Long dogId) {
         isMemberDog(member, dogId);
@@ -105,11 +105,11 @@ public class WalkLogServiceImpl implements WalkLogService{
         return WalkStaticsResponse.of(totalSeconds, totalWalkCount, totalDistanceMeter);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public WalkStaticsResponse getMonthlyTotalWalk(Member member, Long dogId) {
         isMemberDog(member, dogId);
-        List<Walk> walkList = walkDogRepository.findWalksByDogIdAndMonth(dogId, LocalDate.now().getMonthValue());
+        LocalDateTime startMonth = LocalDateTime.of(Year.now().getValue(), LocalDate.now().getMonthValue(),1,0,0,0);
+        List<Walk> walkList = walkDogRepository.findWalksByDogIdAndMonth(dogId, startMonth, LocalDateTime.now());
         long totalSeconds = 0;
         int totalDistanceMeter = 0;
         int totalWalkCount = walkList.size();

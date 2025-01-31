@@ -26,10 +26,12 @@ public interface WalkDogRepository extends JpaRepository<WalkDog, Long> {
     @Query("""
     SELECT wd 
     FROM WalkDog wd 
-    WHERE YEAR(wd.createdAt) = :year 
+    WHERE wd.createdAt
+    BETWEEN :startYear AND :now
     AND wd.dog.dogId = :dogId""")
-    List<WalkDog> findWalkDogsByYearAndDogId(@Param("year") int year,
-                                             @Param("dogId") Long dogId);
+    List<WalkDog> findWalkDogsByYearAndDogId(@Param("dogId") Long dogId,
+                                             @Param("startYear") LocalDateTime startYear,
+                                             @Param("now") LocalDateTime now);
 
     @Query("""
     SELECT wd.walk
@@ -42,21 +44,24 @@ public interface WalkDogRepository extends JpaRepository<WalkDog, Long> {
     SELECT wd.walk
     FROM WalkDog wd
     WHERE wd.dog.dogId = :dogId
-    And Month(wd.createdAt) = :month
-    AND Year(wd.createdAt) = Year(now())
+    And wd.createdAt
+    BETWEEN :startMonth AND :now
 """)
     List<Walk> findWalksByDogIdAndMonth(@Param("dogId") Long dogId,
-                                        @Param("month") int month);
+                                        @Param("startMonth") LocalDateTime startMonth,
+                                        @Param("now") LocalDateTime now);
 
     @Query("""
     SELECT wd.walk 
     FROM WalkDog wd 
     JOIN FETCH wd.walk.member 
     WHERE wd.dog.dogId = :dogId
-    AND YEAR(wd.createdAt) = :year
+    AND wd.createdAt
+    BETWEEN :startYear AND :now
 """)
-    List<Walk> findWalksByDogId(@Param("dogId") Long dogId,
-                                @Param("year") int year);
+    List<Walk> findWalksByDogIdAndYear(@Param("dogId") Long dogId,
+                                @Param("startYear") LocalDateTime startYear,
+                                @Param("now") LocalDateTime now);
 
  @EntityGraph(attributePaths = {"walk"})
  @Query("""

@@ -28,7 +28,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 class WalkDogRepositoryTest extends IntegrationTestSupport {
@@ -157,7 +156,9 @@ class WalkDogRepositoryTest extends IntegrationTestSupport {
         walkDogRepository.save(walkDog);
 
         //when
-        List<WalkDog> response = walkDogRepository.findWalkDogsByYearAndDogId(2025, dog.getDogId());
+        LocalDateTime startYear = LocalDateTime.of(2025,1,1,0,0,0);
+        LocalDateTime now = LocalDateTime.of(2025,2,1,0,0,0);
+        List<WalkDog> response = walkDogRepository.findWalkDogsByYearAndDogId(dog.getDogId(), startYear, now);
 
         //then
         assertThat(response).hasSize(1)
@@ -231,7 +232,9 @@ class WalkDogRepositoryTest extends IntegrationTestSupport {
         walkDogRepository.save(walkDog);
 
         //when
-        List<Walk> response = walkDogRepository.findWalksByDogIdAndMonth(dog.getDogId(), 1);
+        LocalDateTime startMonth = LocalDateTime.of(2025,1,1,0,0,0);
+        LocalDateTime now = LocalDateTime.of(2025,2,1,0,0,0);
+        List<Walk> response = walkDogRepository.findWalksByDogIdAndMonth(dog.getDogId(), startMonth, now);
 
         //then
         assertThat(response).hasSize(1)
