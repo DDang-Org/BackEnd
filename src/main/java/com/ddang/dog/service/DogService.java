@@ -3,6 +3,7 @@ package com.ddang.dog.service;
 import com.ddang.dog.service.request.CreateDogServiceRequest;
 import com.ddang.dog.service.request.UpdateDogServiceRequest;
 import com.ddang.dog.service.response.DogResponse;
+import com.ddang.dog.service.response.DogWalkResponse;
 import com.ddang.member.entity.Member;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,4 +20,6 @@ public interface DogService {
     void deleteDog(Long dogId, Member member);
 
     List<DogResponse> getDogsByMember(Member member);
+
+    DogWalkResponse dogWalk(Member member, Long dogId);
 }

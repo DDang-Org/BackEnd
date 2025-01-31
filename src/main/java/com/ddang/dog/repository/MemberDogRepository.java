@@ -23,10 +23,20 @@ public interface MemberDogRepository extends JpaRepository<MemberDog, Long> {
 
 
     @EntityGraph(attributePaths = {"dog"})
-    @Query("SELECT md FROM MemberDog md WHERE md.member = :member AND md.isDeleted = 'FALSE'")
-    List<MemberDog> findAllByMember(@Param("member") Member member);
+    @Query("SELECT md FROM MemberDog md WHERE md.member.memberId = :memberId AND md.isDeleted = 'FALSE'")
+    List<MemberDog> findAllByMember(@Param("memberId") Long memberId);
 
     @Query("SELECT count(*) FROM MemberDog md WHERE md.member = :member AND md.isDeleted = 'FALSE'")
     Integer countAllByMember(Member member);
+
+
+    @Query(value = """
+            SELECT EXISTS (
+            SELECT 1
+            FROM member_dog
+            WHERE member_id = :memberId AND dog_id = :dogId AND is_deleted = 'FALSE'
+            )
+                    """, nativeQuery = true)
+    long existsByMemberAndDog(Long memberId, Long dogId);
 
 }

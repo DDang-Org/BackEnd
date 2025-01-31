@@ -38,9 +38,10 @@ public class Walk extends BaseEntity {
     private Member member;
 
     @Builder
-    private Walk(LocalDateTime startTime, LocalDateTime endTime, int totalDistance, String walkImg, Member member) {
+    private Walk(LocalDateTime startTime, LocalDateTime endTime, int totalDistance, int totalCalorie, String walkImg, Member member) {
         this.startTime = startTime;
         this.endTime = endTime;
+        this.totalCalorie = totalCalorie;
         this.totalDistance = totalDistance;
         this.walkImg = walkImg;
         this.member = member;
