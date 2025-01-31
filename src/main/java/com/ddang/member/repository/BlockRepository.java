@@ -13,6 +13,5 @@ public interface BlockRepository extends JpaRepository<Block, Long> {
     boolean existsByBlockerAndBlocked(Member blocker, Member blocked);
 
     @EntityGraph(attributePaths = {"blocked"}, type = EntityGraph.EntityGraphType.FETCH)
-    @Query("SELECT b FROM Block b left join b.blocked")
     Slice<Block> findAllByBlocker(Member blocker, Pageable pageable);
 }
