@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -53,27 +55,25 @@ public class NotificationSettingsServiceImpl implements NotificationSettingsServ
 
     @Override
     public void saveDefaultNotificationSettings(Member member) {
-        NotificationSettings walkSettings = NotificationSettings.builder()
-                .type(Type.WALK)
-                .isAgreed(IsAgreed.TRUE)
-                .member(member)
-                .build();
+        List<NotificationSettings> defaultSettings = List.of(
+                NotificationSettings.builder()
+                        .type(Type.WALK)
+                        .isAgreed(IsAgreed.TRUE)
+                        .member(member)
+                        .build(),
+                NotificationSettings.builder()
+                        .type(Type.CHAT)
+                        .isAgreed(IsAgreed.TRUE)
+                        .member(member)
+                        .build(),
+                NotificationSettings.builder()
+                        .type(Type.FRIEND)
+                        .isAgreed(IsAgreed.TRUE)
+                        .member(member)
+                        .build()
+        );
 
-        NotificationSettings chatSettings = NotificationSettings.builder()
-                .type(Type.CHAT)
-                .isAgreed(IsAgreed.TRUE)
-                .member(member)
-                .build();
-
-        NotificationSettings friendSettings = NotificationSettings.builder()
-                .type(Type.FRIEND)
-                .isAgreed(IsAgreed.TRUE)
-                .member(member)
-                .build();
-
-        notificationSettingsRepository.save(walkSettings);
-        notificationSettingsRepository.save(chatSettings);
-        notificationSettingsRepository.save(friendSettings);
+        notificationSettingsRepository.saveAll(defaultSettings);
     }
 
     private Member findMemberById(Long memberId) {
