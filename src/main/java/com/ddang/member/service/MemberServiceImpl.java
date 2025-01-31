@@ -12,6 +12,7 @@ import com.ddang.member.repository.WalkWithMemberRepository;
 import com.ddang.member.service.request.JoinServiceRequest;
 import com.ddang.member.service.request.UpdateServiceRequest;
 import com.ddang.member.service.response.*;
+import com.ddang.notification.service.NotificationSettingsService;
 import com.ddang.walk.repository.WalkRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ public class MemberServiceImpl implements MemberService {
     private final WalkRepository walkRepository;
     private final WalkWithMemberRepository walkWithMemberRepository;
     private final JwtService jwtService;
+    private final NotificationSettingsService notificationSettingsService;
 
     @Override
     public MemberResponse join(JoinServiceRequest serviceRequest, HttpServletResponse response) {
@@ -37,6 +39,8 @@ public class MemberServiceImpl implements MemberService {
         Member member = serviceRequest.toEntity();
 
         memberRepository.save(member);
+
+        notificationSettingsService.saveDefaultNotificationSettings(member);
 
         String accessToken = jwtService.createAccessToken(member.getEmail(), member.getProvider().name());
         String refreshToken = jwtService.createRefreshToken(member.getEmail());

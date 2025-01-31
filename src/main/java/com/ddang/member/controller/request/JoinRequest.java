@@ -38,7 +38,7 @@ public record JoinRequest(
         @NotNull(message = "생일은 반드시 입력해야 합니다.")
         LocalDate memberBirthDate,
 
-        @NotBlank(message = " 주소를 입력해주세요.")
+        @NotBlank(message = "주소를 입력해주세요.")
         @Schema(description = "주소", example = "서울시 강남구")
         String address,
 

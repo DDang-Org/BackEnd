@@ -15,7 +15,7 @@ public interface WalkRepository extends JpaRepository<Walk, Long> {
     int findTotalDistanceByMemberId(@Param("memberId") Long memberId);
 
     @Query("""
-            SELECT COALESCE(COUNT(w), 0)
+            SELECT COUNT(w)
             FROM Walk w
             WHERE w.member.memberId = :memberId AND w.isDeleted = 'FALSE'
             """)

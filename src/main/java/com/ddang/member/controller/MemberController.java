@@ -66,7 +66,7 @@ public class MemberController {
         return ApiResponse.ok(memberService.logout(request));
     }
 
-    @GetMapping("")
+    @GetMapping
     @Operation(summary = "내 정보 조회", description = "내 정보를 조회합니다.")
     @SwaggerExceptionResponse({MEMBER_NOT_FOUND})
     public ApiResponse<MyPageResponse> getMyInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
@@ -87,7 +87,7 @@ public class MemberController {
         return ApiResponse.ok(memberService.getMemberWalkInfo(customOAuth2User.getMember().getMemberId()));
     }
 
-    @PostMapping("/update/isMatched")
+    @PatchMapping("/update/isMatched")
     @Operation(summary = "강번따 허용 여부 수정", description = "강아지 번따 허용 여부를 수정합니다.")
     @SwaggerExceptionResponse({MEMBER_NOT_FOUND, INVALID_IS_MATCHED})
     public ApiResponse<IsMatchedResponse> updateIsMatched(
