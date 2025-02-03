@@ -21,8 +21,9 @@ public class GlobalExceptionHandler {
 
         return ApiResponse.of(
                 HttpStatus.BAD_REQUEST,
+                e.getBindingResult().getAllErrors().get(0).getDefaultMessage(),
                 "Error",
-                e.getBindingResult().getAllErrors().get(0).getDefaultMessage()
+                HttpStatus.BAD_REQUEST.name()
         );
     }
 
