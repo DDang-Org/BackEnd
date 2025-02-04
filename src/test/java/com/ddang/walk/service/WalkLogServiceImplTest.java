@@ -195,7 +195,7 @@ class WalkLogServiceImplTest extends IntegrationTestSupport {
         walkDogRepository.save(walkDog);
 
         //when
-        List<Integer> response = walkLogService.getYearlyWalkLog(member, dog.getDogId());
+        List<Integer> response = walkLogService.getYearlyWalkLog(member);
 
         //then
         assertThat(response).hasSize(12)
@@ -232,7 +232,7 @@ class WalkLogServiceImplTest extends IntegrationTestSupport {
         walkDogRepository.save(walkDog);
 
         //when
-        List<WalkLogByFamilyResponse> response = walkLogService.getYearlyWalkLogByFamily(member, dog.getDogId());
+        List<WalkLogByFamilyResponse> response = walkLogService.getYearlyWalkLogByFamily(member);
 
         //then
         assertThat(response).hasSize(1)
@@ -268,7 +268,7 @@ class WalkLogServiceImplTest extends IntegrationTestSupport {
         walkDogRepository.save(walkDog);
 
         //when
-        WalkStaticsResponse response = walkLogService.getTotalWalkLog(member, dog.getDogId());
+        WalkStaticsResponse response = walkLogService.getTotalWalkLog(member);
 
         //then
         assertThat(response).extracting("walkCount", "totalDistanceMeter")
@@ -303,7 +303,7 @@ class WalkLogServiceImplTest extends IntegrationTestSupport {
         walkDogRepository.save(walkDog);
 
         //when
-        WalkStaticsResponse response = walkLogService.getMonthlyTotalWalk(member, dog.getDogId());
+        WalkStaticsResponse response = walkLogService.getMonthlyTotalWalk(member);
 
         //then
         assertThat(response).extracting("walkCount", "totalDistanceMeter")

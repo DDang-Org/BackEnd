@@ -1,6 +1,9 @@
 package com.ddang.walk.service;
 
+import com.ddang.dog.entity.Dog;
+import com.ddang.dog.repository.DogRepository;
 import com.ddang.dog.repository.MemberDogRepository;
+import com.ddang.family.entity.Family;
 import com.ddang.global.exception.BadRequestException;
 import com.ddang.global.exception.ErrorCode;
 import com.ddang.member.entity.Member;
@@ -33,6 +36,7 @@ public class WalkLogServiceImpl implements WalkLogService{
     private final MemberRepository memberRepository;
     private final WalkDogRepository walkDogRepository;
     private final WalkRepository walkRepository;
+    private final DogRepository dogRepository;
 
     @Override
     public List<LocalDate> getWalkLogs(Member member, Long dogId) {
@@ -53,10 +57,10 @@ public class WalkLogServiceImpl implements WalkLogService{
     }
 
     @Override
-    public List<Integer> getYearlyWalkLog(Member member, Long dogId) {
-        isMemberDog(member, dogId);
-        LocalDateTime startYear = LocalDateTime.of(Year.now().getValue(), 1,1,0,0,0);
-        List<WalkDog> walkDogs = walkDogRepository.findWalkDogsByYearAndDogId(dogId, startYear, LocalDateTime.now());
+    public List<Integer> getYearlyWalkLog(Member member) {
+        LocalDateTime startYear = getStartYearMonth();
+        List<Dog> dogs = getDogsByFamily(member.getFamily());
+        List<WalkDog> walkDogs = walkDogRepository.findWalkDogsByYearAndDogs(dogs, startYear, LocalDateTime.now());
         List<Integer> list = new ArrayList<>(Collections.nCopies(12,0));
 
         for(WalkDog walkDog : walkDogs){
@@ -69,10 +73,10 @@ public class WalkLogServiceImpl implements WalkLogService{
 
 
     @Override
-    public List<WalkLogByFamilyResponse> getYearlyWalkLogByFamily(Member member, Long dogId) {
-        isMemberDog(member, dogId);
-        LocalDateTime startYear = LocalDateTime.of(Year.now().getValue(), 1,1,0,0,0);
-        List<Walk> walkList = walkDogRepository.findWalksByDogIdAndYear(dogId, startYear, LocalDateTime.now());
+    public List<WalkLogByFamilyResponse> getYearlyWalkLogByFamily(Member member) {
+        LocalDateTime startYear = getStartYearMonth();
+        List<Dog> dogs = getDogsByFamily(member.getFamily());
+        List<Walk> walkList = walkDogRepository.findWalksByDogsAndYear(dogs, startYear, LocalDateTime.now());
 
         Map<Member, Long> walkCountByMember = walkList.stream()
                 .collect(Collectors.groupingBy(Walk::getMember, Collectors.counting()));
@@ -91,9 +95,10 @@ public class WalkLogServiceImpl implements WalkLogService{
     }
 
     @Override
-    public WalkStaticsResponse getTotalWalkLog(Member member, Long dogId) {
-        isMemberDog(member, dogId);
-        List<Walk> walkList = walkDogRepository.findWalksByDogId(dogId);
+    public WalkStaticsResponse getTotalWalkLog(Member member) {
+        List<Dog> dogs = getDogsByFamily(member.getFamily());
+        List<Walk> walkList = walkDogRepository.findWalksByDogs(dogs);
+
         long totalSeconds = 0;
         int totalDistanceMeter = 0;
         int totalWalkCount = walkList.size();
@@ -106,10 +111,11 @@ public class WalkLogServiceImpl implements WalkLogService{
     }
 
     @Override
-    public WalkStaticsResponse getMonthlyTotalWalk(Member member, Long dogId) {
-        isMemberDog(member, dogId);
-        LocalDateTime startMonth = LocalDateTime.of(Year.now().getValue(), LocalDate.now().getMonthValue(),1,0,0,0);
-        List<Walk> walkList = walkDogRepository.findWalksByDogIdAndMonth(dogId, startMonth, LocalDateTime.now());
+    public WalkStaticsResponse getMonthlyTotalWalk(Member member) {
+        LocalDateTime startMonth = getStartYearMonth();
+        List<Dog> dogs = getDogsByFamily(member.getFamily());
+        List<Walk> walkList = walkDogRepository.findWalksByDogsAndMonth(dogs, startMonth, LocalDateTime.now());
+
         long totalSeconds = 0;
         int totalDistanceMeter = 0;
         int totalWalkCount = walkList.size();
@@ -126,6 +132,18 @@ public class WalkLogServiceImpl implements WalkLogService{
             throw new BadRequestException(ErrorCode.NOT_MEMBER_DOG);
         }
 
+    }
+
+    private LocalDateTime getStartYearMonth(){
+        return LocalDateTime.of(Year.now().getValue(), 1,1,0,0,0);
+    }
+
+    private List<Dog> getDogsByFamily(Family family){
+        List<Dog> dogs = dogRepository.findDogsByFamily(family);
+        if(dogs.isEmpty()){
+            throw new BadRequestException(ErrorCode.DOG_NOT_FOUND);
+        }
+        return dogs;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.ddang.walk.repository;
 
+import com.ddang.dog.entity.Dog;
 import com.ddang.member.entity.Member;
 import com.ddang.walk.entity.Walk;
 import com.ddang.walk.entity.WalkDog;
@@ -28,26 +29,26 @@ public interface WalkDogRepository extends JpaRepository<WalkDog, Long> {
     FROM WalkDog wd 
     WHERE wd.createdAt
     BETWEEN :startYear AND :now
-    AND wd.dog.dogId = :dogId""")
-    List<WalkDog> findWalkDogsByYearAndDogId(@Param("dogId") Long dogId,
+    AND wd.dog IN :dogs""")
+    List<WalkDog> findWalkDogsByYearAndDogs(@Param("dogs") List<Dog> dogs,
                                              @Param("startYear") LocalDateTime startYear,
                                              @Param("now") LocalDateTime now);
 
     @Query("""
     SELECT wd.walk
     FROM WalkDog wd
-    WHERE wd.dog.dogId = :dogId
+    WHERE wd.dog IN :dogs
 """)
-    List<Walk> findWalksByDogId(@Param("dogId") Long dogId);
+    List<Walk> findWalksByDogs(@Param("dogs") List<Dog> dogs);
 
     @Query("""
     SELECT wd.walk
     FROM WalkDog wd
-    WHERE wd.dog.dogId = :dogId
+    WHERE wd.dog IN :dogs
     And wd.createdAt
     BETWEEN :startMonth AND :now
 """)
-    List<Walk> findWalksByDogIdAndMonth(@Param("dogId") Long dogId,
+    List<Walk> findWalksByDogsAndMonth(@Param("dogs") List<Dog> dogs,
                                         @Param("startMonth") LocalDateTime startMonth,
                                         @Param("now") LocalDateTime now);
 
@@ -55,11 +56,11 @@ public interface WalkDogRepository extends JpaRepository<WalkDog, Long> {
     SELECT wd.walk 
     FROM WalkDog wd 
     JOIN FETCH wd.walk.member 
-    WHERE wd.dog.dogId = :dogId
+    WHERE wd.dog IN :dogs
     AND wd.createdAt
     BETWEEN :startYear AND :now
 """)
-    List<Walk> findWalksByDogIdAndYear(@Param("dogId") Long dogId,
+    List<Walk> findWalksByDogsAndYear(@Param("dogs") List<Dog> dogs,
                                 @Param("startYear") LocalDateTime startYear,
                                 @Param("now") LocalDateTime now);
 

@@ -14,11 +14,11 @@ public interface WalkLogService {
 
     List<WalkLogResponse> getWalkLogByDate(Member member, LocalDate date, Long dogId);
 
-    List<Integer> getYearlyWalkLog(Member member, Long dogId);
+    List<Integer> getYearlyWalkLog(Member member);
 
-    List<WalkLogByFamilyResponse> getYearlyWalkLogByFamily(Member member, Long dogId);
+    List<WalkLogByFamilyResponse> getYearlyWalkLogByFamily(Member member);
 
-    WalkStaticsResponse getTotalWalkLog(Member member, Long dogId);
+    WalkStaticsResponse getTotalWalkLog(Member member);
 
-    WalkStaticsResponse getMonthlyTotalWalk(Member member, Long dogId);
+    WalkStaticsResponse getMonthlyTotalWalk(Member member);
 }
