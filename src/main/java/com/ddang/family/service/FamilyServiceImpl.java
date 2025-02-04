@@ -6,11 +6,7 @@ import com.ddang.dog.repository.DogRepository;
 import com.ddang.dog.repository.MemberDogRepository;
 import com.ddang.dog.service.response.DogResponse;
 import com.ddang.family.entity.Family;
-import com.ddang.family.entity.WalkSchedule;
-import com.ddang.family.entity.WeekDay;
-import com.ddang.family.repository.DayOfWeekRepository;
 import com.ddang.family.repository.FamilyRepository;
-import com.ddang.family.repository.WalkScheduleRepository;
 import com.ddang.family.service.response.*;
 import com.ddang.global.exception.BadRequestException;
 import com.ddang.global.exception.ErrorCode;
@@ -18,16 +14,13 @@ import com.ddang.member.entity.Member;
 import com.ddang.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,8 +34,6 @@ public class FamilyServiceImpl implements FamilyService {
     private final FamilyRepository familyRepository;
     private final MemberDogRepository memberDogRepository;
     private final DogRepository dogRepository;
-    private final DayOfWeekRepository dayOfWeekRepository;
-    private final WalkScheduleRepository walkScheduleRepository;
 //    private final WalkRepository walkRepository;
 
 
@@ -112,12 +103,10 @@ public class FamilyServiceImpl implements FamilyService {
         Family family = currentMember.getFamily();
 
         List<Member> familyMembers = memberRepository.findAllByFamily(family);
-        Map<Long, WalkScheduleInfo> walkSchedules = getWalkSchedulesWithDaysForMembers(familyMembers);
         return familyMembers.stream()
                 .map(m -> {
-                    WalkScheduleInfo scheduleInfo = walkSchedules.getOrDefault(m.getMemberId(), null);
                     boolean isRepresent = family.getRepresentativeMemberId().equals(m.getMemberId());
-                    return FamilyMemberResponse.of(m, scheduleInfo, isRepresent);
+                    return FamilyMemberResponse.of(m, isRepresent);
                 })
                 .toList();
 
@@ -146,10 +135,6 @@ public class FamilyServiceImpl implements FamilyService {
 
         validateRemoveMember(currentMember, removeMember);
 
-        List<WalkSchedule> schedules = walkScheduleRepository.findByMemberId(removeMember.getMemberId());
-        schedules.forEach(dayOfWeekRepository::deleteByWalkSchedule);
-        walkScheduleRepository.deleteByMemberId(removeMember.getMemberId());
-
         memberDogRepository.softDeleteByMember(removeMember);
         removeMember.updateFamily(null);
     }
@@ -159,10 +144,6 @@ public class FamilyServiceImpl implements FamilyService {
     public void leaveFamily(Member member) {
         Member currentMember = validateMemberInFamily(member);
         validateNotFamilyBossForLeaving(currentMember);
-
-        List<WalkSchedule> schedules = walkScheduleRepository.findByMemberId(member.getMemberId());
-        schedules.forEach(dayOfWeekRepository::deleteByWalkSchedule);
-        walkScheduleRepository.deleteByMemberId(member.getMemberId());
 
         memberDogRepository.softDeleteByMember(member);
         member.updateFamily(null);
@@ -226,32 +207,6 @@ public class FamilyServiceImpl implements FamilyService {
         return (int) (0.75 * weight.doubleValue() * totalDistance / 1000);
     }
 
-    private Map<Long, WalkScheduleInfo> getWalkSchedulesWithDaysForMembers(List<Member> members) {
-        if (members.isEmpty()) {
-            return Map.of();
-        }
-
-        List<Long> memberIds = members.stream()
-                .map(Member::getMemberId)
-                .toList();
-
-        List<Object[]> results = dayOfWeekRepository.findSchedulesWithDaysByMemberIds(memberIds);
-
-        return results.stream()
-                .collect(Collectors.toMap(
-                        result -> (Long) result[0],
-                        result -> {
-                            Long walkScheduleId = (Long) result[1];
-                            String weekDayStr = (String) result[2];
-                            LocalTime walkTime = (LocalTime) result[3];
-
-                            List<WeekDay> weekDays = parseWeekDays(weekDayStr);
-
-                            return new WalkScheduleInfo(walkScheduleId, weekDays, walkTime);
-                        }
-                ));
-    }
-
 
     // second Helper Method
     private Long getFamilyIdFromKey(String key) {
@@ -281,16 +236,6 @@ public class FamilyServiceImpl implements FamilyService {
                 .replace("-", "")
                 .substring(0, 8)
                 .toUpperCase();
-    }
-
-    private List<WeekDay> parseWeekDays(String weekDayStr) {
-        if (weekDayStr == null || weekDayStr.isEmpty()) {
-            return List.of();
-        }
-
-        return Arrays.stream(weekDayStr.split(","))
-                .map(WeekDay::valueOf)
-                .toList();
     }
 
     // validate method

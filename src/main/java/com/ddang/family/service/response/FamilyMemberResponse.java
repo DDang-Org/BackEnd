@@ -37,13 +37,10 @@ public record FamilyMemberResponse(
         @Schema(description = "회원 프로필 이미지 URL", example = "https://example.com/profile.jpg")
         String memberProfileImg,
 
-        @Schema(description = "회원의 산책 일정")
-        WalkScheduleInfo walkScheduleInfo,
-
         @Schema(description = "패밀리댕 대표 여부", example = "false")
         boolean isRepresent
 ) {
-    public static FamilyMemberResponse of(Member member, WalkScheduleInfo walkScheduleInfo, boolean represent) {
+    public static FamilyMemberResponse of(Member member, boolean represent) {
         return new FamilyMemberResponse(
                 member.getMemberId(),
                 member.getMemberName(),
@@ -54,7 +51,6 @@ public record FamilyMemberResponse(
                 member.getAddress(),
                 member.getFamilyRole(),
                 member.getMemberProfileImg(),
-                walkScheduleInfo,
                 represent
         );
     }
