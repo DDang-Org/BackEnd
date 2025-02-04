@@ -109,11 +109,11 @@ class WalkLogControllerTest extends ApiTestSupport {
         String accessToken = jwtService.createAccessToken(member.getEmail(), "KAKAO");
 
         //when
-        given(walkLogService.getYearlyWalkLog(any(Member.class),eq(1L)))
+        given(walkLogService.getYearlyWalkLog(any(Member.class)))
                 .willReturn(responses);
 
         //then
-        mockMvc.perform(get("/api/v1/log/year/{dogId}", 1L)
+        mockMvc.perform(get("/api/v1/log/year")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andDo(print())
@@ -136,11 +136,11 @@ class WalkLogControllerTest extends ApiTestSupport {
         String accessToken = jwtService.createAccessToken(member.getEmail(), "KAKAO");
 
         //when
-        given(walkLogService.getYearlyWalkLogByFamily(any(Member.class),eq(1L)))
+        given(walkLogService.getYearlyWalkLogByFamily(any(Member.class)))
                 .willReturn(responses);
 
         //then
-        mockMvc.perform(get("/api/v1/log/year/family/{dogId}", 1L)
+        mockMvc.perform(get("/api/v1/log/year/family")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andDo(print())
@@ -161,11 +161,11 @@ class WalkLogControllerTest extends ApiTestSupport {
 
         String accessToken = jwtService.createAccessToken(member.getEmail(), "KAKAO");
         //when
-        given(walkLogService.getTotalWalkLog(any(Member.class),eq(1L)))
+        given(walkLogService.getTotalWalkLog(any(Member.class)))
                 .willReturn(response);
 
         //then
-        mockMvc.perform(get("/api/v1/log/total/{dogId}", 1L)
+        mockMvc.perform(get("/api/v1/log/total")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andDo(print())
@@ -186,11 +186,11 @@ class WalkLogControllerTest extends ApiTestSupport {
 
         String accessToken = jwtService.createAccessToken(member.getEmail(), "KAKAO");
         //when
-        given(walkLogService.getMonthlyTotalWalk(any(Member.class),eq(1L)))
+        given(walkLogService.getMonthlyTotalWalk(any(Member.class)))
                 .willReturn(response);
 
         //then
-        mockMvc.perform(get("/api/v1/log/total/month/{dogId}", 1L)
+        mockMvc.perform(get("/api/v1/log/total/month")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andDo(print())

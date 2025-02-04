@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -136,6 +137,7 @@ class WalkDogRepositoryTest extends IntegrationTestSupport {
         //given
         Member member = memberRepository.findByEmail("test2@naver.com").get();
         Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
+        List<Dog> dogs = List.of(dog);
 
         Walk walk = Walk.builder()
                 .walkImg("image")
@@ -156,9 +158,9 @@ class WalkDogRepositoryTest extends IntegrationTestSupport {
         walkDogRepository.save(walkDog);
 
         //when
-        LocalDateTime startYear = LocalDateTime.of(2025,1,1,0,0,0);
-        LocalDateTime now = LocalDateTime.of(2025,2,1,0,0,0);
-        List<WalkDog> response = walkDogRepository.findWalkDogsByYearAndDogId(dog.getDogId(), startYear, now);
+        LocalDateTime startYear = getStartYearMonth();
+        LocalDateTime now = LocalDateTime.now();
+        List<WalkDog> response = walkDogRepository.findWalkDogsByYearAndDogs(dogs, startYear, now);
 
         //then
         assertThat(response).hasSize(1)
@@ -174,6 +176,7 @@ class WalkDogRepositoryTest extends IntegrationTestSupport {
         //given
         Member member = memberRepository.findByEmail("test2@naver.com").get();
         Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
+        List<Dog> dogs = List.of(dog);
 
         Walk walk = Walk.builder()
                 .walkImg("image")
@@ -194,7 +197,7 @@ class WalkDogRepositoryTest extends IntegrationTestSupport {
         walkDogRepository.save(walkDog);
 
         //when
-        List<Walk> response = walkDogRepository.findWalksByDogId(dog.getDogId());
+        List<Walk> response = walkDogRepository.findWalksByDogs(dogs);
 
         //then
         assertThat(response).hasSize(1)
@@ -212,6 +215,7 @@ class WalkDogRepositoryTest extends IntegrationTestSupport {
         //given
         Member member = memberRepository.findByEmail("test2@naver.com").get();
         Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
+        List<Dog> dogs = List.of(dog);
 
         Walk walk = Walk.builder()
                 .walkImg("image")
@@ -232,9 +236,9 @@ class WalkDogRepositoryTest extends IntegrationTestSupport {
         walkDogRepository.save(walkDog);
 
         //when
-        LocalDateTime startMonth = LocalDateTime.of(2025,1,1,0,0,0);
-        LocalDateTime now = LocalDateTime.of(2025,2,1,0,0,0);
-        List<Walk> response = walkDogRepository.findWalksByDogIdAndMonth(dog.getDogId(), startMonth, now);
+        LocalDateTime startMonth = getStartMonth();
+        LocalDateTime now = LocalDateTime.now();
+        List<Walk> response = walkDogRepository.findWalksByDogsAndMonth(dogs, startMonth, now);
 
         //then
         assertThat(response).hasSize(1)
@@ -324,5 +328,13 @@ class WalkDogRepositoryTest extends IntegrationTestSupport {
                         tuple("image", member,LocalDateTime.of(LocalDate.now(), LocalTime.of(9,0)),
                                 LocalDateTime.of(LocalDate.now(), LocalTime.of(11,0)), 300, 3000)
                 );
+    }
+
+    private LocalDateTime getStartMonth(){
+        return LocalDateTime.of(Year.now().getValue(), LocalDateTime.now().getMonthValue(), 1,0,0,0);
+    }
+
+    private LocalDateTime getStartYearMonth(){
+        return LocalDateTime.of(Year.now().getValue(), 1,1,0,0,0);
     }
 }
