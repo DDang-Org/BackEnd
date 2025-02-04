@@ -9,7 +9,6 @@ import com.ddang.family.repository.FamilyRepository;
 import com.ddang.global.entity.Gender;
 import com.ddang.member.entity.*;
 import com.ddang.member.repository.MemberRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 class MemberDogRepositoryTest extends IntegrationTestSupport {
@@ -84,7 +81,7 @@ class MemberDogRepositoryTest extends IntegrationTestSupport {
         createAndSaveMemberDog(member, dog);
 
         //when
-        List<MemberDog> memberDogs = memberDogRepository.findAllByMember(member);
+        List<MemberDog> memberDogs = memberDogRepository.findAllByMember(member.getMemberId());
 
         //then
         assertThat(memberDogs).hasSize(1)
@@ -96,17 +93,17 @@ class MemberDogRepositoryTest extends IntegrationTestSupport {
 
     private Member createAndSaveMember(Family family){
         Member member = Member.builder()
-                .memberName("test2")
+                .name("test2")
                 .email("test2@naver.com")
                 .role(Role.USER)
                 .isMatched(IsMatched.TRUE)
                 .address("test2Address")
-                .memberBirthDate(LocalDate.of(2000,5,2))
-                .memberGender(Gender.FEMALE)
+                .birthDate(LocalDate.of(2000,5,2))
+                .gender(Gender.FEMALE)
                 .familyRole(FamilyRole.ELDER_SISTER)
                 .family(family)
                 .provider(Provider.GOOGLE)
-                .memberProfileImg("")
+                .profileImg(1)
                 .build();
 
         memberRepository.save(member);

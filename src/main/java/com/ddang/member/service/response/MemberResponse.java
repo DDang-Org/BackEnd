@@ -25,7 +25,7 @@ public record MemberResponse(
         @Schema(description = "회원 성별", example = "MALE")
         Gender memberGender,
 
-        @Schema(description = "생일", example = "2000-01-01")
+        @Schema(description = "회원 생년월일", example = "1990-01-01")
         LocalDate memberBirthDate,
 
         @Schema(description = "회원 주소", example = "서울시 강남구")
@@ -35,18 +35,18 @@ public record MemberResponse(
         FamilyRole familyRole,
 
         @Schema(description = "회원 프로필 이미지 URL", example = "https://example.com/profile.jpg")
-        String memberProfileImg
+        int memberProfileImg
 ) {
     public static MemberResponse from(Member member) {
         return new MemberResponse(
                 member.getMemberId(),
-                member.getMemberName(),
+                member.getName(),
                 member.getEmail(),
                 member.getProvider(),
-                member.getMemberGender(),
-                member.getMemberBirthDate(),
+                member.getGender(),
+                member.getBirthDate(),
                 member.getAddress(),
                 member.getFamilyRole(),
-                member.getMemberProfileImg());
+                member.getProfileImg());
     }
 }

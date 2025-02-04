@@ -1,16 +1,14 @@
 package com.ddang.member.controller;
 
 import com.ddang.global.api.ApiResponse;
+import com.ddang.global.exception.annotation.SwaggerExceptionResponse;
+import com.ddang.member.controller.request.IsMatchedRequest;
 import com.ddang.member.controller.request.JoinRequest;
-import com.ddang.member.entity.Member;
+import com.ddang.member.controller.request.UpdateRequest;
 import com.ddang.member.oauth2.CustomOAuth2User;
 import com.ddang.member.service.MemberService;
-import com.ddang.member.service.response.MemberResponse;
+import com.ddang.member.service.response.*;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -20,6 +18,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import static com.ddang.global.exception.ErrorCode.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,48 +32,9 @@ public class MemberController {
 
     @PostMapping("/join")
     @PreAuthorize("hasRole('ROLE_GUEST')")
-    @Operation(
-            summary = "회원가입",
-            description = "OAuth2 로그인 후 /register로 리디렉션 후 추가 정보 기입 후 회원가입을 완료합니다.",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "회원가입 정보",
-                    required = true,
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = JoinRequest.class)
-                    )
-            )
-    )
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "회원가입 성공",
-                    useReturnTypeSchema = true
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "400",
-                    description = "요청 데이터가 유효하지 않은 경우",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(
-                                    value = "{\"code\": 400, \"status\": \"BAD_REQUEST\", \"message\": \"성별을 입력해주세요\", \"data\": null}"
-                            )
-                    )
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "500",
-                    description = "서버 내부에서 처리되지 않은 오류가 발생한 경우",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(
-                                    name = "서버 오류 예시",
-                                    value = "{ \"code\": 500, \"status\": \"INTERNAL_SERVER_ERROR\", \"message\": \"알 수 없는 오류가 발생했습니다.\", \"data\": null }"
-                            )
-                    )
-            )
-    })
+    @Operation(summary = "회원가입", description = "OAuth2 로그인 후 /register로 리디렉션 후 추가 정보 기입 후 회원가입을 완료합니다.")
+    @SwaggerExceptionResponse({INVALID_EMAIL, PROVIDER_NOT_NULL, MEMBER_NAME_NOT_NULL, MEMBER_GENDER_NOT_NULL,
+            MEMBER_BIRTH_DATE_MUST_BE_PAST_OR_PRESENT, MEMBER_ADDRESS_NOT_NULL, MEMBER_FAMILY_ROLE_NOT_NULL, MEMBER_PROFILE_IMG_NOT_NULL})
     public ApiResponse<MemberResponse> join(@RequestBody @Valid JoinRequest joinRequest,
                                             HttpServletResponse response) {
 
@@ -86,49 +47,7 @@ public class MemberController {
             summary = "AccessToken 재발급",
             description = "RefreshToken을 사용하여 새로운 AccessToken을 발급합니다. 모든 요청 시 AccessToken의 유효기간이 지나 401을 반환받은 경우 /reissue로 재발급 받아 사용합니다."
     )
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "AccessToken 재발급 성공",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(
-                                    value = "{\"code\": 200, \"status\": \"OK\", \"message\": \"OK\", \"data\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QG5...\"}"
-                            )
-                    )
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "400",
-                    description = "요청 데이터가 유효하지 않은 경우",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ApiResponse.class),
-                            examples = {
-                                    @ExampleObject(
-                                            name = "존재하지 않는 회원",
-                                            value = "{\"code\": 400, \"status\": \"BAD_REQUEST\", \"message\": \"유저를 찾을 수 없습니다.\", \"data\": null}"
-                                    ),
-                                    @ExampleObject(
-                                            name = "RefreshToken이 유효하지 않은 경우",
-                                            value = "{\"code\": 400, \"status\": \"BAD_REQUEST\", \"message\": \"Redis에서 RefreshToken이 유효하지 않습니다.\", \"data\": null}"
-                                    )
-                            }
-                    )
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "500",
-                    description = "서버 내부에서 처리되지 않은 오류가 발생한 경우",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(
-                                    name = "서버 오류 예시",
-                                    value = "{ \"code\": 500, \"status\": \"INTERNAL_SERVER_ERROR\", \"message\": \"알 수 없는 오류가 발생했습니다.\", \"data\": null }"
-                            )
-                    )
-            )
-    })
+    @SwaggerExceptionResponse({UNAUTHORIZED_RTK_ERROR, MEMBER_NOT_FOUND})
     public ApiResponse<String> reissue(HttpServletRequest request, HttpServletResponse response) {
         log.info("reissue() 메서드 진입");
 
@@ -140,49 +59,58 @@ public class MemberController {
     }
 
     @PostMapping("/logout")
-    @Operation(
-            summary = "로그아웃",
-            description = "로그아웃을 수행합니다."
-    )
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "로그아웃 성공",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(
-                                    value = "{\"code\": 200, \"status\": \"OK\", \"message\": \"OK\", \"data\": \"Success Logout\"}"
-                            )
-                    )
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "401",
-                    description = "인증 실패 또는 유효하지 않은 토큰으로 접근하려는 경우",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(
-                                    name = "인증 실패 예시",
-                                    value = "{ \"code\": 401, \"status\": \"UNAUTHORIZED\", \"message\": \"AccessToken is invalid\", \"data\": null }"
-                            )
-                    )
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "500",
-                    description = "서버 내부에서 처리되지 않은 오류가 발생한 경우",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(
-                                    name = "서버 오류 예시",
-                                    value = "{ \"code\": 500, \"status\": \"INTERNAL_SERVER_ERROR\", \"message\": \"알 수 없는 오류가 발생했습니다.\", \"data\": null }"
-                            )
-                    )
-            )
-    })
+    @Operation(summary = "로그아웃", description = "로그아웃을 수행합니다.")
+    @SwaggerExceptionResponse({UNAUTHORIZED_ATK_ERROR})
     public ApiResponse<String> logout(HttpServletRequest request) {
         log.info("logout() 메서드 진입");
         return ApiResponse.ok(memberService.logout(request));
+    }
+
+    @GetMapping
+    @Operation(summary = "내 정보 조회", description = "내 정보를 조회합니다.")
+    @SwaggerExceptionResponse({MEMBER_NOT_FOUND})
+    public ApiResponse<MyPageResponse> getMyInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        return ApiResponse.ok(memberService.getMemberInfo(customOAuth2User.getMember().getMemberId()));
+    }
+
+    @GetMapping("/{memberId}")
+    @Operation(summary = "특정 멤버 정보 조회", description = "특정 멤버의 정보를 조회합니다.")
+    @SwaggerExceptionResponse({MEMBER_NOT_FOUND})
+    public ApiResponse<MyPageResponse> getMemberInfoWithId(@PathVariable Long memberId) {
+        return ApiResponse.ok(memberService.getMemberInfo(memberId));
+    }
+
+    @GetMapping("/walk-info")
+    @Operation(summary = "내 산책 정보 조회", description = "내 산책 정보를 조회합니다.")
+    @SwaggerExceptionResponse({MEMBER_NOT_FOUND})
+    public ApiResponse<WalkInfoResponse> getMyWalkInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        return ApiResponse.ok(memberService.getMemberWalkInfo(customOAuth2User.getMember().getMemberId()));
+    }
+
+    @PatchMapping("/update/isMatched")
+    @Operation(summary = "강번따 허용 여부 수정", description = "강아지 번따 허용 여부를 수정합니다.")
+    @SwaggerExceptionResponse({MEMBER_NOT_FOUND, INVALID_IS_MATCHED})
+    public ApiResponse<IsMatchedResponse> updateIsMatched(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            @RequestBody @Valid IsMatchedRequest isMatchedRequest) {
+
+        Long memberId = customOAuth2User.getMember().getMemberId();
+        return ApiResponse.ok(memberService.updateIsMatched(memberId, isMatchedRequest));
+    }
+
+    @GetMapping("/update")
+    @Operation(summary = "내 정보 수정을 위한 정보 조회", description = "내 정보 수정을 위한 정보를 조회합니다.")
+    @SwaggerExceptionResponse({MEMBER_NOT_FOUND})
+    public ApiResponse<UpdateResponse> getUpdateInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        return ApiResponse.ok(memberService.getUpdateInfo(customOAuth2User.getMember().getMemberId()));
+    }
+
+    @PatchMapping("/update")
+    @Operation(summary = "내 정보 수정", description = "내 정보를 수정합니다.")
+    @SwaggerExceptionResponse({MEMBER_NOT_FOUND, MEMBER_NAME_NOT_NULL, MEMBER_GENDER_NOT_NULL,
+            MEMBER_ADDRESS_NOT_NULL, MEMBER_FAMILY_ROLE_NOT_NULL, MEMBER_PROFILE_IMG_NOT_NULL})
+    public ApiResponse<UpdateResponse> updateMember(@RequestBody @Valid UpdateRequest updateRequest,
+                                                    @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        return ApiResponse.ok(memberService.updateMember(customOAuth2User.getMember().getMemberId(), updateRequest.toServiceRequest()));
     }
 }

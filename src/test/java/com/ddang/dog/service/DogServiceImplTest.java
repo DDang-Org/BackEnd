@@ -50,16 +50,16 @@ class DogServiceImplTest extends IntegrationTestSupport {
     @BeforeEach
     void createMember(){
         Member memberHasNoDog = Member.builder()
-                .memberName("test")
+                .name("test")
                 .email("test@naver.com")
                 .role(Role.USER)
-                .memberBirthDate(LocalDate.of(1999,9,3))
+                .birthDate(LocalDate.of(1999,9,3))
                 .isMatched(IsMatched.TRUE)
                 .address("testAddress")
-                .memberGender(Gender.MALE)
+                .gender(Gender.MALE)
                 .familyRole(FamilyRole.ELDER_BROTHER)
                 .provider(Provider.KAKAO)
-                .memberProfileImg("")
+                .profileImg(1)
                 .build();
 
         Family family = Family.create();
@@ -79,17 +79,17 @@ class DogServiceImplTest extends IntegrationTestSupport {
                 .build();
 
         Member memberHasDog = Member.builder()
-                .memberName("test2")
+                .name("test2")
                 .email("test2@naver.com")
                 .role(Role.USER)
                 .isMatched(IsMatched.TRUE)
                 .address("test2Address")
-                .memberBirthDate(LocalDate.of(2000,5,2))
-                .memberGender(Gender.FEMALE)
+                .birthDate(LocalDate.of(2000,5,2))
+                .gender(Gender.FEMALE)
                 .familyRole(FamilyRole.ELDER_SISTER)
                 .family(family)
                 .provider(Provider.GOOGLE)
-                .memberProfileImg("")
+                .profileImg(1)
                 .build();
 
         memberRepository.saveAll(Arrays.asList(memberHasNoDog, memberHasDog));
@@ -122,7 +122,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
         Dog dog = dogRepository.findById(response.dogId()).get();
 
         //then
-        assertThat(memberDogRepository.findAllByMember(member)).hasSize(1)
+        assertThat(memberDogRepository.findAllByMember(member.getMemberId())).hasSize(1)
                 .extracting("dog", "member")
                 .containsExactlyInAnyOrder(
                         tuple(dog, member)
@@ -148,7 +148,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
 
 
         //then
-        assertThat(memberDogRepository.findAllByMember(member)).hasSize(2)
+        assertThat(memberDogRepository.findAllByMember(member.getMemberId())).hasSize(2)
                 .extracting("dog", "member")
                 .containsExactlyInAnyOrder(
                         tuple(dogs.get(0), member),
@@ -167,7 +167,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
 
         //then
         assertThat(response)
-                .extracting("dogId" ,"dogName", "dogBreed", "dogBirthDate", "dogWeight", "dogGender", "isNeutered", "walkCount", "familyId", "comment")
+                .extracting("dogId" ,"dogName", "breed", "dogBirthDate", "weight", "dogGender", "isNeutered", "walkCount", "familyId", "comment")
                 .containsExactlyInAnyOrder(
                         dog.getDogId(), dog.getName(), dog.getBreed(),
                         dog.getBirthDate(), dog.getWeight(), dog.getGender(),
@@ -181,7 +181,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
     void updateDog() throws IOException {
         //given
         Member member = memberRepository.findByEmail("test2@naver.com").get();
-        Dog dog = memberDogRepository.findAllByMember(member).get(0).getDog();
+        Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
         UpdateDogRequest request = new UpdateDogRequest("banana", null,
                 null, BigDecimal.valueOf(4.5), null, null,
                 "how kind of you");
@@ -191,7 +191,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
 
         //then
         assertThat(response)
-                .extracting("dogName", "dogWeight", "comment")
+                .extracting("dogName", "weight", "comment")
                 .containsExactlyInAnyOrder(
                    "banana", BigDecimal.valueOf(4.5), "how kind of you"
                 );
@@ -202,7 +202,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
     void deleteDog() {
         //given
         Member member = memberRepository.findByEmail("test2@naver.com").get();
-        Dog dog = memberDogRepository.findAllByMember(member).get(0).getDog();
+        Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
 
         Dog dog2 = Dog.builder()
                 .name("choco")
@@ -237,14 +237,14 @@ class DogServiceImplTest extends IntegrationTestSupport {
     void getDogsByMember() {
         //given
         Member member = memberRepository.findByEmail("test2@naver.com").get();
-        Dog dog = memberDogRepository.findAllByMember(member).get(0).getDog();
+        Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
 
         //when
         List<DogResponse> responses = dogService.getDogsByMember(member);
 
         //then
         assertThat(responses).hasSize(1)
-                .extracting("dogId" ,"dogName", "dogBreed", "dogBirthDate", "dogWeight", "dogGender", "isNeutered", "walkCount", "familyId", "comment")
+                .extracting("dogId" ,"dogName", "breed", "dogBirthDate", "weight", "dogGender", "isNeutered", "walkCount", "familyId", "comment")
                 .containsExactlyInAnyOrder(
                         tuple(dog.getDogId(), dog.getName(), dog.getBreed(),
                                 dog.getBirthDate(), dog.getWeight(), dog.getGender(),

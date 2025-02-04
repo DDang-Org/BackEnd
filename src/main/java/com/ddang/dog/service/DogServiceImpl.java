@@ -7,6 +7,7 @@ import com.ddang.dog.repository.MemberDogRepository;
 import com.ddang.dog.service.request.CreateDogServiceRequest;
 import com.ddang.dog.service.request.UpdateDogServiceRequest;
 import com.ddang.dog.service.response.DogResponse;
+import com.ddang.dog.service.response.DogWalkResponse;
 import com.ddang.family.entity.Family;
 import com.ddang.family.repository.FamilyRepository;
 import com.ddang.global.exception.BadRequestException;
@@ -14,6 +15,11 @@ import com.ddang.global.exception.ErrorCode;
 import com.ddang.global.service.S3Service;
 import com.ddang.member.entity.Member;
 import com.ddang.member.repository.MemberRepository;
+import com.ddang.walk.entity.Walk;
+import com.ddang.walk.repository.WalkDogRepository;
+import com.ddang.walk.repository.WalkRepository;
+import com.ddang.walk.service.response.TimeDuration;
+import com.ddang.walk.util.WalkCalculator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,18 +27,24 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DogServiceImpl implements DogService{
+public class DogServiceImpl implements DogService {
 
     private final DogRepository dogRepository;
     private final MemberRepository memberRepository;
     private final MemberDogRepository memberDogRepository;
     private final FamilyRepository familyRepository;
+    private final WalkDogRepository walkDogRepository;
     private final S3Service s3Service;
 
     private final static String DOG_PROFILE_DIR = "dog";
@@ -87,11 +99,48 @@ public class DogServiceImpl implements DogService{
     }
 
     public List<DogResponse> getDogsByMember(Member member) {
-        List<MemberDog> memberDogs = memberDogRepository.findAllByMember(member);
+        List<MemberDog> memberDogs = memberDogRepository.findAllByMember(member.getMemberId());
 
         return memberDogs.stream()
                 .map(memberDog -> DogResponse.from(memberDog.getDog()))
                 .toList();
+    }
+
+    @Override
+    public DogWalkResponse dogWalk(Member member, Long dogId) {
+        Map<String, Long> walkSummary = calculateWalkSummary(dogId);
+
+        long totalDistanceMeter = walkSummary.get("totalDistanceMeter");
+        TimeDuration timeDuration = TimeDuration.from(walkSummary.get("totalSeconds"));
+        int totalCalorie = walkSummary.get("totalCalorie").intValue();
+
+        return DogWalkResponse.of(timeDuration, totalDistanceMeter, totalCalorie);
+    }
+
+    private Map<String, Long> calculateWalkSummary(Long dogId) {
+        long totalSeconds = 0;
+        long totalDistanceMeter = 0;
+        long totalCalorie = 0;
+        List<Walk> walkList = findTodayWalksByDogId(dogId);
+
+        for (Walk walk : walkList) {
+            totalCalorie += walk.getTotalCalorie();
+            totalSeconds += ChronoUnit.SECONDS.between(walk.getStartTime(), walk.getEndTime());
+            totalDistanceMeter += walk.getTotalDistance();
+        }
+
+        Map<String, Long> summary = new HashMap<>();
+        summary.put("totalCalorie", totalCalorie);
+        summary.put("totalSeconds", totalSeconds);
+        summary.put("totalDistanceMeter", totalDistanceMeter);
+        return summary;
+    }
+
+    private List<Walk> findTodayWalksByDogId(Long dogId) {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.plusDays(1).atStartOfDay().minusNanos(1);
+        return walkDogRepository.findTodayWalksByDogId(dogId, startOfDay, endOfDay);
     }
 
 

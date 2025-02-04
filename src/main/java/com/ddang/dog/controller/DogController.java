@@ -4,10 +4,13 @@ import com.ddang.dog.controller.request.CreateDogRequest;
 import com.ddang.dog.controller.request.UpdateDogRequest;
 import com.ddang.dog.service.DogService;
 import com.ddang.dog.service.response.DogResponse;
+import com.ddang.dog.service.response.DogWalkResponse;
 import com.ddang.global.api.ApiResponse;
 import com.ddang.global.exception.annotation.SwaggerExceptionResponse;
 import com.ddang.member.oauth2.CustomOAuth2User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +33,22 @@ public class DogController {
     private final DogService dogService;
 
     @PostMapping(value = "/create", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    @Operation(summary = "반려견 등록", description = "반려견을 등록합니다.")
+    @Operation(
+            summary = "반려견 등록",
+            description = "반려견을 등록합니다.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "반려견 등록 정보",
+                    required = true,
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CreateDogRequest.class)
+                    )
+            ),
+            parameters = {
+                    @Parameter( name = "profileImgFile",
+                            description = "Profile Image File",
+                            schema = @Schema(type = "string", format = "binary") ) }
+    )
     @SwaggerExceptionResponse({DOG_NOT_FOUND, OVER_MAX_DOG, NAME_NOT_NULL, NAME_EXCEED, BREED_NOT_NULL, DATE_MUST_BE_PAST_OR_PRESENT, WEIGHT_MINIMUM, WEIGHT_MAXIMUM,
             WEIGHT_DECIMAL_LIMIT,GENDER_REQUIRED,NEUTERING_REQUIRED,COMMENT_SIZE_EXCEED, MEMBER_NOT_FOUND, DOG_ALREADY_OWNED})
     public ApiResponse<DogResponse> createDog(
@@ -59,7 +77,22 @@ public class DogController {
     }
 
     @PatchMapping(value = "/{dogId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    @Operation(summary = "반려견 정보 수정", description = "반려견 정보를 수정합니다.")
+    @Operation(
+            summary = "반려견 정보 수정",
+            description = "반려견 정보를 수정합니다.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "반려견 수정 정보",
+                    required = true,
+                    content = @io.swagger.v3.oas.annotations.media.Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UpdateDogRequest.class)
+                    )
+            ),
+            parameters = {
+                    @Parameter( name = "profileImgFile",
+                            description = "Profile Image File",
+                            schema = @Schema(type = "string", format = "binary") ) }
+    )
     @SwaggerExceptionResponse({DOG_NOT_FOUND, OVER_MAX_DOG, NAME_NOT_NULL, NAME_EXCEED, BREED_NOT_NULL, DATE_MUST_BE_PAST_OR_PRESENT, WEIGHT_MINIMUM, WEIGHT_MAXIMUM,
             WEIGHT_DECIMAL_LIMIT,GENDER_REQUIRED,NEUTERING_REQUIRED,COMMENT_SIZE_EXCEED, MEMBER_NOT_FOUND, DOG_ALREADY_OWNED})
     public ApiResponse<DogResponse> updateDog(
@@ -83,6 +116,17 @@ public class DogController {
         dogService.deleteDog(dogId, customOAuth2User.getMember());
 
         return ApiResponse.noContent();
+    }
+
+    @GetMapping("/{dogId}/walk")
+    @Operation(summary = "강아지 당일 산책 기록", description = "강아지의 당일 산책 기록을 조회합니다.")
+    @SwaggerExceptionResponse(DOG_NOT_FOUND)
+    public ApiResponse<DogWalkResponse> dogWalk(@PathVariable Long dogId,
+                                                @AuthenticationPrincipal CustomOAuth2User customOAuth2User){
+
+        DogWalkResponse response = dogService.dogWalk(customOAuth2User.getMember(), dogId);
+
+        return ApiResponse.ok(response);
     }
 }
 

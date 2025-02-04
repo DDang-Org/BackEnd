@@ -21,23 +21,23 @@ public class Member extends BaseEntity {
     private Long memberId;
 
     @Column(nullable = false, length = 100)
-    private String memberName;
+    private String name;
 
     @Column(nullable = false, length = 100)
     private String email;
 
     @Column(nullable = false)
-    private LocalDate memberBirthDate;
-
-    @Column(nullable = false)
     private String address;
 
     @Column(nullable = false)
-    private String memberProfileImg;
+    private int profileImg;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Gender memberGender;
+    private Gender gender;
+
+    @Column(nullable = false)
+    private LocalDate birthDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -60,13 +60,13 @@ public class Member extends BaseEntity {
     private Role role;
 
     @Builder
-    public Member(String memberName, String email, LocalDate memberBirthDate, String address, String memberProfileImg, Gender memberGender, FamilyRole familyRole, IsMatched isMatched, Family family, Provider provider, Role role) {
-        this.memberName = memberName;
+    public Member(String name, String email, String address, int profileImg, Gender gender, LocalDate birthDate, FamilyRole familyRole, IsMatched isMatched, Family family, Provider provider, Role role) {
+        this.name = name;
         this.email = email;
-        this.memberBirthDate = memberBirthDate;
         this.address = address;
-        this.memberProfileImg = memberProfileImg;
-        this.memberGender = memberGender;
+        this.profileImg = profileImg;
+        this.gender = gender;
+        this.birthDate = birthDate;
         this.familyRole = familyRole;
         this.isMatched = isMatched;
         this.family = family;
@@ -80,5 +80,29 @@ public class Member extends BaseEntity {
 
     public boolean hasNoFamily(){
         return this.family == null;
+    }
+
+    public void updateIsMatched(IsMatched isMatched) {
+        this.isMatched = isMatched;
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public void updateAddress(String address) {
+        this.address = address;
+    }
+
+    public void updateFamilyRole(FamilyRole familyRole) {
+        this.familyRole = familyRole;
+    }
+
+    public void updateProfileImg(int profileImg) {
+        this.profileImg = profileImg;
     }
 }

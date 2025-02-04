@@ -13,7 +13,7 @@ public record JoinServiceRequest(
         LocalDate memberBirthDate,
         String address,
         FamilyRole familyRole,
-        String memberProfileImg,
+        int memberProfileImg,
         IsMatched isMatched,
         Role role
 ) {
@@ -21,12 +21,12 @@ public record JoinServiceRequest(
         return Member.builder()
                 .email(email)
                 .provider(provider)
-                .memberName(memberName)
-                .memberGender(memberGender)
-                .memberBirthDate(memberBirthDate)
+                .name(memberName)
+                .gender(memberGender)
+                .birthDate(memberBirthDate)
                 .address(address)
                 .familyRole(familyRole)
-                .memberProfileImg(memberProfileImg)
+                .profileImg(memberProfileImg)
                 .isMatched(isMatched)
                 .provider(provider)
                 .role(role)
