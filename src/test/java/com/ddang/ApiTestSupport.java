@@ -2,7 +2,9 @@ package com.ddang;
 
 import com.ddang.dog.controller.DogController;
 import com.ddang.dog.service.DogService;
+import com.ddang.member.controller.FriendController;
 import com.ddang.member.jwt.service.JwtService;
+import com.ddang.member.service.FriendService;
 import com.ddang.walk.controller.WalkLogController;
 import com.ddang.walk.service.WalkLogService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = {
         DogController.class,
-        WalkLogController.class
+        WalkLogController.class,
+        FriendController.class
 })
 @AutoConfigureMockMvc(addFilters = false)
 public abstract class ApiTestSupport {
@@ -37,5 +40,8 @@ public abstract class ApiTestSupport {
 
     @MockitoBean
     protected WalkLogService walkLogService;
+
+    @MockitoBean
+    protected FriendService friendService;
 
 }
