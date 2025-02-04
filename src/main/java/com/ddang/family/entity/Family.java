@@ -24,6 +24,15 @@ public class Family extends BaseEntity {
         return new Family();
     }
 
+    public static Family create(Long representativeMemberId) {
+        if (representativeMemberId == null) {
+            throw new IllegalArgumentException("대표 멤버 ID는 반드시 필요합니다.");
+        }
+        Family family = new Family();
+        family.representativeMemberId = representativeMemberId;
+        return family;
+    }
+
     public void updateRepresentative(Member newRepresentative) {
         this.representativeMemberId = newRepresentative.getMemberId();
     }
