@@ -34,8 +34,7 @@ public class FamilyServiceImpl implements FamilyService {
     private final FamilyRepository familyRepository;
     private final MemberDogRepository memberDogRepository;
     private final DogRepository dogRepository;
-//    private final WalkRepository walkRepository;
-
+    // private final WalkRepository walkRepository; // 추후 구현 예정
 
     @Override
     public InviteCodeResponse createInviteCode(Member member) {
@@ -80,6 +79,7 @@ public class FamilyServiceImpl implements FamilyService {
 
         List<Dog> dogs = dogRepository.findAllByFamilyId(family.getFamilyId());
         List<Long> dogIds = dogs.stream().map(Dog::getDogId).toList();
+        // TODO : 임시로 빈 맵을 반환
         Map<Long, Integer> totalDistances = getTotalDistancesByDogIds(dogIds);
 
         return dogs.stream()
@@ -98,7 +98,7 @@ public class FamilyServiceImpl implements FamilyService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<FamilyMemberResponse>getMyFamily(Member member){
+    public List<FamilyMemberResponse> getMyFamily(Member member) {
         Member currentMember = validateMemberInFamily(member);
         Family family = currentMember.getFamily();
 
@@ -109,7 +109,6 @@ public class FamilyServiceImpl implements FamilyService {
                     return FamilyMemberResponse.of(m, isRepresent);
                 })
                 .toList();
-
     }
 
     @Override
@@ -125,7 +124,6 @@ public class FamilyServiceImpl implements FamilyService {
         Family family = currentMember.getFamily();
         family.updateRepresentative(newRepresentativeMember);
     }
-
 
     @Override
     @Transactional
@@ -149,13 +147,14 @@ public class FamilyServiceImpl implements FamilyService {
         member.updateFamily(null);
     }
 
+    // ===================== Helper Methods =====================
 
-
-    // Helper Method
     private String findExistingInviteCode(Long familyId) {
-
-        return Objects.requireNonNull(redisTemplate.keys(REDIS_INVITE_KEY_PREFIX + "*"))
-                .stream()
+        Set<String> keys = redisTemplate.keys(REDIS_INVITE_KEY_PREFIX + "*");
+        if (keys == null || keys.isEmpty()) {
+            return null;
+        }
+        return keys.stream()
                 .filter(key -> familyId.equals(getFamilyIdFromKey(key)))
                 .findFirst()
                 .orElse(null);
@@ -182,33 +181,14 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     private Map<Long, Integer> getTotalDistancesByDogIds(List<Long> dogIds) {
-        // TODO : walkRepository에 추가하고 수정
-
-//        @Query("""
-//    SELECT w.dog.dogId, SUM(w.distanceInKilometers)
-//    FROM Walk w
-//    WHERE w.dog.dogId IN :dogIds
-//    GROUP BY w.dog.dogId
-//    """)
-//        List<Object[]> findTotalDistancesByDogIds(@Param("dogIds") List<Long> dogIds);
-
-
-//        List<Object[]> results = walkRepository.findTotalDistancesByDogIds(dogIds);
-//
-//        return results.stream()
-//                .collect(Collectors.toMap(
-//                        result -> (Long) result[0],
-//                        result -> (Double) result[1]
-//                ));
-        return null;
+        // TODO: walkRepository 구현 후 수정
+        return Collections.emptyMap();
     }
 
-    public int calculateCalorie(BigDecimal weight, int totalDistance){
+    public int calculateCalorie(BigDecimal weight, int totalDistance) {
         return (int) (0.75 * weight.doubleValue() * totalDistance / 1000);
     }
 
-
-    // second Helper Method
     private Long getFamilyIdFromKey(String key) {
         String familyIdStr = redisTemplate.opsForValue().get(key);
         return familyIdStr != null ? Long.valueOf(familyIdStr) : null;
@@ -238,7 +218,8 @@ public class FamilyServiceImpl implements FamilyService {
                 .toUpperCase();
     }
 
-    // validate method
+    // =============== Validation Methods ===============
+
     private Member validateFamilyBoss(Member member) {
         Member currentMember = validateMemberInFamily(member);
         if (!currentMember.getFamily().getRepresentativeMemberId().equals(currentMember.getMemberId())) {
@@ -291,7 +272,7 @@ public class FamilyServiceImpl implements FamilyService {
     private Member findMemberByIdOrThrowException(Long id) {
         return memberRepository.findActiveById(id)
                 .orElseThrow(() -> {
-                    log.warn(">>>> {} : {} <<<<", id, ErrorCode.MEMBER_NOT_FOUND);
+                    log.warn("Member not found with id {} : {}", id, ErrorCode.MEMBER_NOT_FOUND);
                     return new BadRequestException(ErrorCode.MEMBER_NOT_FOUND);
                 });
     }
@@ -299,7 +280,7 @@ public class FamilyServiceImpl implements FamilyService {
     private Member findMemberByEmailOrThrowException(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> {
-                    log.warn(">>>> {} : {} <<<<", email, ErrorCode.MEMBER_NOT_FOUND);
+                    log.warn("Member not found with email {} : {}", email, ErrorCode.MEMBER_NOT_FOUND);
                     return new BadRequestException(ErrorCode.MEMBER_NOT_FOUND);
                 });
     }
@@ -307,7 +288,7 @@ public class FamilyServiceImpl implements FamilyService {
     private Family findFamilyByIdOrThrowException(Long id) {
         return familyRepository.findActiveById(id)
                 .orElseThrow(() -> {
-                    log.warn(">>>> {} : {} <<<<", id, ErrorCode.FAMILY_NOT_FOUND);
+                    log.warn("Family not found with id {} : {}", id, ErrorCode.FAMILY_NOT_FOUND);
                     return new BadRequestException(ErrorCode.FAMILY_NOT_FOUND);
                 });
     }
