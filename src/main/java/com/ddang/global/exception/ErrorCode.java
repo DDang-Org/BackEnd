@@ -68,6 +68,11 @@ public enum ErrorCode {
 
     //WebSocket
     EMPTY_ACCESSOR_HEADER("E_EAH", NOT_FOUND, "Accessor Header 를 찾을 수 없습니다."),
+    //Walk
+    ZERO_WALK_TIME("E_ZWT", BAD_REQUEST, "산책 총 시간은 0보다 커야 합니다."),
+    ZERO_WALK_METER("E_ZWM", BAD_REQUEST, "산책 총 거리는 0보다 커야 합니다."),
+    WALK_METER_NOT_NULL("E_MNN", BAD_REQUEST, "산책 총 거리는 NULL 이면 안됩니다."),
+    WALK_TIME_NOT_NULL("E_TNN", BAD_REQUEST, "산책 총 시간은 NULL 이면 안됩니다."),
 
     // Redis
     REDIS_DATA_SIZE_EXCEEDED_ERROR("E_REDIS", BAD_REQUEST, "Redis에 저장할 데이터 크기가 허용치를 초과했습니다."),

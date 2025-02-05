@@ -35,4 +35,14 @@ public class RedisService {
             throw new RedisException(ErrorCode.REDIS_DATA_DELETE_ERROR);
         }
     }
+
+    public void deleteGeoValues(String key, String id){
+        if (redisTemplate.opsForGeo().remove(key, id) != 1) {
+            throw new IllegalArgumentException("위치 정보를 삭제하지 못했습니다.");
+        }
+    }
+
+    public boolean checkHasKey(String key){
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
 }
