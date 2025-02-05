@@ -80,4 +80,8 @@ public class Dog extends BaseEntity {
         if (request.isNeutered() != null) this.isNeutered = request.isNeutered();
         if (request.comment() != null) this.comment = request.comment();
     }
+
+    public void doWalk() {
+        this.walkCount++;
+    }
 }

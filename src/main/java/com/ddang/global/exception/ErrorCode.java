@@ -66,6 +66,12 @@ public enum ErrorCode {
     INVALID_NOTIFICATION_TYPE("E_INT", BAD_REQUEST, "알림 타입은 반드시 CHAT, FRIEND, WALK 중 하나여야 합니다."),
     INVALID_IS_AGREED("E_IIA", BAD_REQUEST, "isAgreed는 반드시 TRUE 혹은 FALSE여야 합니다."),
 
+    //Walk
+    ZERO_WALK_TIME("E_ZWT", BAD_REQUEST, "산책 총 시간은 0보다 커야 합니다."),
+    ZERO_WALK_METER("E_ZWM", BAD_REQUEST, "산책 총 거리는 0보다 커야 합니다."),
+    WALK_METER_NOT_NULL("E_MNN", BAD_REQUEST, "산책 총 거리는 NULL 이면 안됩니다."),
+    WALK_TIME_NOT_NULL("E_TNN", BAD_REQUEST, "산책 총 시간은 NULL 이면 안됩니다."),
+
     // Redis
     REDIS_DATA_SIZE_EXCEEDED_ERROR("E_REDIS", BAD_REQUEST, "Redis에 저장할 데이터 크기가 허용치를 초과했습니다."),
     REDIS_DATA_DELETE_ERROR("E_REDIS", BAD_REQUEST, "Redis에 저장된 데이터 삭제 중 오류가 발생했습니다.");
