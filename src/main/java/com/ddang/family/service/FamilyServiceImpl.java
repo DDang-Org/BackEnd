@@ -156,6 +156,7 @@ public class FamilyServiceImpl implements FamilyService {
         }
         return keys.stream()
                 .filter(key -> familyId.equals(getFamilyIdFromKey(key)))
+                .map(key -> key.substring(REDIS_INVITE_KEY_PREFIX.length()))
                 .findFirst()
                 .orElse(null);
     }
