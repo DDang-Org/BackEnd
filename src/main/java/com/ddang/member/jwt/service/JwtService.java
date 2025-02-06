@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -97,6 +98,11 @@ public class JwtService {
     public Optional<String> extractAccessToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(accessHeader))
                 .filter(accessToken -> accessToken.startsWith(BEARER))
+                .map(accessToken -> accessToken.replace(BEARER, ""));
+    }
+
+    public Optional<String> extractAccessToken(SimpMessageHeaderAccessor headerAccessor) {
+        return Optional.ofNullable(headerAccessor.getFirstNativeHeader(accessHeader))
                 .map(accessToken -> accessToken.replace(BEARER, ""));
     }
 
