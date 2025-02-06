@@ -35,7 +35,7 @@ public record FamilyMemberResponse(
         FamilyRole familyRole,
 
         @Schema(description = "회원 프로필 이미지 URL", example = "https://example.com/profile.jpg")
-        String memberProfileImg,
+        int memberProfileImg,
 
         @Schema(description = "패밀리댕 대표 여부", example = "false")
         boolean isRepresent
@@ -43,14 +43,14 @@ public record FamilyMemberResponse(
     public static FamilyMemberResponse of(Member member, boolean represent) {
         return new FamilyMemberResponse(
                 member.getMemberId(),
-                member.getMemberName(),
+                member.getName(),
                 member.getEmail(),
                 member.getProvider(),
-                member.getMemberGender(),
-                member.getMemberBirthDate(),
+                member.getGender(),
+                member.getBirthDate(),
                 member.getAddress(),
                 member.getFamilyRole(),
-                member.getMemberProfileImg(),
+                member.getProfileImg(),
                 represent
         );
     }

@@ -265,7 +265,7 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     private void validateMemberWithoutDog(Member member) {
-        if (!memberDogRepository.findAllByMember(member).isEmpty()) {
+        if (!memberDogRepository.findAllByMember(member.getMemberId()).isEmpty()) {
             throw new BadRequestException(ErrorCode.MEMBER_HAVE_DOG);
         }
     }
