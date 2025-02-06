@@ -37,6 +37,17 @@ public enum ErrorCode {
     DOG_ALREADY_OWNED("E_DAO", BAD_REQUEST, "강아지는 한마리만 소유할 수 있습니다."),
     NOT_MEMBER_DOG("E_NMD", BAD_REQUEST, "강아지의 소유자가 아닙니다."),
 
+    //Family
+    FAMILY_NOT_FOUND("E_FNF", NOT_FOUND, "패밀리댕을 찾을 수 없습니다."),
+    MEMBER_NOT_IN_FAMILY("E_MNF", BAD_REQUEST, "패밀리댕에 속하지 않은 사용자입니다."),
+    MEMBER_IN_FAMILY("E_MIF", BAD_REQUEST, "패밀리댕에 이미 속해 있는 사용자입니다."),
+    MEMBER_HAVE_DOG("E_MHD", BAD_REQUEST, "강아지를 소유하고 있다면 패밀리댕에 가입할 수 없습니다."),
+    INVALID_INVITE_CODE("E_IIC", BAD_REQUEST, "유효하지 않은 초대 코드입니다."),
+    MEMBER_NOT_FAMILY_BOSS("E_MFB", BAD_REQUEST, "패밀리댕 대표가 아닌 사용자입니다."),
+    SELF_REMOVE_NOT_ALLOWED("E_SRA", BAD_REQUEST, "본인을 추방할 수 없습니다."),
+    INVALID_FAMILY_MEMBER("E_IFM", BAD_REQUEST, "잘못된 패밀리댕 사용자입니다."),
+    INVALID_ACTION_FAMILY_BOSS("E_IAF", BAD_REQUEST, "패밀리댕 대표는 할 수 없습니다."),
+
 
     // S3
     FILE_UPLOAD_FAIL("E_FUF", BAD_REQUEST, "파일 업로드에 실패하였습니다."),
