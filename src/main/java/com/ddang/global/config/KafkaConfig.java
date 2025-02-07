@@ -1,8 +1,10 @@
 package com.ddang.global.config;
 
-import com.ddang.chat.controller.request.ChatMessageRequest;
+import com.ddang.chat.service.request.ChatMessageKafkaRequest;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +15,6 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class KafkaConfig {
     private String consumerGroupId;
 
     @Bean
-    public DefaultKafkaProducerFactory<String, ChatMessageRequest> producerFactory() {
+    public DefaultKafkaProducerFactory<String, ChatMessageKafkaRequest> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -39,12 +39,12 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, ChatMessageRequest> kafkaTemplate() {
+    public KafkaTemplate<String, ChatMessageKafkaRequest> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
     @Bean
-    public DefaultKafkaConsumerFactory<String, ChatMessageRequest> consumerFactory() {
+    public DefaultKafkaConsumerFactory<String, ChatMessageKafkaRequest> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroupId);
@@ -52,12 +52,12 @@ public class KafkaConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(),
-                new JsonDeserializer<>(ChatMessageRequest.class));
+                new JsonDeserializer<>(ChatMessageKafkaRequest.class));
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, ChatMessageRequest> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, ChatMessageRequest> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, ChatMessageKafkaRequest> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, ChatMessageKafkaRequest> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;

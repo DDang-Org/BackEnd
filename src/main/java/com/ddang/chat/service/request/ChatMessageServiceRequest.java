@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record ChatMessageServiceRequest(
-        Long chatRoomId,
         String senderEmail,
         String receiverEmail,
         String message
