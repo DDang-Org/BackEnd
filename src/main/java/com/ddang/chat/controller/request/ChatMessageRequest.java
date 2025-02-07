@@ -1,10 +1,15 @@
 package com.ddang.chat.controller.request;
 
-import com.ddang.chat.entity.ChatType;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record ChatMessageRequest(
+        @Schema(description = "채팅방 ID", example = "3")
+        @NotNull(message = "채팅방 아이디는 필수입니다.")
         Long chatRoomId,
-        Long senderId,
-        String text,
-        ChatType chatType
-) {}
+        @Schema(description = "전송할 채팅 메시지", example = "안녕하세요!")
+        @NotBlank(message = "채팅 메세지는 필수입니다.")
+        String message
+) {
+}
