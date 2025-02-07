@@ -1,5 +1,6 @@
 package com.ddang.chat.controller.request;
 
+import com.ddang.chat.service.request.ChatMessageServiceRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,4 +13,7 @@ public record ChatMessageRequest(
         @NotBlank(message = "채팅 메세지는 필수입니다.")
         String message
 ) {
+    public ChatMessageServiceRequest toServiceRequest(String senderEmail, String receiverEmail) {
+        return new ChatMessageServiceRequest(chatRoomId, senderEmail, receiverEmail, message);
+    }
 }
