@@ -31,4 +31,23 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
               AND c.createdAt < :lastMessageCreatedAt
             """)
     Slice<Chat> findChatsBefore(@Param("chatRoomId") Long chatRoomId, @Param("lastMessageCreatedAt") LocalDateTime lastMessageCreatedAt, Pageable pageable);
+
+    @Query("""
+                SELECT c.text 
+                FROM Chat c 
+                WHERE c.chatRoom.chatroomId = :chatRoomId 
+                  AND c.isDeleted = 'FALSE' 
+                ORDER BY c.createdAt DESC LIMIT 1
+            """)
+    String findLastMessageByChatRoom(@Param("chatRoomId") Long chatRoomId);
+
+    @Query("""
+                SELECT COUNT(c)
+                FROM Chat c
+                WHERE c.chatRoom.chatroomId = :chatRoomId
+                  AND c.member.memberId <> :memberId
+                  AND c.isRead = 'FALSE'
+            """)
+    Long countUnreadMessagesByChatRoomAndMember(@Param("chatRoomId") Long chatRoomId, @Param("memberId") Long memberId);
+
 }

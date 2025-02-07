@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -40,4 +41,14 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 """)
     Optional<ChatRoom> findOneToOneChatRoom(@Param("member1") Member member1,
                                             @Param("member2") Member member2);
+
+    @Query("""
+        SELECT DISTINCT c 
+        FROM ChatRoom c 
+        JOIN ChatMember cm ON cm.chatRoom = c 
+        WHERE cm.member = :member 
+          AND c.isDeleted = 'FALSE' 
+          AND cm.isDeleted = 'FALSE'
+    """)
+    List<ChatRoom> findChatRoomsByMember(@Param("member") Member member);
 }
