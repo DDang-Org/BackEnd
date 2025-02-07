@@ -64,6 +64,8 @@ public class ChatServiceImpl implements ChatService {
 
         Member currentMember = checkValidate(chatRoomId, member.getEmail());
 
+        chatRepository.markChatsAsRead(chatRoomId, currentMember, IsRead.TRUE, IsRead.FALSE);
+
         Slice<Chat> chats = chatRepository.findByChatRoomId(chatRoomId, pageable);
 
 //        String topic = "topic-chat-" + chatRoomId;

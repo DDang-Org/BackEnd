@@ -1,9 +1,12 @@
 package com.ddang.chat.repository;
 
 import com.ddang.chat.entity.Chat;
+import com.ddang.chat.entity.IsRead;
+import com.ddang.member.entity.Member;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -50,4 +53,16 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
             """)
     Long countUnreadMessagesByChatRoomAndMember(@Param("chatRoomId") Long chatRoomId, @Param("memberId") Long memberId);
 
+    @Modifying
+    @Query("""
+    UPDATE Chat c 
+    SET c.isRead = :trueValue 
+    WHERE c.chatRoom.chatroomId = :chatRoomId 
+      AND c.member <> :member 
+      AND c.isRead = :falseValue
+    """)
+    int markChatsAsRead(@Param("chatRoomId") Long chatRoomId,
+                        @Param("member") Member member,
+                        @Param("trueValue") IsRead trueValue,
+                        @Param("falseValue") IsRead falseValue);
 }
