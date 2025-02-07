@@ -48,6 +48,10 @@ public enum ErrorCode {
     INVALID_FAMILY_MEMBER("E_IFM", BAD_REQUEST, "잘못된 패밀리댕 사용자입니다."),
     INVALID_ACTION_FAMILY_BOSS("E_IAF", BAD_REQUEST, "패밀리댕 대표는 할 수 없습니다."),
 
+    //Chat
+    CHATROOM_NOT_FOUND("E_CNF", NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
+    CHATMEMBER_NOT_IN_CHATROOM("E_CNC", BAD_REQUEST, "해당 채팅방을 찾을 수 없습니다."),
+
 
     // S3
     FILE_UPLOAD_FAIL("E_FUF", BAD_REQUEST, "파일 업로드에 실패하였습니다."),
