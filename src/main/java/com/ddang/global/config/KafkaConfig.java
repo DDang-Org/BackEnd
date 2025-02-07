@@ -1,5 +1,6 @@
 package com.ddang.global.config;
 
+import com.ddang.chat.controller.request.ChatMessageRequest;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +30,7 @@ public class KafkaConfig {
     private String consumerGroupId;
 
     @Bean
-    public ProducerFactory<String, ChatMessageDto> producerFactory() {
+    public DefaultKafkaProducerFactory<String, ChatMessageRequest> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -38,12 +39,12 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, ChatMessageDto> kafkaTemplate() {
+    public KafkaTemplate<String, ChatMessageRequest> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
     @Bean
-    public ConsumerFactory<String, ChatMessageDto> consumerFactory() {
+    public DefaultKafkaConsumerFactory<String, ChatMessageRequest> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroupId);
@@ -51,12 +52,12 @@ public class KafkaConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(),
-                new JsonDeserializer<>(ChatMessageDto.class));
+                new JsonDeserializer<>(ChatMessageRequest.class));
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, ChatMessageDto> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, ChatMessageDto> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, ChatMessageRequest> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, ChatMessageRequest> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
