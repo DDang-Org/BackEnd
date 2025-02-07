@@ -2,6 +2,7 @@ package com.ddang.chat.service.request;
 
 import com.ddang.chat.entity.Chat;
 import com.ddang.chat.entity.ChatType;
+import com.ddang.chat.entity.IsRead;
 import com.ddang.global.entity.Gender;
 import com.ddang.member.entity.FamilyRole;
 import com.ddang.member.entity.Member;
@@ -22,6 +23,7 @@ public record ChatMessageKafkaRequest(
         LocalDateTime updatedAt,
         Long chatRoomId,
         ChatType chatType,
+        IsRead isRead,
         String text
 ) {
     public static ChatMessageKafkaRequest from(Chat chat, Member receiver) {
@@ -40,6 +42,7 @@ public record ChatMessageKafkaRequest(
                 chat.getUpdatedAt(),
                 chat.getChatRoom().getChatroomId(),
                 chat.getChatType(),
+                chat.getIsRead(),
                 chat.getText()
         );
     }

@@ -14,9 +14,15 @@ import com.ddang.member.entity.Member;
 import com.ddang.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +58,41 @@ public class ChatServiceImpl implements ChatService {
     }
 
 
+    @Override
+    @Transactional
+    public Slice<ChatMessageResponse> findChatsByRoom(Long chatRoomId, Pageable pageable, Member member) {
+
+        Member currentMember = checkValidate(chatRoomId, member.getEmail());
+
+        Slice<Chat> chats = chatRepository.findByChatRoomId(chatRoomId, pageable);
+
+//        String topic = "topic-chat-" + chatRoomId;
+//        chatProducer.sendReadEvent(topic, new ChatReadServiceRequest(chatRoomId, currentMember.getEmail(), null));
+
+        List<ChatMessageResponse> reversedResponses = new ArrayList<>(chats.getContent()
+                .stream()
+                .map(ChatMessageResponse::from)
+                .toList());
+        Collections.reverse(reversedResponses);
+
+        return new SliceImpl<>(reversedResponses, pageable, chats.hasNext());
+    }
+
+    @Override
+    @Transactional
+    public Slice<ChatMessageResponse> findChatsBefore(Long chatRoomId, LocalDateTime lastMessageCreatedAt, Pageable pageable, Member member){
+        checkValidate(chatRoomId, member.getEmail());
+        Slice<Chat> chats = chatRepository.findChatsBefore(chatRoomId, lastMessageCreatedAt, pageable);
+        List<ChatMessageResponse> reversedResponses = new ArrayList<>(chats.getContent()
+                .stream()
+                .map(ChatMessageResponse::from)
+                .toList());
+        Collections.reverse(reversedResponses);
+
+        return new SliceImpl<>(reversedResponses, pageable, chats.hasNext());
+    }
+
+
     // ===================== Helper Methods =====================
 
     private ChatRoom getOrCreateChatRoom(Member member1, Member member2) {
@@ -71,13 +112,31 @@ public class ChatServiceImpl implements ChatService {
         return newChatRoom;
     }
 
+    private Member checkValidate(Long chatRoomId, String email){
+        findChatRoomByIdOrThrowException(chatRoomId);
 
+        Member member = findMemberByEmailOrThrowException(email);
+
+        if(!chatMemberRepository.existsByChatRoomIdAndMemberId(chatRoomId, member.getMemberId())){
+            throw new BadRequestException(ErrorCode.CHATMEMBER_NOT_IN_CHATROOM);
+        }
+
+        return member;
+    }
 
     private Member findMemberByEmailOrThrowException(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.warn("Member not found with email {} : {}", email, ErrorCode.MEMBER_NOT_FOUND);
                     return new BadRequestException(ErrorCode.MEMBER_NOT_FOUND);
+                });
+    }
+
+    private ChatRoom findChatRoomByIdOrThrowException(Long id) {
+        return chatRoomRepository.findActiveById(id)
+                .orElseThrow(() -> {
+                    log.warn("Chatroom not found with id {} : {}", id, ErrorCode.CHATROOM_NOT_FOUND);
+                    return new BadRequestException(ErrorCode.CHATROOM_NOT_FOUND);
                 });
     }
 }

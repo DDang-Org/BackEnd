@@ -13,6 +13,17 @@ public record ChatMemberInfo(
         int memberProfileImg
 ) {
 
+    public static ChatMemberInfo from(Member member) {
+        return new ChatMemberInfo(
+                member.getMemberId(),
+                member.getName(),
+                member.getEmail(),
+                member.getGender(),
+                member.getFamilyRole(),
+                member.getProfileImg()
+        );
+    }
+
     public static ChatMemberInfo fromKafka(com.ddang.chat.service.request.ChatMessageKafkaRequest request) {
         return new ChatMemberInfo(
                 request.sendMemberId(),
