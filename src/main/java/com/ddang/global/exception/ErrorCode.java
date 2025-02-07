@@ -73,6 +73,11 @@ public enum ErrorCode {
     ZERO_WALK_METER("E_ZWM", BAD_REQUEST, "산책 총 거리는 0보다 커야 합니다."),
     WALK_METER_NOT_NULL("E_MNN", BAD_REQUEST, "산책 총 거리는 NULL 이면 안됩니다."),
     WALK_TIME_NOT_NULL("E_TNN", BAD_REQUEST, "산책 총 시간은 NULL 이면 안됩니다."),
+    NOT_EXIST_PROPOSAL("E_NEP",BAD_REQUEST,"제안을 취소했거나 이미 강번따를 진행 중인 유저 입니다."),
+    NOT_MATCHED_MEMBER("E_NMM", BAD_REQUEST,"제안을 한 유저와 받은 유저가 일치하지 않습니다."),
+    ALREADY_PROPOSAL("E_ALP", BAD_REQUEST,"이미 다른 견주분에게 산책을 제안을 하신 상태 입니다."),
+    ALREADY_MATCHED_MEMBER("E_AMM", BAD_REQUEST,"이미 산책 매칭이 된 유저 입니다."),
+    ABNORMAL_WALK("E_ABW", BAD_REQUEST,"산책이 정상적으로 이루어지지 않았습니다."),
 
     // Redis
     REDIS_DATA_SIZE_EXCEEDED_ERROR("E_REDIS", BAD_REQUEST, "Redis에 저장할 데이터 크기가 허용치를 초과했습니다."),
