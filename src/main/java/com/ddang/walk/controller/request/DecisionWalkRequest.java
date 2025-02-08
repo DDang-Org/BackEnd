@@ -10,6 +10,8 @@ public record DecisionWalkRequest(
         @Email(message = "올바른 이메일 형식을 입력해주세요.")
         @Schema(description = "상대방 이메일", example = "example@exaple.com")
         String email,
+
+        @NotNull(message = "수락 혹은 거절을 입력해야 합니다.")
         @Schema(description = "수락 거절 여부", example = "ACCEPT")
         String decision
 ) {

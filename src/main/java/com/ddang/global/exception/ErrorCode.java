@@ -47,6 +47,7 @@ public enum ErrorCode {
     // Member
     MEMBER_NOT_FOUND("E_MEM", NOT_FOUND, "멤버를 찾을 수 없습니다."),
     INVALID_EMAIL("E_IEM", BAD_REQUEST, "이메일 형식이 올바르지 않습니다."),
+    EMAIL_NOT_NULL("E_ENN", BAD_REQUEST, "이메일을 입력해야합니다."),
     PROVIDER_NOT_NULL("E_PNN", BAD_REQUEST, "OAuth2 서버 제공자를 입력해주세요."),
     MEMBER_NAME_NOT_NULL("E_MNN", BAD_REQUEST, "멤버 이름은 비워둘 수 없습니다."),
     MEMBER_GENDER_NOT_NULL("E_MGN", BAD_REQUEST, "멤버 성별은 비워둘 수 없습니다."),
@@ -68,7 +69,15 @@ public enum ErrorCode {
 
     //WebSocket
     EMPTY_ACCESSOR_HEADER("E_EAH", NOT_FOUND, "Accessor Header 를 찾을 수 없습니다."),
+
     //Walk
+    DECISION_NOT_NULL("E_DNN", BAD_REQUEST, "수락 혹은 거절을 입력해야 합니다."),
+    LATITUDE_TOO_LOW("E_LTL", BAD_REQUEST, "위도는 -90.0 이상이어야 합니다."),
+    LATITUDE_TOO_HIGH("E_LTH", BAD_REQUEST, "위도는 90.0 이하여야 합니다."),
+    LATITUDE_NOT_NULL("E_LNN", BAD_REQUEST, "위도는 필수입니다."),
+    LONGITUDE_TOO_LOW("E_LGL", BAD_REQUEST, "경도는 -180.0 이상이어야 합니다."),
+    LONGITUDE_TOO_HIGH("E_LGH", BAD_REQUEST, "경도는 180.0 이하여야 합니다."),
+    LONGITUDE_NOT_NULL("E_LGN", BAD_REQUEST, "경도는 필수입니다."),
     ZERO_WALK_TIME("E_ZWT", BAD_REQUEST, "산책 총 시간은 0보다 커야 합니다."),
     ZERO_WALK_METER("E_ZWM", BAD_REQUEST, "산책 총 거리는 0보다 커야 합니다."),
     WALK_METER_NOT_NULL("E_MNN", BAD_REQUEST, "산책 총 거리는 NULL 이면 안됩니다."),
