@@ -31,7 +31,7 @@ class DogRepositoryTest extends IntegrationTestSupport {
     @DisplayName("Dog 을 Soft Delete 처리를 한다.")
     void softDeleteById() {
         //given
-        Family family = Family.create();
+        Family family = Family.create(1L);
         familyRepository.save(family);
         Dog dog = createDog(family);
         dogRepository.save(dog);
@@ -48,7 +48,7 @@ class DogRepositoryTest extends IntegrationTestSupport {
     @DisplayName("Delete 되지 않은 Dog 을 Id 로 조회한다.")
     void findActiveById() {
         //given
-        Family family = Family.create();
+        Family family = Family.create(1L);
         familyRepository.save(family);
 
         Dog dog = createDog(family);

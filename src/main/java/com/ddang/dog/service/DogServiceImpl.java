@@ -158,7 +158,7 @@ public class DogServiceImpl implements DogService {
 
     private void createFamilyIfNotExists(Member member){
         if(member.hasNoFamily()) {
-            Family family = Family.create();
+            Family family = Family.create(member.getMemberId());
             family = familyRepository.save(family);
 
             member.updateFamily(family);

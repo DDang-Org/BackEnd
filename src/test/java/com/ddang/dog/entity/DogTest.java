@@ -24,7 +24,7 @@ class DogTest extends IntegrationTestSupport {
     @DisplayName("dog 정보 수정을 한다.")
     void update() {
         //given
-        Family family = Family.create();
+        Family family = Family.create(1L);
         familyRepository.save(family);
 
         Dog dog = Dog.builder()

@@ -40,9 +40,8 @@ class MemberDogRepositoryTest extends IntegrationTestSupport {
     @DisplayName("MemberDog 을 멤버와 강아지 Id 로 조회 한다")
     void findByDogIdAndMemberId() {
         //given
-        Family family = createAndSaveFamily();
-        Member member = createAndSaveMember(family);
-        Dog dog = createAndSaveDog(family);
+        Member member = createAndSaveMember();
+        Dog dog = createAndSaveDog(member.getFamily());
         createAndSaveMemberDog(member, dog);
 
         //when
@@ -59,9 +58,8 @@ class MemberDogRepositoryTest extends IntegrationTestSupport {
     @DisplayName("MemberDog 을 Soft Delete 처리 한다.")
     void softDeleteByDogId() {
         //given
-        Family family = createAndSaveFamily();
-        Member member = createAndSaveMember(family);
-        Dog dog = createAndSaveDog(family);
+        Member member = createAndSaveMember();
+        Dog dog = createAndSaveDog(member.getFamily());
         createAndSaveMemberDog(member, dog);
 
         //when
@@ -75,9 +73,8 @@ class MemberDogRepositoryTest extends IntegrationTestSupport {
     @DisplayName("MemberDog 을 Member 로 모두 조회한다.")
     void findAllByMember() {
         //given
-        Family family = createAndSaveFamily();
-        Member member = createAndSaveMember(family);
-        Dog dog = createAndSaveDog(family);
+        Member member = createAndSaveMember();
+        Dog dog = createAndSaveDog(member.getFamily());
         createAndSaveMemberDog(member, dog);
 
         //when
@@ -91,7 +88,7 @@ class MemberDogRepositoryTest extends IntegrationTestSupport {
                 );
     }
 
-    private Member createAndSaveMember(Family family){
+    private Member createAndSaveMember(){
         Member member = Member.builder()
                 .name("test2")
                 .email("test2@naver.com")
@@ -101,12 +98,16 @@ class MemberDogRepositoryTest extends IntegrationTestSupport {
                 .birthDate(LocalDate.of(2000,5,2))
                 .gender(Gender.FEMALE)
                 .familyRole(FamilyRole.ELDER_SISTER)
-                .family(family)
+                .family(null)
                 .provider(Provider.GOOGLE)
                 .profileImg(1)
                 .build();
 
         memberRepository.save(member);
+
+        Family family = Family.create(member.getMemberId());
+        familyRepository.save(family);
+        member.updateFamily(family);
 
         return member;
     }
@@ -128,9 +129,9 @@ class MemberDogRepositoryTest extends IntegrationTestSupport {
         return dog;
     }
 
-    private Family createAndSaveFamily(){
+    private Family createAndSaveFamily(Long memberId){
 
-        Family family = Family.create();
+        Family family = Family.create(memberId);
         familyRepository.save(family);
 
         return family;

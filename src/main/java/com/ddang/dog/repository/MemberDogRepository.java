@@ -43,14 +43,7 @@ public interface MemberDogRepository extends JpaRepository<MemberDog, Long> {
     """)
     void softDeleteByMember(@Param("member") Member member);
 
-    @Query(value = """
-            SELECT EXISTS (
-            SELECT 1
-            FROM member_dog
-            WHERE member_id = :memberId AND dog_id = :dogId AND is_deleted = 'FALSE'
-            )
-                    """, nativeQuery = true)
-    long existsByMemberAndDog(Long memberId, Long dogId);
+    boolean existsByMemberMemberIdAndDogDogId(Long memberId, Long dogId);
 
     @EntityGraph(attributePaths = {"dog", "member"})
     @Query("""
