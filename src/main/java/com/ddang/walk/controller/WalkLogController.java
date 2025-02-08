@@ -53,10 +53,9 @@ public class WalkLogController {
                     """
     )
     @SwaggerExceptionResponse(ErrorCode.NOT_MEMBER_DOG)
-    @GetMapping("/year/{dogId}")
-    public ApiResponse<List<Integer>> getYearlyWalkLog(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-                                                       @PathVariable Long dogId){
-        List<Integer> response = walkLogService.getYearlyWalkLog(customOAuth2User.getMember(), dogId);
+    @GetMapping("/year")
+    public ApiResponse<List<Integer>> getYearlyWalkLog(@AuthenticationPrincipal CustomOAuth2User customOAuth2User){
+        List<Integer> response = walkLogService.getYearlyWalkLog(customOAuth2User.getMember());
         return ApiResponse.ok(response);
     }
 
@@ -68,28 +67,25 @@ public class WalkLogController {
                     """
     )
     @SwaggerExceptionResponse(ErrorCode.NOT_MEMBER_DOG)
-    @GetMapping("/year/family/{dogId}")
-    public ApiResponse<List<WalkLogByFamilyResponse>> getYearlyWalkLogByFamily(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-                                                                               @PathVariable Long dogId){
-        List<WalkLogByFamilyResponse> response = walkLogService.getYearlyWalkLogByFamily(customOAuth2User.getMember(), dogId);
+    @GetMapping("/year/family")
+    public ApiResponse<List<WalkLogByFamilyResponse>> getYearlyWalkLogByFamily(@AuthenticationPrincipal CustomOAuth2User customOAuth2User){
+        List<WalkLogByFamilyResponse> response = walkLogService.getYearlyWalkLogByFamily(customOAuth2User.getMember());
         return ApiResponse.ok(response);
     }
 
     @Operation(summary = "총 산책 기록 조회", description = " 모든 강아지의 기준으로 전체 산책 기록의 통계를 조회합니다.")
     @SwaggerExceptionResponse(ErrorCode.NOT_MEMBER_DOG)
-    @GetMapping("/total/{dogId}")
-    public ApiResponse<WalkStaticsResponse> getTotalWalkLog(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-                                                            @PathVariable Long dogId){
-        WalkStaticsResponse response = walkLogService.getTotalWalkLog(customOAuth2User.getMember(), dogId);
+    @GetMapping("/total")
+    public ApiResponse<WalkStaticsResponse> getTotalWalkLog(@AuthenticationPrincipal CustomOAuth2User customOAuth2User){
+        WalkStaticsResponse response = walkLogService.getTotalWalkLog(customOAuth2User.getMember());
         return ApiResponse.ok(response);
     }
 
     @Operation(summary = "이번달 산책 기록 조회", description = " 모든 강아지의 이번달 산책 기록의 통계를 조회합니다.")
     @SwaggerExceptionResponse(ErrorCode.NOT_MEMBER_DOG)
-    @GetMapping("/total/month/{dogId}")
-    public ApiResponse<WalkStaticsResponse> getMonthlyTotalWalk(@AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-                                                                @PathVariable Long dogId){
-        WalkStaticsResponse response = walkLogService.getMonthlyTotalWalk(customOAuth2User.getMember(), dogId);
+    @GetMapping("/total/month")
+    public ApiResponse<WalkStaticsResponse> getMonthlyTotalWalk(@AuthenticationPrincipal CustomOAuth2User customOAuth2User){
+        WalkStaticsResponse response = walkLogService.getMonthlyTotalWalk(customOAuth2User.getMember());
         return ApiResponse.ok(response);
     }
 

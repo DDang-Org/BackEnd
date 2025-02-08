@@ -1,6 +1,7 @@
 package com.ddang.family.entity;
 
 import com.ddang.global.entity.BaseEntity;
+import com.ddang.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,8 +17,24 @@ public class Family extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long familyId;
 
+    @Column(nullable = false)
+    private Long representativeMemberId;
+
     public static Family create() {
         return new Family();
+    }
+
+    public static Family create(Long representativeMemberId) {
+        if (representativeMemberId == null) {
+            throw new IllegalArgumentException("대표 멤버 ID는 반드시 필요합니다.");
+        }
+        Family family = new Family();
+        family.representativeMemberId = representativeMemberId;
+        return family;
+    }
+
+    public void updateRepresentative(Member newRepresentative) {
+        this.representativeMemberId = newRepresentative.getMemberId();
     }
 
 }
