@@ -9,11 +9,11 @@ public record DecisionWalkRequest(
         @NotNull(message = "상대 이메일은 입력해주셔야 해요")
         @Email(message = "올바른 이메일 형식을 입력해주세요.")
         @Schema(description = "상대방 이메일", example = "example@exaple.com")
-        String otherEmail,
+        String email,
         @Schema(description = "수락 거절 여부", example = "ACCEPT")
         String decision
 ) {
     public DecisionWalkServiceRequest toService(){
-        return new DecisionWalkServiceRequest(otherEmail, decision);
+        return new DecisionWalkServiceRequest(email, decision);
     }
 }

@@ -1,7 +1,7 @@
 package com.ddang.walk.service.response.walk;
 
 
-import com.ddang.walk.service.request.StartWalkServiceRequest;
+import com.ddang.walk.service.request.WalkServiceRequest;
 
 public record WalkWithResponse(
         String email,
@@ -9,7 +9,7 @@ public record WalkWithResponse(
         double longitude,
         Type type
 ) {
-    public static WalkWithResponse of(String email, StartWalkServiceRequest serviceRequest){
+    public static WalkWithResponse of(String email, WalkServiceRequest serviceRequest){
         return new WalkWithResponse(email, serviceRequest.latitude(), serviceRequest.longitude(), Type.WALK_WITH);
     }
 }

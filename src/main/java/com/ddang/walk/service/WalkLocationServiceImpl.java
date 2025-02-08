@@ -1,19 +1,21 @@
 package com.ddang.walk.service;
 
 import com.ddang.dog.entity.Dog;
-import com.ddang.dog.repository.MemberDogRepository;
+import com.ddang.dog.service.response.DogResponse;
 import com.ddang.global.api.WebSocketResponse;
 import com.ddang.global.exception.BadRequestException;
 import com.ddang.global.exception.MemberException;
 import com.ddang.global.exception.NotFoundException;
 import com.ddang.global.service.RedisService;
-import com.ddang.member.entity.IsMatched;
 import com.ddang.member.entity.Member;
 import com.ddang.member.repository.MemberRepository;
 import com.ddang.walk.service.request.DecisionWalkServiceRequest;
 import com.ddang.walk.service.request.ProposalWalkServiceRequest;
-import com.ddang.walk.service.request.StartWalkServiceRequest;
-import com.ddang.walk.service.response.walk.*;
+import com.ddang.walk.service.request.WalkServiceRequest;
+import com.ddang.walk.service.response.walk.DecisionWalkResponse;
+import com.ddang.walk.service.response.walk.MemberNearbyResponse;
+import com.ddang.walk.service.response.walk.ProposalWalkResponse;
+import com.ddang.walk.service.response.walk.WalkWithResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.GeoResult;
@@ -27,11 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import static com.ddang.global.exception.ErrorCode.*;
 import static com.ddang.global.service.RedisKey.*;
-import static com.ddang.walk.util.DateCalculator.calculateAgeFromNow;
 
 
 @Service
@@ -40,31 +41,28 @@ import static com.ddang.walk.util.DateCalculator.calculateAgeFromNow;
 public class WalkLocationServiceImpl implements WalkLocationService {
 
     private final RedisService redisService;
-    private final MemberDogRepository memberDogRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final MemberRepository memberRepository;
 
 
     @Override
     @Transactional(readOnly = true)
-    public void startWalk(String email, StartWalkServiceRequest startWalkServiceRequest){
-        saveMemberLocation(email, startWalkServiceRequest);
+    public void startWalk(String email, WalkServiceRequest walkServiceRequest){
+        saveMemberLocation(email, walkServiceRequest);
         findNearbyMember(email);
     }
 
     @Override
     public void proposalWalk(String email, ProposalWalkServiceRequest proposalWalkServiceRequest) {
-        Member member = getMemberFromEmailOrElseThrow(email);
-
-        List<Dog> dogs = getDogsFromMemberId(member.getMemberId());
+        DogResponse dog = getDogFromRedis(email);
         String otherEmail = proposalWalkServiceRequest.otherMemberEmail();
         validateBeforeProposalWalk(email, otherEmail);
 
-        redisService.setValues(PROPOSAL_KEY + member.getEmail(), otherEmail, Duration.ofMinutes(3));
-        ProposalWalkResponse response = ProposalWalkResponse.of(dogs, member, proposalWalkServiceRequest.comment());
+        redisService.setValues(PROPOSAL_KEY + email, otherEmail, Duration.ofMinutes(3));
+        ProposalWalkResponse response = ProposalWalkResponse.of(dog, email, proposalWalkServiceRequest.comment());
 
         sendMessageToWalkUrl(otherEmail, response);
-        sendMessageToWalkUrl(member.getEmail(), "Proposal Success");
+        sendMessageToWalkUrl(email, "Proposal Success");
     }
 
     @Override
@@ -80,9 +78,9 @@ public class WalkLocationServiceImpl implements WalkLocationService {
             throw new BadRequestException(NOT_MATCHED_MEMBER);
         }
 
-        Member otherMember = getMemberFromEmailOrElseThrow(memberEmail);
-        List<Dog> dogs = getDogsFromMemberId(member.getMemberId());
-        List<Dog> otherDogs = getDogsFromMemberId(otherMember.getMemberId());
+        Member otherMember = getMemberFromEmailOrElseThrow(serviceRequest.otherEmail());
+        DogResponse dog = getDogFromRedis(email);
+        DogResponse otherDog = getDogFromRedis(serviceRequest.otherEmail());
         redisService.deleteValues(PROPOSAL_KEY + serviceRequest.otherEmail());
 
         if(serviceRequest.decision().equals("ACCEPT")){
@@ -90,29 +88,27 @@ public class WalkLocationServiceImpl implements WalkLocationService {
             redisService.setValues(WALK_WITH_KEY + serviceRequest.otherEmail(), email);
         }
 
-        sendMessageToWalkUrl(email, DecisionWalkResponse.of(serviceRequest.decision(), otherMember, otherDogs));
-        sendMessageToWalkUrl(serviceRequest.otherEmail(), DecisionWalkResponse.of(serviceRequest.decision(), member, dogs));
+        sendMessageToWalkUrl(email, DecisionWalkResponse.of(serviceRequest.decision(), otherMember, otherDog));
+        sendMessageToWalkUrl(serviceRequest.otherEmail(), DecisionWalkResponse.of(serviceRequest.decision(), member, dog));
     }
 
     @Override
-    public void startWalkWith(String email, StartWalkServiceRequest startWalkServiceRequest) {
-        saveMemberLocation(email, startWalkServiceRequest);
+    public void startWalkWith(String email, WalkServiceRequest walkServiceRequest) {
+        saveMemberLocation(email, walkServiceRequest);
         String otherMemberEmail = redisService.getValues(WALK_WITH_KEY + email);
 
         if(otherMemberEmail == null){
             throw new MemberException(INVALID_EMAIL);
         }
 
-        sendMessageToWalkUrl(otherMemberEmail, WalkWithResponse.of(email, startWalkServiceRequest));
+        sendMessageToWalkUrl(otherMemberEmail, WalkWithResponse.of(email, walkServiceRequest));
     }
 
-    private void saveMemberLocation(String email, StartWalkServiceRequest startWalkServiceRequest){
+    private void saveMemberLocation(String email, WalkServiceRequest request){
         // 좌표 데이터를 String 변환
-        String pointData = startWalkServiceRequest.toStringFormat();
-        Point point = new Point(startWalkServiceRequest.longitude(), startWalkServiceRequest.latitude());
+        Point point = new Point(request.longitude(), request.latitude());
 
         redisService.setGeoValues(POINT_KEY, email, point);
-        redisService.setListValues(LIST_KEY + email, pointData);
     }
 
     private void findNearbyMember(String email){
@@ -124,17 +120,34 @@ public class WalkLocationServiceImpl implements WalkLocationService {
             sendMessageToWalkUrl(email, null);
             return;
         }
+        List<MemberNearbyResponse> nearbyResponses = getNearbyResponseFromRedis(memberEmailList);
 
-        List<MemberNearbyInfo> memberNearbyInfos = memberDogRepository.findDogsAndMembersByMemberEmails(memberEmailList);
-        sendNearbyMember(memberNearbyInfos, email);
+        sendMessageToWalkUrl(email, nearbyResponses);
     }
 
-    private void sendNearbyMember(List<MemberNearbyInfo> memberNearbyInfos, String email){
-        List<MemberNearbyResponse> responseList = memberNearbyInfos.stream()
-                .filter(memberNearbyInfo -> memberNearbyInfo.isMatched().equals(IsMatched.TRUE))
-                .map(MemberNearbyResponse::from).toList();
+    private List<MemberNearbyResponse> getNearbyResponseFromRedis(List<String> memberEmailList){
+        return memberEmailList.stream()
+                .map(email -> {
+                    try {
+                        DogResponse dog = (DogResponse) redisService.loadHash(WALK_DOG_KEY + email);
+                        return MemberNearbyResponse.of(dog, email);
+                    } catch (ClassCastException e) {
+                        log.error("key 로 가져온 객체의 형식이 다릅니다. {}: {}", WALK_DOG_KEY + email, e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+    }
 
-        sendMessageToWalkUrl(email, responseList);
+    public DogResponse getDogFromRedis(String email) {
+        Object obj = redisService.loadHash(WALK_DOG_KEY + email);
+
+        if (!(obj instanceof DogResponse)) {
+            throw new NotFoundException(DOG_NOT_FOUND);
+        }
+
+        return (DogResponse) obj;
     }
 
     private List<String> getEmailListFromNearbyMemberResults(GeoResults<RedisGeoCommands.GeoLocation<String>> results, String email){
@@ -162,16 +175,6 @@ public class WalkLocationServiceImpl implements WalkLocationService {
                 .orElseThrow(() -> new NotFoundException(MEMBER_NOT_FOUND));
     }
 
-    private List<Dog> getDogsFromMemberId(Long memberId){
-        List<Dog> dogs = memberDogRepository.findDogsByMemberId(memberId);
-
-        if(dogs.isEmpty()){
-            throw new NotFoundException(DOG_NOT_FOUND);
-        }
-
-        return dogs;
-    }
-
     private void validateBeforeProposalWalk(String email, String otherEmail){
         if(redisService.checkHasKey(PROPOSAL_KEY + email)){
             throw new BadRequestException(ALREADY_PROPOSAL);
@@ -183,34 +186,5 @@ public class WalkLocationServiceImpl implements WalkLocationService {
 
     }
 
-    public List<MemberNearbyResponse> groupByMember(List<MemberNearbyInfo> infos) {
-        return infos.stream()
-                .collect(Collectors.groupingBy(
-                        MemberNearbyInfo::memberId, // memberId 기준으로 그룹화
-                        Collectors.toList()
-                ))
-                .entrySet().stream()
-                .map(entry -> {
-                    List<MemberNearbyInfo> groupedInfos = entry.getValue();
-                    List<DogInfo> dogInfos = groupedInfos.stream()
-                            .map(info -> new DogInfo(
-                                    info.dogId(), info.dogName(), info.breed(),
-                                    info.dogProfileImg(), info.dogGender(),
-                                    calculateAgeFromNow(info.dogBirthDate()), info.walkCount()
-                            ))
-                            .toList();
-
-                    // 첫 번째 요소에서 email 가져오기
-                    String email = groupedInfos.get(0).email();
-
-                    return new MemberNearbyResponse(
-                            dogInfos,
-                            entry.getKey(), // memberId
-                            email,
-                            Type.WALK_ALONE // 적절한 타입 설정
-                    );
-                })
-                .toList();
-    }
 
 }

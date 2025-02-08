@@ -9,14 +9,13 @@ import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.GeoResults;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.RedisGeoCommands;
-import org.springframework.data.redis.core.GeoOperations;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.hash.Jackson2HashMapper;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 import static com.ddang.global.service.RedisKey.POINT_KEY;
 
@@ -26,6 +25,8 @@ import static com.ddang.global.service.RedisKey.POINT_KEY;
 public class RedisService {
 
     private final RedisTemplate redisTemplate;
+    private final HashOperations<String, String, Object> hashOperations;
+    private Jackson2HashMapper mapper = new Jackson2HashMapper(true);
 
     public void setValues(String key, String data, Duration duration) {
         ValueOperations<String, Object> values = redisTemplate.opsForValue();
@@ -37,7 +38,17 @@ public class RedisService {
         values.set(key, data);
     }
 
-    public void setListValues(String key, String value){
+    public void writeHash(String key, Object object) {
+        Map<String, Object> mappedHash = mapper.toHash(object);
+        hashOperations.putAll(key, mappedHash);
+    }
+
+    public Object loadHash(String key) {
+        Map<String, Object> loadedHash = hashOperations.entries(key);
+        return mapper.fromHash(loadedHash);
+    }
+
+    public void setListValues(String key, Object value){
         ListOperations<String, Object> listOperations = redisTemplate.opsForList();
         listOperations.rightPush(key, value);
     }
@@ -48,6 +59,11 @@ public class RedisService {
             return null;
         }
         return (String) values.get(key);
+    }
+
+    public List<Long> getLongListOpsValues(String key){
+        ListOperations<String, Long> listOperations = redisTemplate.opsForList();
+        return listOperations.range(key, 0, -1);
     }
 
     public void deleteValues(String key) {
