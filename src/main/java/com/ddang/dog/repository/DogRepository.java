@@ -29,4 +29,7 @@ public interface DogRepository extends JpaRepository<Dog, Long> {
 
     @Query("SELECT d FROM Dog d WHERE d.family = :family AND d.isDeleted = 'FALSE'")
     List<Dog> findDogsByFamily(@Param("family") Family family);
+
+    @Query("SELECT d FROM Dog d WHERE d.dogId IN :dogIds AND d.isDeleted = 'FALSE'")
+    List<Dog> findDogsByDogIds(@Param("dogIds") List<Long> dogIds);
 }

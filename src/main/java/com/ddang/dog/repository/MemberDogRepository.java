@@ -1,7 +1,9 @@
 package com.ddang.dog.repository;
 
+import com.ddang.dog.entity.Dog;
 import com.ddang.dog.entity.MemberDog;
 import com.ddang.member.entity.Member;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -26,8 +28,12 @@ public interface MemberDogRepository extends JpaRepository<MemberDog, Long> {
     @Query("SELECT md FROM MemberDog md WHERE md.member.memberId = :memberId AND md.isDeleted = 'FALSE'")
     List<MemberDog> findAllByMember(@Param("memberId") Long memberId);
 
+    @Query("SELECT md.dog FROM MemberDog md WHERE md.member.memberId = :memberId AND md.isDeleted = 'FALSE'")
+    List<Dog> findDogsByMemberId(@Param("memberId") Long memberId);
+
     @Query("SELECT count(*) FROM MemberDog md WHERE md.member = :member AND md.isDeleted = 'FALSE'")
     Integer countAllByMember(Member member);
+
 
     @Modifying
     @Query("""
@@ -46,4 +52,12 @@ public interface MemberDogRepository extends JpaRepository<MemberDog, Long> {
                     """, nativeQuery = true)
     long existsByMemberAndDog(Long memberId, Long dogId);
 
+    @EntityGraph(attributePaths = {"dog", "member"})
+    @Query("""
+            SELECT md
+            FROM MemberDog md
+            WHERE md.member.email = :email
+            AND md.isDeleted = 'FALSE'
+            """)
+    List<MemberDog> findMemberDogByMemberEmail(@Param("email") String email, Pageable pageable);
 }
