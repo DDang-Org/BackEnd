@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,6 +50,7 @@ class FriendServiceImplTest extends IntegrationTestSupport {
                 .gender(Gender.MALE)
                 .familyRole(FamilyRole.ELDER_BROTHER)
                 .provider(Provider.KAKAO)
+                .birthDate(LocalDate.of(1999,9,3))
                 .profileImg(1)
                 .build();
 
@@ -62,6 +64,7 @@ class FriendServiceImplTest extends IntegrationTestSupport {
                 .familyRole(FamilyRole.ELDER_SISTER)
                 .provider(Provider.KAKAO)
                 .profileImg(1)
+                .birthDate(LocalDate.of(2001,9,3))
                 .build();
 
         memberRepository.saveAll(Arrays.asList(member, otherMember));
@@ -136,6 +139,7 @@ class FriendServiceImplTest extends IntegrationTestSupport {
 
 
     @Test
+    @DisplayName("친구들의 목록을 조회한다.")
     void getFriendList() {
         //given
         Member member = memberRepository.findByEmail("test@naver.com").get();
@@ -148,45 +152,12 @@ class FriendServiceImplTest extends IntegrationTestSupport {
         //then
         assertThat(friendList)
                 .hasSize(1)
-                .extracting("memberId", "gender", "familyRole", "profileImg", "name")
+                .extracting("memberId", "memberGender", "familyRole", "memberProfileImg", "memberName")
                 .containsExactlyInAnyOrder(
                         tuple(otherMember.getMemberId(), otherMember.getGender(), otherMember.getFamilyRole(), otherMember.getProfileImg(), otherMember.getName())
                 );
 
     }
-
-//    @DisplayName("친구의 상세프로필을 조회한다.")
-//    @Test
-//    void getFriendProfile() {
-//        //given
-//        Member member = memberRepository.findByEmail("test@naver.com").get();
-//        Member otherMember = memberRepository.findByEmail("test2@naver.com").get();
-//        saveFriend(member, otherMember);
-//
-//        //when
-//        FriendResponse response = friendService.getFriend(member, otherMember.getMemberId());
-//
-//        //then
-//        assertThat(response).isNotNull()
-//                .extracting("memberName", "address", "memberGender", "familyRole", "memberProfileImg")
-//                .containsExactlyInAnyOrder(
-//                  otherMember.getName(), otherMember.getAddress(), otherMember.getGender(), otherMember.getFamilyRole(), otherMember.getProfileImg()
-//                );
-//    }
-//
-//    @DisplayName("친구가 아닌 사람의 상세프로필을 조회할 시 에러를 던진다.")
-//    @Test
-//    void getFriendProfileWhenIsNotFriendThrowException() {
-//        //given
-//        Member member = memberRepository.findByEmail("test@naver.com").get();
-//        Member otherMember = memberRepository.findByEmail("test2@naver.com").get();
-//
-//        //when
-//        //then
-//        assertThatThrownBy(() -> friendService.getFriend(member, otherMember.getMemberId()))
-//                .isInstanceOf(IllegalArgumentException.class)
-//                .hasMessage("친구가 아닌 사람의 프로필은 볼 수 없습니다.");
-//    }
 
     @Test
     @DisplayName("친구를 삭제한다.")

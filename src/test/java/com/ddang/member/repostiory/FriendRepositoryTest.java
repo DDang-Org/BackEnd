@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -38,6 +39,7 @@ class FriendRepositoryTest extends IntegrationTestSupport {
                 .familyRole(FamilyRole.ELDER_BROTHER)
                 .provider(Provider.KAKAO)
                 .profileImg(1)
+                .birthDate(LocalDate.of(1999,9,3))
                 .build();
 
         Member otherMember = Member.builder()
@@ -49,6 +51,7 @@ class FriendRepositoryTest extends IntegrationTestSupport {
                 .gender(Gender.FEMALE)
                 .familyRole(FamilyRole.ELDER_SISTER)
                 .provider(Provider.KAKAO)
+                .birthDate(LocalDate.of(2001,9,3))
                 .profileImg(1)
                 .build();
 
