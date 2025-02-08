@@ -7,10 +7,7 @@ import com.ddang.global.exception.ErrorCode;
 import com.ddang.member.entity.Friend;
 import com.ddang.member.entity.FriendRequest;
 import com.ddang.member.entity.Member;
-import com.ddang.member.repository.FriendRepository;
-import com.ddang.member.repository.FriendRequestRepository;
-import com.ddang.member.repository.MemberRepository;
-import com.ddang.member.repository.WalkWithMemberRepository;
+import com.ddang.member.repository.*;
 import com.ddang.member.service.request.AddFriendServiceRequest;
 import com.ddang.member.service.response.FriendListResponse;
 import com.ddang.member.service.response.FriendResponse;
@@ -22,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +32,7 @@ public class FriendServiceImpl implements FriendService{
     private final WalkRepository walkRepository;
     private final WalkWithMemberRepository walkWithMemberRepository;
     private final NotificationRepository notificationRepository;
+    private final BlockRepository blockRepository;
     //private final SimpMessagingTemplate messagingTemplate;
 
     @Override
@@ -54,29 +53,14 @@ public class FriendServiceImpl implements FriendService{
     @Transactional(readOnly = true)
     public List<FriendListResponse> getFriendList(Member member) {
         List<Member> friends = friendRepository.findAllFriendsBySender(member);
+        List<Long> blockedIds = blockRepository.findAllBlockedIdsByBlocker(member);
 
-        return friends.stream().map(FriendListResponse::from).toList();
+        List<Member> realFriends = friends.stream()
+                .filter(friend -> !blockedIds.contains(friend.getMemberId()))
+                .toList();
+
+        return realFriends.stream().map(FriendListResponse::from).toList();
     }
-
-//    @Override
-//    @Transactional(readOnly = true)
-//    public FriendResponse getFriend(Member member, Long memberId) {
-//        Member otherMember = getMemberFromMemberIdOrElseThrow(memberId);
-//
-//        if(!friendRepository.existsBySenderAndReceiver(member, otherMember)){
-//            throw new BadRequestException(ErrorCode.NOT_A_FRIEND);
-//        }
-//
-//        Dog dog = memberDogRepository.findTopByMemberAndIsDeletedFalse(member)
-//                .orElseThrow(() -> new BadRequestException(ErrorCode.DOG_NOT_FOUND)).getDog();
-//
-//        int totalDistanceInMeters = walkRepository.findTotalDistanceByMemberId(memberId);
-//        int countWalks = walkRepository.countWalksByMemberId(memberId);
-//        double totalDistanceInKilometers = totalDistanceInMeters / 1000.0;
-//        int countWalksWithMember = walkWithMemberRepository.countBySenderMemberId(memberId);
-//
-//        return FriendResponse.of(otherMember, dog, totalDistanceInKilometers, countWalks ,countWalksWithMember);
-//    }
 
     @Override
     @Transactional
