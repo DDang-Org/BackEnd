@@ -126,7 +126,7 @@ public class WalkLogServiceImpl implements WalkLogService{
     }
 
     private void isMemberDog(Member member, Long dogId){
-        if(memberDogRepository.existsByMemberAndDog(member.getMemberId(), dogId) == 0){
+        if(!memberDogRepository.existsByMemberMemberIdAndDogDogId(member.getMemberId(), dogId)){
             throw new BadRequestException(ErrorCode.NOT_MEMBER_DOG);
         }
 

@@ -58,9 +58,26 @@ class WalkLogServiceImplTest extends IntegrationTestSupport {
 
     @BeforeEach
     void createMember(){
-        Family family = Family.create();
 
+        Member memberHasDog = Member.builder()
+                .name("test2")
+                .email("test2@naver.com")
+                .role(Role.USER)
+                .isMatched(IsMatched.TRUE)
+                .address("test2Address")
+                .birthDate(LocalDate.of(2000,5,2))
+                .gender(Gender.FEMALE)
+                .familyRole(FamilyRole.ELDER_SISTER)
+                .family(null)
+                .provider(Provider.GOOGLE)
+                .profileImg(1)
+                .build();
+
+        memberRepository.save(memberHasDog);
+
+        Family family = Family.create(memberHasDog.getMemberId());
         familyRepository.save(family);
+        memberHasDog.updateFamily(family);
 
         Dog dog = Dog.builder()
                 .name("choco")
@@ -74,21 +91,6 @@ class WalkLogServiceImplTest extends IntegrationTestSupport {
                 .isNeutered(IsNeutered.TRUE)
                 .build();
 
-        Member memberHasDog = Member.builder()
-                .name("test2")
-                .email("test2@naver.com")
-                .role(Role.USER)
-                .isMatched(IsMatched.TRUE)
-                .address("test2Address")
-                .birthDate(LocalDate.of(2000,5,2))
-                .gender(Gender.FEMALE)
-                .familyRole(FamilyRole.ELDER_SISTER)
-                .family(family)
-                .provider(Provider.GOOGLE)
-                .profileImg(1)
-                .build();
-
-        memberRepository.save(memberHasDog);
         dogRepository.save(dog);
 
         MemberDog memberDog = MemberDog.builder()

@@ -62,8 +62,9 @@ class DogServiceImplTest extends IntegrationTestSupport {
                 .profileImg(1)
                 .build();
 
-        Family family = Family.create();
+        memberRepository.save(memberHasNoDog);
 
+        Family family = Family.create(memberHasNoDog.getMemberId());
         familyRepository.save(family);
 
         Dog dog = Dog.builder()
@@ -92,7 +93,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
                 .profileImg(1)
                 .build();
 
-        memberRepository.saveAll(Arrays.asList(memberHasNoDog, memberHasDog));
+        memberRepository.save(memberHasDog);
         dogRepository.save(dog);
 
         MemberDog memberDog = MemberDog.builder()
