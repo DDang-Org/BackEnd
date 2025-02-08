@@ -17,6 +17,14 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT m FROM Member m WHERE m.family = :family AND m.isDeleted = 'FALSE'")
     List<Member> findAllByFamily(Family family);
 
+    @Query("""
+    SELECT m 
+    FROM Member m 
+    WHERE m.memberId = :id 
+      AND m.isDeleted = 'FALSE'
+    """)
+    Optional<Member> findActiveById(@Param("id") Long id);
+
     @Query("SELECT m FROM Member m WHERE m.memberId = :memberId AND m.isDeleted = 'FALSE'")
     Optional<Member> findById(@Param("memberId") Long memberId);
 }

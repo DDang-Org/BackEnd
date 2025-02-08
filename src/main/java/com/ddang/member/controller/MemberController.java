@@ -87,6 +87,13 @@ public class MemberController {
         return ApiResponse.ok(memberService.getMemberWalkInfo(customOAuth2User.getMember().getMemberId()));
     }
 
+    @GetMapping("/walk-info/{memberId}")
+    @Operation(summary = "특정 멤버 산책 정보 조회", description = "특정 멤버 산책 정보를 조회합니다.")
+    @SwaggerExceptionResponse({MEMBER_NOT_FOUND})
+    public ApiResponse<WalkInfoResponse> getMemberWalkInfo(@PathVariable Long memberId) {
+        return ApiResponse.ok(memberService.getMemberWalkInfo(memberId));
+    }
+
     @PatchMapping("/update/isMatched")
     @Operation(summary = "강번따 허용 여부 수정", description = "강아지 번따 허용 여부를 수정합니다.")
     @SwaggerExceptionResponse({MEMBER_NOT_FOUND, INVALID_IS_MATCHED})

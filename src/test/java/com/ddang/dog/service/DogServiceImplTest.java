@@ -240,7 +240,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
         Dog dog = memberDogRepository.findAllByMember(member.getMemberId()).get(0).getDog();
 
         //when
-        List<DogResponse> responses = dogService.getDogsByMember(member);
+        List<DogResponse> responses = dogService.getDogsByMember(member.getMemberId());
 
         //then
         assertThat(responses).hasSize(1)

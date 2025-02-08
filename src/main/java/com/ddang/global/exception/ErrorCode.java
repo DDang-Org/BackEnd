@@ -37,6 +37,21 @@ public enum ErrorCode {
     DOG_ALREADY_OWNED("E_DAO", BAD_REQUEST, "강아지는 한마리만 소유할 수 있습니다."),
     NOT_MEMBER_DOG("E_NMD", BAD_REQUEST, "강아지의 소유자가 아닙니다."),
 
+    //Family
+    FAMILY_NOT_FOUND("E_FNF", NOT_FOUND, "패밀리댕을 찾을 수 없습니다."),
+    MEMBER_NOT_IN_FAMILY("E_MNF", BAD_REQUEST, "패밀리댕에 속하지 않은 사용자입니다."),
+    MEMBER_IN_FAMILY("E_MIF", BAD_REQUEST, "패밀리댕에 이미 속해 있는 사용자입니다."),
+    MEMBER_HAVE_DOG("E_MHD", BAD_REQUEST, "강아지를 소유하고 있다면 패밀리댕에 가입할 수 없습니다."),
+    INVALID_INVITE_CODE("E_IIC", BAD_REQUEST, "유효하지 않은 초대 코드입니다."),
+    MEMBER_NOT_FAMILY_BOSS("E_MFB", BAD_REQUEST, "패밀리댕 대표가 아닌 사용자입니다."),
+    SELF_REMOVE_NOT_ALLOWED("E_SRA", BAD_REQUEST, "본인을 추방할 수 없습니다."),
+    INVALID_FAMILY_MEMBER("E_IFM", BAD_REQUEST, "잘못된 패밀리댕 사용자입니다."),
+    INVALID_ACTION_FAMILY_BOSS("E_IAF", BAD_REQUEST, "패밀리댕 대표는 할 수 없습니다."),
+
+    //Chat
+    CHATROOM_NOT_FOUND("E_CNF", NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
+    CHATMEMBER_NOT_IN_CHATROOM("E_CNC", BAD_REQUEST, "해당 채팅방을 찾을 수 없습니다."),
+
 
     // S3
     FILE_UPLOAD_FAIL("E_FUF", BAD_REQUEST, "파일 업로드에 실패하였습니다."),
@@ -66,6 +81,11 @@ public enum ErrorCode {
     NOTIFICATION_SETTINGS_NOT_FOUND("E_NSNF", NOT_FOUND, "알림 설정을 찾을 수 없습니다."),
     INVALID_NOTIFICATION_TYPE("E_INT", BAD_REQUEST, "알림 타입은 반드시 CHAT, FRIEND, WALK 중 하나여야 합니다."),
     INVALID_IS_AGREED("E_IIA", BAD_REQUEST, "isAgreed는 반드시 TRUE 혹은 FALSE여야 합니다."),
+
+    //Friend
+    MEMBER_ID_NULL("E_MNU", BAD_REQUEST, "memberId 는 필수 값 입니다."),
+    DECISION_NULL("E_DNU", BAD_REQUEST, "ACCEPT 혹은 DENY 필수 입니다."),
+    NOT_A_FRIEND("E_NAF", BAD_REQUEST, "친구가 아닙니다."),
 
     //WebSocket
     EMPTY_ACCESSOR_HEADER("E_EAH", NOT_FOUND, "Accessor Header 를 찾을 수 없습니다."),

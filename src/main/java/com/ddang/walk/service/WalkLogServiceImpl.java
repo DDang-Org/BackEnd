@@ -11,7 +11,6 @@ import com.ddang.member.repository.MemberRepository;
 import com.ddang.walk.entity.Walk;
 import com.ddang.walk.entity.WalkDog;
 import com.ddang.walk.repository.WalkDogRepository;
-import com.ddang.walk.repository.WalkRepository;
 import com.ddang.walk.service.response.log.WalkLogByFamilyResponse;
 import com.ddang.walk.service.response.log.WalkLogResponse;
 import com.ddang.walk.service.response.log.WalkStaticsResponse;
@@ -35,7 +34,6 @@ public class WalkLogServiceImpl implements WalkLogService{
     private final MemberDogRepository memberDogRepository;
     private final MemberRepository memberRepository;
     private final WalkDogRepository walkDogRepository;
-    private final WalkRepository walkRepository;
     private final DogRepository dogRepository;
 
     @Override
