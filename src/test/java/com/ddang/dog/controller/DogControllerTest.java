@@ -164,7 +164,7 @@ class DogControllerTest extends ApiTestSupport {
         response.add(dogResponse);
 
         //when
-        given(dogService.getDogsByMember(any(Member.class)))
+        given(dogService.getDogsByMember(eq(member.getMemberId())))
                 .willReturn(response);
 
         //then
