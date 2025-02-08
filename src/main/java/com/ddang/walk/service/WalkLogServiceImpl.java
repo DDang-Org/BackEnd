@@ -34,7 +34,6 @@ public class WalkLogServiceImpl implements WalkLogService{
     private final MemberDogRepository memberDogRepository;
     private final MemberRepository memberRepository;
     private final WalkDogRepository walkDogRepository;
-    private final WalkRepository walkRepository;
     private final DogRepository dogRepository;
 
     @Override
