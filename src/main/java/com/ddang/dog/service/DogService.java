@@ -19,7 +19,7 @@ public interface DogService {
 
     void deleteDog(Long dogId, Member member);
 
-    List<DogResponse> getDogsByMember(Member member);
+    List<DogResponse> getDogsByMember(Long memberId);
 
     DogWalkResponse dogWalk(Member member, Long dogId);
 }

@@ -81,6 +81,11 @@ public enum ErrorCode {
     INVALID_NOTIFICATION_TYPE("E_INT", BAD_REQUEST, "알림 타입은 반드시 CHAT, FRIEND, WALK 중 하나여야 합니다."),
     INVALID_IS_AGREED("E_IIA", BAD_REQUEST, "isAgreed는 반드시 TRUE 혹은 FALSE여야 합니다."),
 
+    //Friend
+    MEMBER_ID_NULL("E_MNU", BAD_REQUEST, "memberId 는 필수 값 입니다."),
+    DECISION_NULL("E_DNU", BAD_REQUEST, "ACCEPT 혹은 DENY 필수 입니다."),
+    NOT_A_FRIEND("E_NAF", BAD_REQUEST, "친구가 아닙니다."),
+
     //WebSocket
     EMPTY_ACCESSOR_HEADER("E_EAH", NOT_FOUND, "Accessor Header 를 찾을 수 없습니다."),
 

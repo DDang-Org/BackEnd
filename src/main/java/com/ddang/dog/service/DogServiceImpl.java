@@ -98,8 +98,8 @@ public class DogServiceImpl implements DogService {
         // TODO 산책 내역 삭제하기
     }
 
-    public List<DogResponse> getDogsByMember(Member member) {
-        List<MemberDog> memberDogs = memberDogRepository.findAllByMember(member.getMemberId());
+    public List<DogResponse> getDogsByMember(Long memberId) {
+        List<MemberDog> memberDogs = memberDogRepository.findAllByMember(memberId);
 
         return memberDogs.stream()
                 .map(memberDog -> DogResponse.from(memberDog.getDog()))

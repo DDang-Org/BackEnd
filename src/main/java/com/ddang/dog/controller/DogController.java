@@ -72,7 +72,15 @@ public class DogController {
     @Operation(summary = "내 반려견 조회", description = "반려견을 조회합니다.")
     @SwaggerExceptionResponse({DOG_NOT_FOUND, MEMBER_NOT_FOUND})
     public ApiResponse<List<DogResponse>> getMyDogs(@AuthenticationPrincipal CustomOAuth2User customOAuth2User){
-        List<DogResponse> responses = dogService.getDogsByMember(customOAuth2User.getMember());
+        List<DogResponse> responses = dogService.getDogsByMember(customOAuth2User.getMember().getMemberId());
+        return ApiResponse.ok(responses);
+    }
+
+    @GetMapping("/member/{memberId}")
+    @Operation(summary = "타인의 반려견 조회", description = "타인의 반려견을 조회합니다.")
+    @SwaggerExceptionResponse({DOG_NOT_FOUND, MEMBER_NOT_FOUND})
+    public ApiResponse<List<DogResponse>> getOtherDogs(@PathVariable Long memberId){
+        List<DogResponse> responses = dogService.getDogsByMember(memberId);
         return ApiResponse.ok(responses);
     }
 
