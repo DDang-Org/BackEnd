@@ -78,6 +78,8 @@ public enum ErrorCode {
     ALREADY_PROPOSAL("E_ALP", BAD_REQUEST,"이미 다른 견주분에게 산책을 제안을 하신 상태 입니다."),
     ALREADY_MATCHED_MEMBER("E_AMM", BAD_REQUEST,"이미 산책 매칭이 된 유저 입니다."),
     ABNORMAL_WALK("E_ABW", BAD_REQUEST,"산책이 정상적으로 이루어지지 않았습니다."),
+    EMPTY_DOG_ID("E_EDI", BAD_REQUEST, "dogId 는 필수 값 입니다."),
+    NOT_FOUND_WALKING_DOG("E_NFW", NOT_FOUND, "산책한 강아지들을 찾을 수 없습니다."),
 
     // Redis
     REDIS_DATA_SIZE_EXCEEDED_ERROR("E_REDIS", BAD_REQUEST, "Redis에 저장할 데이터 크기가 허용치를 초과했습니다."),
