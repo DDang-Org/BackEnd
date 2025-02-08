@@ -3,7 +3,7 @@ package com.ddang.dog.repository;
 import com.ddang.dog.entity.Dog;
 import com.ddang.dog.entity.MemberDog;
 import com.ddang.member.entity.Member;
-import com.ddang.walk.service.response.walk.MemberNearbyInfo;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -50,18 +50,5 @@ public interface MemberDogRepository extends JpaRepository<MemberDog, Long> {
             WHERE md.member.email = :email
             AND md.isDeleted = 'FALSE'
             """)
-    Optional<MemberDog> findMemberDogByMemberEmail(@Param("email") String email);
-
-    @Query("""
-            SELECT new com.ddang.walk.service.response.walk.MemberNearbyInfo
-            (d.dogId, d.breed, d.name,d.profileImg, d.walkCount, m.memberId, d.birthDate, d.gender, m.isMatched, m.email) 
-            FROM MemberDog md  
-            JOIN md.dog d  
-            JOIN md.member m  
-            WHERE md.member.email  
-            IN :emails
-            """)
-    List<MemberNearbyInfo> findDogsAndMembersByMemberEmails(@Param("emails") List<String> emails);
-
-
+    List<MemberDog> findMemberDogByMemberEmail(@Param("email") String email, Pageable pageable);
 }

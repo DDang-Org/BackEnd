@@ -1,10 +1,12 @@
 package com.ddang.walk.controller;
 
 import com.ddang.global.api.ApiResponse;
+import com.ddang.global.exception.BadRequestException;
 import com.ddang.global.exception.ErrorCode;
 import com.ddang.global.exception.annotation.SwaggerExceptionResponse;
 import com.ddang.member.oauth2.CustomOAuth2User;
 import com.ddang.walk.controller.request.CompleteWalkRequest;
+import com.ddang.walk.controller.request.StartWalkRequest;
 import com.ddang.walk.service.WalkService;
 import com.ddang.walk.service.response.walk.CompleteWalkResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,13 +16,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/walk")
@@ -29,6 +29,17 @@ import java.io.IOException;
 public class WalkController {
 
     private final WalkService walkService;
+
+    @Operation(summary = "산책 시작", description = "산책할 강아지들을 선택 후 산책을 시작합니다.")
+    @SwaggerExceptionResponse({ErrorCode.WALK_METER_NOT_NULL, ErrorCode.WALK_TIME_NOT_NULL, ErrorCode.ZERO_WALK_TIME, ErrorCode.ZERO_WALK_METER})
+    @PostMapping("/start")
+    public ApiResponse<Void> startWalk(@AuthenticationPrincipal CustomOAuth2User oAuth2User,
+                                       @RequestBody @Valid StartWalkRequest startWalkRequest) throws IOException {
+
+        walkService.startWalk(oAuth2User.getMember(), startWalkRequest.toService().dogIds());
+
+        return ApiResponse.noContent();
+    }
 
     @Operation(
             summary = "산책 완료",
