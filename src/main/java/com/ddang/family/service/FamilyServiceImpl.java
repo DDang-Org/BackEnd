@@ -12,6 +12,7 @@ import com.ddang.global.exception.BadRequestException;
 import com.ddang.global.exception.ErrorCode;
 import com.ddang.member.entity.Member;
 import com.ddang.member.repository.MemberRepository;
+import com.ddang.walk.repository.WalkRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -34,7 +36,7 @@ public class FamilyServiceImpl implements FamilyService {
     private final FamilyRepository familyRepository;
     private final MemberDogRepository memberDogRepository;
     private final DogRepository dogRepository;
-    // private final WalkRepository walkRepository; // 추후 구현 예정
+    private final WalkRepository walkRepository;
 
     @Override
     public InviteCodeResponse createInviteCode(Member member) {
@@ -103,12 +105,21 @@ public class FamilyServiceImpl implements FamilyService {
         Family family = currentMember.getFamily();
 
         List<Member> familyMembers = memberRepository.findAllByFamily(family);
+        List<Object[]> results = walkRepository.countWalksByMembers(familyMembers);
+
+        Map<Long, Integer> walkCountMap = results.stream()
+                .collect(Collectors.toMap(
+                        result -> (Long) result[0],
+                        result -> ((Long) result[1]).intValue()
+                ));
+
         return familyMembers.stream()
                 .map(m -> {
                     boolean isRepresent = family.getRepresentativeMemberId().equals(m.getMemberId());
-                    return FamilyMemberResponse.of(m, isRepresent);
+                    int walkCount = walkCountMap.getOrDefault(m.getMemberId(), 0);
+                    return FamilyMemberResponse.of(m, walkCount, isRepresent);
                 })
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
