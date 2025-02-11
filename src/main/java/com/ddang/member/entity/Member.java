@@ -60,7 +60,8 @@ public class Member extends BaseEntity {
     private Role role;
 
     @Builder
-    public Member(String name, String email, String address, int profileImg, Gender gender, LocalDate birthDate, FamilyRole familyRole, IsMatched isMatched, Family family, Provider provider, Role role) {
+    public Member(Long memberId, String name, String email, String address, int profileImg, Gender gender, LocalDate birthDate, FamilyRole familyRole, IsMatched isMatched, Family family, Provider provider, Role role) {
+        this.memberId = memberId;
         this.name = name;
         this.email = email;
         this.address = address;
