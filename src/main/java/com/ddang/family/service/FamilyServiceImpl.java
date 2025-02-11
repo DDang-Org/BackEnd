@@ -12,6 +12,7 @@ import com.ddang.global.exception.BadRequestException;
 import com.ddang.global.exception.ErrorCode;
 import com.ddang.member.entity.Member;
 import com.ddang.member.repository.MemberRepository;
+import com.ddang.walk.repository.WalkDogRepository;
 import com.ddang.walk.repository.WalkRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ public class FamilyServiceImpl implements FamilyService {
     private final MemberDogRepository memberDogRepository;
     private final DogRepository dogRepository;
     private final WalkRepository walkRepository;
+    private final WalkDogRepository walkDogRepository;
 
     @Override
     public InviteCodeResponse createInviteCode(Member member) {
@@ -81,7 +83,6 @@ public class FamilyServiceImpl implements FamilyService {
 
         List<Dog> dogs = dogRepository.findAllByFamilyId(family.getFamilyId());
         List<Long> dogIds = dogs.stream().map(Dog::getDogId).toList();
-        // TODO : 임시로 빈 맵을 반환
         Map<Long, Integer> totalDistances = getTotalDistancesByDogIds(dogIds);
 
         return dogs.stream()
@@ -193,8 +194,15 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     private Map<Long, Integer> getTotalDistancesByDogIds(List<Long> dogIds) {
-        // TODO: walkRepository 구현 후 수정
-        return Collections.emptyMap();
+        if (dogIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Object[]> results = walkDogRepository.findTotalDistanceByDogIds(dogIds);
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (Long) result[0],
+                        result -> ((Long) result[1]).intValue()
+                ));
     }
 
     public int calculateCalorie(BigDecimal weight, int totalDistance) {
