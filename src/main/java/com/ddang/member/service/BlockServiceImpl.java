@@ -3,6 +3,7 @@ package com.ddang.member.service;
 import com.ddang.global.exception.BlockException;
 import com.ddang.global.exception.ErrorCode;
 import com.ddang.global.exception.MemberException;
+import com.ddang.global.service.RedisService;
 import com.ddang.member.entity.Block;
 import com.ddang.member.entity.Member;
 import com.ddang.member.repository.BlockRepository;
@@ -18,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.ddang.global.service.RedisKey.BLOCK_LIST_KEY;
+import static com.ddang.global.service.RedisKey.WALK_DOG_KEY;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -26,6 +30,7 @@ public class BlockServiceImpl implements BlockService {
 
     private final MemberRepository memberRepository;
     private final BlockRepository blockRepository;
+    private final RedisService redisService;
 
     @Override
     public BlockResponse createBlock(Long blockerId, Long blockedId) {
@@ -33,6 +38,7 @@ public class BlockServiceImpl implements BlockService {
         Member blocked = findMemberById(blockedId);
 
         validateBlockRequest(blocker, blocked);
+        saveBlockedMemberIfWalking(blocker.getEmail(), blocked.getEmail());
 
         Block newBlock = Block.of(blocker, blocked);
         blockRepository.save(newBlock);
@@ -78,5 +84,11 @@ public class BlockServiceImpl implements BlockService {
             return false;
         }
         return blocker.getFamily().getFamilyId().equals(blocked.getFamily().getFamilyId());
+    }
+
+    private void saveBlockedMemberIfWalking(String email, String blockedEmail){
+        if(redisService.checkHasKey(WALK_DOG_KEY + email)){ // 산책 중인 멤버가 차단 한 경우
+            redisService.setListValues(BLOCK_LIST_KEY + email,blockedEmail);
+        }
     }
 }
