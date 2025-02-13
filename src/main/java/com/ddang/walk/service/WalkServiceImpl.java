@@ -9,8 +9,10 @@ import com.ddang.global.exception.ErrorCode;
 import com.ddang.global.exception.NotFoundException;
 import com.ddang.global.service.RedisService;
 import com.ddang.global.service.S3Service;
+import com.ddang.member.entity.Block;
 import com.ddang.member.entity.Member;
 import com.ddang.member.entity.WalkWithMember;
+import com.ddang.member.repository.BlockRepository;
 import com.ddang.member.repository.WalkWithMemberRepository;
 import com.ddang.walk.entity.Walk;
 import com.ddang.walk.entity.WalkDog;
@@ -27,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ddang.global.exception.ErrorCode.DOG_NOT_FOUND;
@@ -43,6 +46,7 @@ public class WalkServiceImpl implements WalkService{
     private final MemberDogRepository memberDogRepository;
     private final WalkDogRepository walkDogRepository;
     private final WalkWithMemberRepository walkWithMemberRepository;
+    private final BlockRepository blockRepository;
     private final S3Service s3Service;
 
     private final static String WALK_ROUTE_DIR = "walk";
@@ -52,8 +56,12 @@ public class WalkServiceImpl implements WalkService{
     public void startWalk(Member member, List<Long> dogIds) {
         Dog dog = getDogFromDogIdAndMemberId(dogIds.get(0), member.getMemberId());
         DogResponse dogResponse = DogResponse.from(dog);
+
+        List<String> blockEmail = getBlogEamilsByMember(member);
+
         redisService.writeHash(WALK_DOG_KEY + member.getEmail(), dogResponse); // redis 에 response 객체 저장
         dogIds.stream().forEach(dogId -> redisService.setListValues(WALK_DOG_LIST_KEY + member.getEmail(), dogId)); // redis 에 id 를 list 형태로 저장
+        blockEmail.stream().forEach(email -> redisService.setListValues(BLOCK_LIST_KEY + member.getEmail(), email)); // redis 에 email 을 list 형태로 저장
     }
 
     @Override
@@ -147,5 +155,24 @@ public class WalkServiceImpl implements WalkService{
         redisService.deleteValues(WALK_DOG_KEY + email);
         redisService.deleteValues(WALK_DOG_LIST_KEY + email);
 
+    }
+
+    private List<String> getBlogEamilsByMember(Member member){
+        List<Block> allByBlocker = blockRepository.findAllByBlocker(member);
+        List<Block> allByBlocked = blockRepository.findAllByBlocked(member);
+
+        List<String> blockedEmails = allByBlocker.stream()
+                .map(block -> block.getBlocked().getEmail())
+                .toList();
+
+        List<String> blockerEmails = allByBlocked.stream()
+                .map(block -> block.getBlocker().getEmail())
+                .toList();
+
+        List<String> blockEmails = new ArrayList<>();
+        blockEmails.addAll(blockedEmails);
+        blockEmails.addAll(blockerEmails);
+
+        return blockEmails;
     }
 }

@@ -66,6 +66,11 @@ public class RedisService {
         return listOperations.range(key, 0, -1);
     }
 
+    public List<String> getStringListOpsValues(String key){
+        ListOperations<String, String> listOperations = redisTemplate.opsForList();
+        return listOperations.range(key, 0, -1);
+    }
+
     public void deleteValues(String key) {
         if(Boolean.FALSE.equals(redisTemplate.delete(key))){
             throw new RedisException(ErrorCode.REDIS_DATA_DELETE_ERROR);

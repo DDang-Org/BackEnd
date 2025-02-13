@@ -152,6 +152,7 @@ public class WalkLocationServiceImpl implements WalkLocationService {
 
     private List<String> getEmailListFromNearbyMemberResults(GeoResults<RedisGeoCommands.GeoLocation<String>> results, String email){
         List<String> memberEmailList = new ArrayList<>();
+        List<String> blockEmails = getBlockEmailsFromRedis(email);
 
         for(GeoResult<RedisGeoCommands.GeoLocation<String>> result : results) {
             RedisGeoCommands.GeoLocation<String> location = result.getContent();
@@ -162,6 +163,7 @@ public class WalkLocationServiceImpl implements WalkLocationService {
             }
         }
 
+        memberEmailList.removeAll(blockEmails);
         return memberEmailList;
     }
 
@@ -184,6 +186,12 @@ public class WalkLocationServiceImpl implements WalkLocationService {
             throw new BadRequestException(ALREADY_MATCHED_MEMBER);
         }
 
+    }
+
+    private List<String> getBlockEmailsFromRedis(String email){
+        List<String> blockEmails = redisService.getStringListOpsValues(BLOCK_LIST_KEY + email);
+
+        return blockEmails;
     }
 
 

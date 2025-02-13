@@ -22,4 +22,7 @@ public interface BlockRepository extends JpaRepository<Block, Long> {
 
     @EntityGraph(attributePaths = {"blocker"})
     List<Block> findAllByBlocked(Member blocked);
+
+    @EntityGraph(attributePaths = {"blocked"})
+    List<Block> findAllByBlocker(Member blocker);
 }
