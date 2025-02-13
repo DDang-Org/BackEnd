@@ -154,7 +154,7 @@ public class WalkServiceImpl implements WalkService{
         redisService.deleteGeoValues(POINT_KEY, email);
         redisService.deleteValues(WALK_DOG_KEY + email);
         redisService.deleteValues(WALK_DOG_LIST_KEY + email);
-
+        redisService.deleteValues(BLOCK_LIST_KEY + email);
     }
 
     private List<String> getBlogEamilsByMember(Member member){
