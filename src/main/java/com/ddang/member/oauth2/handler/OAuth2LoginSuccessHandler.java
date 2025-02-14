@@ -45,7 +45,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         log.info("GUEST 상태 - 추가 정보 입력 페이지로 리디렉션");
 
         // email과 provider 정보를 객체로 묶어서 리디렉션
-        String redirectUrl = "https://ddang.pages.dev/register?email=" + member.getEmail() + "&provider=" + member.getProvider().name();
+        String redirectUrl = "https://ddang.site.dev/register?email=" + member.getEmail() + "&provider=" + member.getProvider().name();
         log.info("Redirecting to: {}", redirectUrl);
 
         // 리디렉션
@@ -60,7 +60,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 
         // 사용자가 로그인 성공 시 홈 페이지로 리디렉션
-        response.sendRedirect("https://ddang.pages.dev/?accessToken=" + accessToken);
+        response.sendRedirect("https://ddang.site.dev/?accessToken=" + accessToken);
     }
 }
 
