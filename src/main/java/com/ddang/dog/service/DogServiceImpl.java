@@ -53,7 +53,6 @@ public class DogServiceImpl implements DogService {
     @Transactional
     public DogResponse createDog(CreateDogServiceRequest request, Member member, MultipartFile profileImgFile) throws IOException {
         validateRepresentativeMember(member);
-
         throwIfExceedsMaxLimit(member);
 
         String profileImg = getProfileImgUrlOrElseGetNull(profileImgFile);
@@ -76,7 +75,6 @@ public class DogServiceImpl implements DogService {
     @Transactional
     public DogResponse updateDog(UpdateDogServiceRequest request, Long dogId, Member member, MultipartFile profileImgFile) throws IOException {
         validateRepresentativeMember(member);
-
 
         MemberDog memberDog = memberDogRepository.findByDogIdAndMemberId(dogId, member.getMemberId())
                 .orElseThrow(() -> new BadRequestException(ErrorCode.MEMBER_NOT_HAVE_DOG));
