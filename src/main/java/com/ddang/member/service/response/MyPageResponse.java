@@ -31,11 +31,14 @@ public record MyPageResponse(
         FamilyRole familyRole,
 
         @Schema(description = "회원 프로필 이미지 URL", example = "https://example.com/profile.jpg")
-        int memberProfileImg
+        int memberProfileImg,
 
-        // TODO : 패밀리댕 대표 필드 추가
+        @Schema(description = "패밀리댕 대표 여부", example = "true")
+        boolean isRepresentative
 ) {
     public static MyPageResponse from(Member member) {
+        boolean isRepresentative = member.getFamily() != null
+                && member.getFamily().getRepresentativeMemberId().equals(member.getMemberId());
         return new MyPageResponse(
                 member.getMemberId(),
                 member.getName(),
@@ -44,7 +47,8 @@ public record MyPageResponse(
                 member.getGender(),
                 member.getBirthDate(),
                 member.getFamilyRole(),
-                member.getProfileImg()
+                member.getProfileImg(),
+                isRepresentative
         );
     }
 }
