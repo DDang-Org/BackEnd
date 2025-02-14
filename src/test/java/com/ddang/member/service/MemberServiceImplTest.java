@@ -181,13 +181,31 @@ class MemberServiceImplTest {
     }
 
     @Test
-    @DisplayName("회원 정보 조회 테스트")
-    void getMemberInfoTest() {
+    @DisplayName("내 정보 조회 테스트")
+    void getMyInfoTest() {
         // given
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
 
         // when
-        MyPageResponse response = memberService.getMemberInfo(1L);
+        MyPageResponse response = memberService.getMyInfo(1L);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.memberName()).isEqualTo("홍길동");
+        assertThat(response.email()).isEqualTo("test@naver.com");
+
+        // verify
+        verify(memberRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    @DisplayName("특정 정보 조회 테스트")
+    void getMemberInfoWithIdTest() {
+        // given
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+
+        // when
+        MemberPageResponse response = memberService.getMemberInfo(1L);
 
         // then
         assertThat(response).isNotNull();
@@ -262,7 +280,7 @@ class MemberServiceImplTest {
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
 
         UpdateServiceRequest updateRequest = new UpdateServiceRequest(
-                "김철수", Gender.MALE, "부산시 해운대구", FamilyRole.ELDER_BROTHER, 2);
+                "김철수", Gender.MALE, LocalDate.of(1990, 1, 1), "부산시 해운대구", FamilyRole.BROTHER, 2);
 
         // when
         UpdateResponse response = memberService.updateMember(1L, updateRequest);
@@ -271,7 +289,7 @@ class MemberServiceImplTest {
         assertThat(response.memberName()).isEqualTo("김철수");
         assertThat(response.memberGender()).isEqualTo(Gender.MALE);
         assertThat(response.address()).isEqualTo("부산시 해운대구");
-        assertThat(response.familyRole()).isEqualTo(FamilyRole.ELDER_BROTHER);
+        assertThat(response.familyRole()).isEqualTo(FamilyRole.BROTHER);
         assertThat(response.memberProfileImg()).isEqualTo(2);
 
         // verify
