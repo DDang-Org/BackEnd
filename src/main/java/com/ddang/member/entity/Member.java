@@ -107,12 +107,4 @@ public class Member extends BaseEntity {
         this.profileImg = profileImg;
     }
 
-    public boolean isNotRepresentativeFamilyMember(){
-        if(this.getFamily().getRepresentativeMemberId() != this.getMemberId()){
-            return true;
-        }
-
-        return false;
-    }
-
 }

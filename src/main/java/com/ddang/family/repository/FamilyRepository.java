@@ -16,4 +16,7 @@ public interface FamilyRepository extends JpaRepository<Family, Long> {
           AND f.isDeleted = 'FALSE'
     """)
     Optional<Family> findActiveById(@Param("id") Long id);
+
+   boolean existsByRepresentativeMemberIdAndIsDeleted_True(Long memberId);
+
 }

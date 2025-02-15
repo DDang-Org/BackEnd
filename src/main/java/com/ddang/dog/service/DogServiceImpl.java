@@ -33,6 +33,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Slf4j
@@ -182,14 +183,14 @@ public class DogServiceImpl implements DogService {
         }
     }
 
-    private void throwIfOnlyOneDogExists(Member member){
-        if(memberDogRepository.countAllByMember(member) == 1){
-            throw new BadRequestException(ErrorCode.FAMILY_MUST_HAVE_ONE_DOG);
-        }
-    }
+//    private void throwIfOnlyOneDogExists(Member member){
+//        if(memberDogRepository.countAllByMember(member) == 1){
+//            throw new BadRequestException(ErrorCode.FAMILY_MUST_HAVE_ONE_DOG);
+//        }
+//    }
 
     private void validateRepresentativeMember(Member member){
-        if(member.isNotRepresentativeFamilyMember()){
+        if(!familyRepository.existsByRepresentativeMemberIdAndIsDeleted_True(member.getMemberId())){
             throw new BadRequestException(ErrorCode.MEMBER_NOT_FAMILY_BOSS);
         }
     }
