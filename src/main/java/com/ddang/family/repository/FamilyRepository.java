@@ -18,6 +18,10 @@ public interface FamilyRepository extends JpaRepository<Family, Long> {
     """)
     Optional<Family> findActiveById(@Param("id") Long id);
 
+
+   boolean existsByRepresentativeMemberIdAndIsDeleted_True(Long memberId);
+
+
     @Modifying
     @Query("""
             UPDATE Family f
@@ -25,4 +29,5 @@ public interface FamilyRepository extends JpaRepository<Family, Long> {
             WHERE f.familyId = :familyId
             """)
     void softDeleteById(@Param("familyId") Long familyId);
+
 }

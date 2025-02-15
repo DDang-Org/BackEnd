@@ -111,12 +111,5 @@ public class Member extends BaseEntity {
         this.birthDate = birthDate;
     }
 
-    public boolean isNotRepresentativeFamilyMember(){
-        if(this.getFamily().getRepresentativeMemberId() != this.getMemberId()){
-            return true;
-        }
-
-        return false;
-    }
 
 }
