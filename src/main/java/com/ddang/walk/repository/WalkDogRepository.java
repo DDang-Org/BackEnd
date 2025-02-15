@@ -89,4 +89,11 @@ public interface WalkDogRepository extends JpaRepository<WalkDog, Long> {
                                     @Param("date") LocalDate date,
                                     @Param("dogId") Long dogId);
 
+ @Query("""
+    SELECT wd.dog.dogId, SUM(w.totalDistance) 
+    FROM WalkDog wd JOIN wd.walk w 
+    WHERE wd.dog.dogId IN :dogIds 
+    GROUP BY wd.dog.dogId
+    """)
+ List<Object[]> findTotalDistanceByDogIds(@Param("dogIds") List<Long> dogIds);
 }

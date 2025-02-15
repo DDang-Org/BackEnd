@@ -50,7 +50,7 @@ public class DogController {
                             schema = @Schema(type = "string", format = "binary") ) }
     )
     @SwaggerExceptionResponse({DOG_NOT_FOUND, OVER_MAX_DOG, NAME_NOT_NULL, NAME_EXCEED, BREED_NOT_NULL, DATE_MUST_BE_PAST_OR_PRESENT, WEIGHT_MINIMUM, WEIGHT_MAXIMUM,
-            WEIGHT_DECIMAL_LIMIT,GENDER_REQUIRED,NEUTERING_REQUIRED,COMMENT_SIZE_EXCEED, MEMBER_NOT_FOUND, DOG_ALREADY_OWNED})
+            WEIGHT_DECIMAL_LIMIT,GENDER_REQUIRED,NEUTERING_REQUIRED,COMMENT_SIZE_EXCEED, MEMBER_NOT_FOUND, DOG_ALREADY_OWNED, MEMBER_NOT_FAMILY_BOSS})
     public ApiResponse<DogResponse> createDog(
             @RequestPart @Valid CreateDogRequest request,
             @RequestPart(required = false) MultipartFile profileImgFile,
@@ -102,7 +102,7 @@ public class DogController {
                             schema = @Schema(type = "string", format = "binary") ) }
     )
     @SwaggerExceptionResponse({DOG_NOT_FOUND, OVER_MAX_DOG, NAME_NOT_NULL, NAME_EXCEED, BREED_NOT_NULL, DATE_MUST_BE_PAST_OR_PRESENT, WEIGHT_MINIMUM, WEIGHT_MAXIMUM,
-            WEIGHT_DECIMAL_LIMIT,GENDER_REQUIRED,NEUTERING_REQUIRED,COMMENT_SIZE_EXCEED, MEMBER_NOT_FOUND, DOG_ALREADY_OWNED})
+            WEIGHT_DECIMAL_LIMIT,GENDER_REQUIRED,NEUTERING_REQUIRED,COMMENT_SIZE_EXCEED, MEMBER_NOT_FOUND, DOG_ALREADY_OWNED, MEMBER_NOT_FAMILY_BOSS})
     public ApiResponse<DogResponse> updateDog(
             @PathVariable Long dogId,
             @RequestPart @Valid UpdateDogRequest request,
@@ -116,7 +116,7 @@ public class DogController {
 
     @DeleteMapping("/{dogId}")
     @Operation(summary = "반려견 삭제", description = "반려견을 삭제합니다.")
-    @SwaggerExceptionResponse({MEMBER_NOT_FOUND, FAMILY_MUST_HAVE_ONE_DOG})
+    @SwaggerExceptionResponse({MEMBER_NOT_FOUND, MEMBER_NOT_FAMILY_BOSS})
     public ApiResponse<Void> deleteDog(
             @PathVariable Long dogId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
