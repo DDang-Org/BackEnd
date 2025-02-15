@@ -53,11 +53,12 @@ public class DogServiceImpl implements DogService {
 
     @Transactional
     public DogResponse createDog(CreateDogServiceRequest request, Member member, MultipartFile profileImgFile) throws IOException {
+        createFamilyIfNotExists(member);
         validateRepresentativeMember(member);
         throwIfExceedsMaxLimit(member);
 
         String profileImg = getProfileImgUrlOrElseGetNull(profileImgFile);
-        createFamilyIfNotExists(member);
+
         Dog dog = request.toEntity(profileImg, member.getFamily());
         List<MemberDog> memberDog = assignDogToFamilyMembers(member, dog);
 
