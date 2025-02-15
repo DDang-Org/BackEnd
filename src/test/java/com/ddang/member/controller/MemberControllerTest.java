@@ -36,6 +36,7 @@ import static com.ddang.member.entity.IsMatched.TRUE;
 import static com.ddang.member.entity.Provider.KAKAO;
 import static com.ddang.member.entity.Role.USER;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -137,7 +138,7 @@ public class MemberControllerTest {
 
         MyPageResponse dummyResponse = MyPageResponse.from(dummyMember);
 
-        when(memberService.getMemberInfo(1L)).thenReturn(dummyResponse);
+        when(memberService.getMyInfo(1L)).thenReturn(dummyResponse);
 
         // when & then
         mockMvc.perform(get("/api/v1/member")
@@ -161,7 +162,7 @@ public class MemberControllerTest {
         Member dummyMember = setMemberToSecurity();
         ReflectionTestUtils.setField(dummyMember, "memberId", 1L);
 
-        MyPageResponse dummyResponse = MyPageResponse.from(dummyMember);
+        MemberPageResponse dummyResponse = MemberPageResponse.from(dummyMember);
 
         when(memberService.getMemberInfo(1L)).thenReturn(dummyResponse);
 
@@ -245,6 +246,7 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.data.memberId").value(1))
                 .andExpect(jsonPath("$.data.memberName").value("홍길동"))
                 .andExpect(jsonPath("$.data.memberGender").value("MALE"))
+                .andExpect(jsonPath("$.data.memberBirthDate").value("1990-01-01"))
                 .andExpect(jsonPath("$.data.address").value("서울시 강남구"))
                 .andExpect(jsonPath("$.data.familyRole").value("FATHER"))
                 .andExpect(jsonPath("$.data.memberProfileImg").value(1));
@@ -261,6 +263,7 @@ public class MemberControllerTest {
         UpdateServiceRequest updateServiceRequest = new UpdateServiceRequest(
                 "홍길순",
                 FEMALE,
+                LocalDate.of(1990, 1, 1),
                 "서울시 강북구",
                 MOTHER,
                 2
@@ -269,6 +272,7 @@ public class MemberControllerTest {
                 1L,
                 "홍길순",
                 FEMALE,
+                LocalDate.of(1990, 1, 1),
                 "서울시 강북구",
                 MOTHER,
                 2
@@ -285,10 +289,30 @@ public class MemberControllerTest {
                 .andExpect(jsonPath("$.data.memberId").value(1))
                 .andExpect(jsonPath("$.data.memberName").value("홍길순"))
                 .andExpect(jsonPath("$.data.memberGender").value("FEMALE"))
+                .andExpect(jsonPath("$.data.memberBirthDate").value("1990-01-01"))
                 .andExpect(jsonPath("$.data.address").value("서울시 강북구"))
                 .andExpect(jsonPath("$.data.familyRole").value("MOTHER"))
                 .andExpect(jsonPath("$.data.memberProfileImg").value(2));
     }
+
+    @Test
+    @DisplayName("회원 탈퇴 테스트")
+    @WithMockUser
+    void deleteMemberTest() throws Exception {
+        // given
+        Member dummyMember = setMemberToSecurity();
+
+        // when & then
+        mockMvc.perform(delete("/api/v1/member/delete")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("회원 삭제 완료"));
+
+        // verify
+        verify(memberService).deleteMember(dummyMember);
+    }
+
 
     private Member setMemberToSecurity() {
         Member member = Member.builder()

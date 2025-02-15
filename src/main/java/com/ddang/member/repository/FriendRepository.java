@@ -34,4 +34,10 @@ public interface FriendRepository  extends JpaRepository<Friend, Long> {
 """)
     boolean existsBySenderAndReceiver(@Param("sender") Member sender, @Param("receiver") Member receiver);
 
+    @Modifying
+    @Query("""
+            DELETE FROM Friend f
+            WHERE f.sender.memberId = :memberId OR f.receiver.memberId = :memberId
+            """)
+    void deleteByMemberId(Long memberId);
 }

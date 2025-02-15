@@ -36,7 +36,7 @@ class MemberRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        family = Family.create();
+        family = Family.create(1L);
         testEntityManager.persist(family);
 
         member = Member.builder()
