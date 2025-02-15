@@ -106,4 +106,13 @@ public class Member extends BaseEntity {
     public void updateProfileImg(int profileImg) {
         this.profileImg = profileImg;
     }
+
+    public boolean isNotRepresentativeFamilyMember(){
+        if(this.getFamily().getRepresentativeMemberId() != this.getMemberId()){
+            return true;
+        }
+
+        return false;
+    }
+
 }

@@ -52,8 +52,7 @@ public class DogServiceImpl implements DogService {
 
     @Transactional
     public DogResponse createDog(CreateDogServiceRequest request, Member member, MultipartFile profileImgFile) throws IOException {
-        // TODO : 패밀리장인지 유효성 검사
-
+        validateRepresentativeMember(member);
         throwIfExceedsMaxLimit(member);
 
         String profileImg = getProfileImgUrlOrElseGetNull(profileImgFile);
@@ -75,7 +74,7 @@ public class DogServiceImpl implements DogService {
 
     @Transactional
     public DogResponse updateDog(UpdateDogServiceRequest request, Long dogId, Member member, MultipartFile profileImgFile) throws IOException {
-        // TODO : 패밀리장인지 유효성 검사
+        validateRepresentativeMember(member);
 
         MemberDog memberDog = memberDogRepository.findByDogIdAndMemberId(dogId, member.getMemberId())
                 .orElseThrow(() -> new BadRequestException(ErrorCode.MEMBER_NOT_HAVE_DOG));
@@ -89,13 +88,13 @@ public class DogServiceImpl implements DogService {
 
     @Transactional
     public void deleteDog(Long dogId, Member member) {
-        // TODO : 패밀리장인지 유효성 검사
-        throwIfOnlyOneDogExists(member);
+        validateRepresentativeMember(member);
+
+        //throwIfOnlyOneDogExists(member);
 
         memberDogRepository.softDeleteByDogId(dogId);
 
         dogRepository.softDeleteById(dogId);
-        // TODO 산책 내역 삭제하기
     }
 
     public List<DogResponse> getDogsByMember(Long memberId) {
@@ -186,6 +185,12 @@ public class DogServiceImpl implements DogService {
     private void throwIfOnlyOneDogExists(Member member){
         if(memberDogRepository.countAllByMember(member) == 1){
             throw new BadRequestException(ErrorCode.FAMILY_MUST_HAVE_ONE_DOG);
+        }
+    }
+
+    private void validateRepresentativeMember(Member member){
+        if(member.isNotRepresentativeFamilyMember()){
+            throw new BadRequestException(ErrorCode.MEMBER_NOT_FAMILY_BOSS);
         }
     }
 
