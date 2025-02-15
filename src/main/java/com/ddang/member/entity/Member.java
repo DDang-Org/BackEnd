@@ -107,6 +107,10 @@ public class Member extends BaseEntity {
         this.profileImg = profileImg;
     }
 
+    public void updateBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
     public boolean isNotRepresentativeFamilyMember(){
         if(this.getFamily().getRepresentativeMemberId() != this.getMemberId()){
             return true;

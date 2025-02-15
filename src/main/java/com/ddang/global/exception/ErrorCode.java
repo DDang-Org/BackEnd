@@ -71,6 +71,7 @@ public enum ErrorCode {
     MEMBER_PROFILE_IMG_NOT_NULL("E_MPI", BAD_REQUEST, "멤버 프로필 이미지는 비워둘 수 없습니다."),
     MEMBER_BIRTH_DATE_MUST_BE_PAST_OR_PRESENT("E_MBD", BAD_REQUEST, "멤버 생년월일은 과거 혹은 현재 날짜여야 합니다."),
     INVALID_IS_MATCHED("E_IIM", BAD_REQUEST, "isMatched는 반드시 TRUE 혹은 FALSE여야 합니다."),
+    CANNOT_DELETE_REPRESENTATIVE("E_CDR", BAD_REQUEST, "가족 대표 멤버는 삭제할 수 없습니다."),
 
     // Block
     BLOCK_NOT_FOUND("E_BNF", NOT_FOUND, "차단 내역을 찾을 수 없습니다."),

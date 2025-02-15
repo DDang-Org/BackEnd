@@ -1,6 +1,7 @@
 package com.ddang.member.service;
 
 import com.ddang.member.controller.request.IsMatchedRequest;
+import com.ddang.member.entity.Member;
 import com.ddang.member.service.request.JoinServiceRequest;
 import com.ddang.member.service.request.UpdateServiceRequest;
 import com.ddang.member.service.response.*;
@@ -15,7 +16,9 @@ public interface MemberService {
 
     String logout(HttpServletRequest request);
 
-    MyPageResponse getMemberInfo(Long memberId);
+    MyPageResponse getMyInfo(Long memberId);
+
+    MemberPageResponse getMemberInfo(Long memberId);
 
     WalkInfoResponse getMemberWalkInfo(Long memberId);
 
@@ -24,4 +27,6 @@ public interface MemberService {
     UpdateResponse getUpdateInfo(Long memberId);
 
     UpdateResponse updateMember(Long memberId, UpdateServiceRequest serviceRequest);
+
+    void deleteMember(Member member);
 }

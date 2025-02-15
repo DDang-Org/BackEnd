@@ -70,13 +70,13 @@ public class MemberController {
     @Operation(summary = "내 정보 조회", description = "내 정보를 조회합니다.")
     @SwaggerExceptionResponse({MEMBER_NOT_FOUND})
     public ApiResponse<MyPageResponse> getMyInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        return ApiResponse.ok(memberService.getMemberInfo(customOAuth2User.getMember().getMemberId()));
+        return ApiResponse.ok(memberService.getMyInfo(customOAuth2User.getMember().getMemberId()));
     }
 
     @GetMapping("/{memberId}")
     @Operation(summary = "특정 멤버 정보 조회", description = "특정 멤버의 정보를 조회합니다.")
     @SwaggerExceptionResponse({MEMBER_NOT_FOUND})
-    public ApiResponse<MyPageResponse> getMemberInfoWithId(@PathVariable Long memberId) {
+    public ApiResponse<MemberPageResponse> getMemberInfoWithId(@PathVariable Long memberId) {
         return ApiResponse.ok(memberService.getMemberInfo(memberId));
     }
 
@@ -115,9 +115,18 @@ public class MemberController {
     @PatchMapping("/update")
     @Operation(summary = "내 정보 수정", description = "내 정보를 수정합니다.")
     @SwaggerExceptionResponse({MEMBER_NOT_FOUND, MEMBER_NAME_NOT_NULL, MEMBER_GENDER_NOT_NULL,
-            MEMBER_ADDRESS_NOT_NULL, MEMBER_FAMILY_ROLE_NOT_NULL, MEMBER_PROFILE_IMG_NOT_NULL})
+            MEMBER_ADDRESS_NOT_NULL, MEMBER_FAMILY_ROLE_NOT_NULL, MEMBER_PROFILE_IMG_NOT_NULL, MEMBER_BIRTH_DATE_MUST_BE_PAST_OR_PRESENT})
     public ApiResponse<UpdateResponse> updateMember(@RequestBody @Valid UpdateRequest updateRequest,
                                                     @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         return ApiResponse.ok(memberService.updateMember(customOAuth2User.getMember().getMemberId(), updateRequest.toServiceRequest()));
+    }
+
+    @DeleteMapping("/delete")
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 수행합니다.")
+    @SwaggerExceptionResponse({MEMBER_NOT_FOUND, CANNOT_DELETE_REPRESENTATIVE})
+    public ApiResponse<String> deleteMember(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+
+        memberService.deleteMember(customOAuth2User.getMember());
+        return ApiResponse.ok("회원 삭제 완료");
     }
 }

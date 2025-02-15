@@ -76,6 +76,11 @@ public class NotificationSettingsServiceImpl implements NotificationSettingsServ
         notificationSettingsRepository.saveAll(defaultSettings);
     }
 
+    @Override
+    public void deleteNotificationSettings(Long memberId) {
+        notificationSettingsRepository.deleteByMember(memberId);
+    }
+
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
