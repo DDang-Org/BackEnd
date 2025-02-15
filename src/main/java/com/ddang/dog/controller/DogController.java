@@ -116,7 +116,7 @@ public class DogController {
 
     @DeleteMapping("/{dogId}")
     @Operation(summary = "반려견 삭제", description = "반려견을 삭제합니다.")
-    @SwaggerExceptionResponse({MEMBER_NOT_FOUND, FAMILY_MUST_HAVE_ONE_DOG, MEMBER_NOT_FAMILY_BOSS})
+    @SwaggerExceptionResponse({MEMBER_NOT_FOUND, MEMBER_NOT_FAMILY_BOSS})
     public ApiResponse<Void> deleteDog(
             @PathVariable Long dogId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {

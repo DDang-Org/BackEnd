@@ -90,7 +90,7 @@ public class DogServiceImpl implements DogService {
     public void deleteDog(Long dogId, Member member) {
         validateRepresentativeMember(member);
 
-        throwIfOnlyOneDogExists(member);
+        //throwIfOnlyOneDogExists(member);
 
         memberDogRepository.softDeleteByDogId(dogId);
 
