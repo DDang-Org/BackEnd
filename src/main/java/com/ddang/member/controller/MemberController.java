@@ -4,6 +4,7 @@ import com.ddang.global.api.ApiResponse;
 import com.ddang.global.exception.annotation.SwaggerExceptionResponse;
 import com.ddang.member.controller.request.IsMatchedRequest;
 import com.ddang.member.controller.request.JoinRequest;
+import com.ddang.member.controller.request.ReissueRequest;
 import com.ddang.member.controller.request.UpdateRequest;
 import com.ddang.member.oauth2.CustomOAuth2User;
 import com.ddang.member.service.MemberService;
@@ -48,10 +49,11 @@ public class MemberController {
             description = "RefreshToken을 사용하여 새로운 AccessToken을 발급합니다. 모든 요청 시 AccessToken의 유효기간이 지나 401을 반환받은 경우 /reissue로 재발급 받아 사용합니다."
     )
     @SwaggerExceptionResponse({UNAUTHORIZED_RTK_ERROR, MEMBER_NOT_FOUND})
-    public ApiResponse<String> reissue(HttpServletRequest request, HttpServletResponse response) {
+    public ApiResponse<String> reissue(@RequestBody @Valid ReissueRequest reissueRequest, HttpServletResponse response) {
         log.info("reissue() 메서드 진입");
 
-        String newAccessToken = memberService.reissueAccessToken(request, response);
+        String email = reissueRequest.email();
+        String newAccessToken = memberService.reissueAccessToken(email, response);
         log.info("새로운 AccessToken 생성: {}", newAccessToken);
 
         // ApiResponse 사용하여 응답 반환

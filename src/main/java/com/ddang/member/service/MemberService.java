@@ -12,7 +12,7 @@ public interface MemberService {
 
     MemberResponse join(JoinServiceRequest serviceRequest, HttpServletResponse response);
 
-    String reissueAccessToken(HttpServletRequest request, HttpServletResponse response);
+    String reissueAccessToken(String email, HttpServletResponse response);
 
     String logout(HttpServletRequest request);
 

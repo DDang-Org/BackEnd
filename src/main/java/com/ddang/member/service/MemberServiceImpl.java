@@ -59,17 +59,10 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
-
-        String refreshToken = jwtService.extractRefreshTokenFromCookie(request)
-                .filter(jwtService::isTokenValid)
-                .orElseThrow(() -> new AuthenticationException(ErrorCode.UNAUTHORIZED_RTK_ERROR));
-
-        String email = jwtService.extractEmailFromRefreshToken(refreshToken)
-                .orElseThrow(() -> new AuthenticationException(ErrorCode.UNAUTHORIZED_RTK_ERROR));
+    public String reissueAccessToken(String email, HttpServletResponse response) {
 
         jwtService.getRefreshTokenFromRedis(email)
-                .filter(storedToken -> storedToken.equals(refreshToken))
+                .filter(jwtService::isTokenValid)
                 .orElseThrow(() -> new AuthenticationException(ErrorCode.UNAUTHORIZED_RTK_ERROR));
 
         Member member = memberRepository.findByEmail(email)
