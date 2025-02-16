@@ -2,6 +2,7 @@ package com.ddang.member.controller;
 
 import com.ddang.member.controller.request.IsMatchedRequest;
 import com.ddang.member.controller.request.JoinRequest;
+import com.ddang.member.controller.request.ReissueRequest;
 import com.ddang.member.entity.*;
 import com.ddang.member.oauth2.CustomOAuth2User;
 import com.ddang.member.service.MemberServiceImpl;
@@ -36,6 +37,7 @@ import static com.ddang.member.entity.IsMatched.TRUE;
 import static com.ddang.member.entity.Provider.KAKAO;
 import static com.ddang.member.entity.Role.USER;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -101,14 +103,19 @@ public class MemberControllerTest {
         // given
         String dummyAccessToken = "dummyNewAccessToken";
 
-        when(memberService.reissueAccessToken(any(HttpServletRequest.class), any(HttpServletResponse.class)))
+        when(memberService.reissueAccessToken(anyString(), any(HttpServletResponse.class)))
                 .thenReturn(dummyAccessToken);
+
+        ReissueRequest request = new ReissueRequest("email@example.com");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(request);
 
         // when & then
         mockMvc.perform(post("/api/v1/member/reissue")
-                        .with(csrf()) // CSRF 보호를 우회하기 위한 토큰 추가
-                        .cookie(new Cookie("refreshToken", "dummyRefreshToken"))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value(dummyAccessToken));
     }

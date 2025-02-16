@@ -141,23 +141,21 @@ class MemberServiceImplTest {
     @DisplayName("AccessToken 재발급 테스트")
     void reissueAccessTokenTest() {
         // given
-        when(jwtService.extractRefreshTokenFromCookie(request)).thenReturn(Optional.of(VALID_REFRESH_TOKEN));
-        when(jwtService.isTokenValid(VALID_REFRESH_TOKEN)).thenReturn(true);
-        when(jwtService.extractEmailFromRefreshToken(VALID_REFRESH_TOKEN)).thenReturn(Optional.of(EMAIL));
         when(jwtService.getRefreshTokenFromRedis(EMAIL)).thenReturn(Optional.of(VALID_REFRESH_TOKEN));
+        when(jwtService.isTokenValid(VALID_REFRESH_TOKEN)).thenReturn(true);
         when(memberRepository.findByEmail(EMAIL)).thenReturn(Optional.of(member));
-        when(jwtService.createAccessToken(any(), any())).thenReturn(NEW_ACCESS_TOKEN);
-        when(jwtService.createRefreshToken(any())).thenReturn(NEW_REFRESH_TOKEN);
+        when(jwtService.createAccessToken(member.getEmail(), member.getProvider().name())).thenReturn(NEW_ACCESS_TOKEN);
+        when(jwtService.createRefreshToken(member.getEmail())).thenReturn(NEW_REFRESH_TOKEN);
 
         // when
-        String resultToken = memberService.reissueAccessToken(request, response);
+        String resultToken = memberService.reissueAccessToken(EMAIL, response);
 
         // then
         assertThat(resultToken).isEqualTo(NEW_ACCESS_TOKEN);
 
         // verify
         verify(jwtService, times(1)).removeRefreshTokenFromRedis(EMAIL);
-        verify(jwtService, times(1)).saveRefreshTokenToRedis(EMAIL, NEW_REFRESH_TOKEN);
+        verify(jwtService, times(1)).saveRefreshTokenToRedis(member.getEmail(), NEW_REFRESH_TOKEN);
         verify(jwtService, times(1)).sendAccessAndRefreshToken(response, NEW_ACCESS_TOKEN, NEW_REFRESH_TOKEN);
     }
 
