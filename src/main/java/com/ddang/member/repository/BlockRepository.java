@@ -19,4 +19,10 @@ public interface BlockRepository extends JpaRepository<Block, Long> {
 
     @Query("SELECT b.blocked.memberId FROM Block b WHERE b.blocker = :blocker")
     List<Long> findAllBlockedIdsByBlocker(Member blocker);
+
+    @EntityGraph(attributePaths = {"blocker"})
+    List<Block> findAllByBlocked(Member blocked);
+
+    @EntityGraph(attributePaths = {"blocked"})
+    List<Block> findAllByBlocker(Member blocker);
 }
