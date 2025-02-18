@@ -63,6 +63,7 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND("E_MEM", NOT_FOUND, "멤버를 찾을 수 없습니다."),
     INVALID_EMAIL("E_IEM", BAD_REQUEST, "이메일 형식이 올바르지 않습니다."),
     EMAIL_NOT_NULL("E_ENN", BAD_REQUEST, "이메일을 입력해야합니다."),
+    EXIST_EMAIL("E_EXE", BAD_REQUEST, "이미 존재하는 이메일 입니다."),
     PROVIDER_NOT_NULL("E_PNN", BAD_REQUEST, "OAuth2 서버 제공자를 입력해주세요."),
     MEMBER_NAME_NOT_NULL("E_MNN", BAD_REQUEST, "멤버 이름은 비워둘 수 없습니다."),
     MEMBER_GENDER_NOT_NULL("E_MGN", BAD_REQUEST, "멤버 성별은 비워둘 수 없습니다."),
