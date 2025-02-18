@@ -35,7 +35,7 @@ public class MemberController {
     @PreAuthorize("hasRole('ROLE_GUEST')")
     @Operation(summary = "회원가입", description = "OAuth2 로그인 후 /register로 리디렉션 후 추가 정보 기입 후 회원가입을 완료합니다.")
     @SwaggerExceptionResponse({INVALID_EMAIL, PROVIDER_NOT_NULL, MEMBER_NAME_NOT_NULL, MEMBER_GENDER_NOT_NULL,
-            MEMBER_BIRTH_DATE_MUST_BE_PAST_OR_PRESENT, MEMBER_ADDRESS_NOT_NULL, MEMBER_FAMILY_ROLE_NOT_NULL, MEMBER_PROFILE_IMG_NOT_NULL})
+            MEMBER_BIRTH_DATE_MUST_BE_PAST_OR_PRESENT, MEMBER_ADDRESS_NOT_NULL, MEMBER_FAMILY_ROLE_NOT_NULL, MEMBER_PROFILE_IMG_NOT_NULL, EXIST_EMAIL})
     public ApiResponse<MemberResponse> join(@RequestBody @Valid JoinRequest joinRequest,
                                             HttpServletResponse response) {
 

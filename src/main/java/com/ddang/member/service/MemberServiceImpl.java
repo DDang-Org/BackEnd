@@ -44,6 +44,7 @@ public class MemberServiceImpl implements MemberService {
     public MemberResponse join(JoinServiceRequest serviceRequest, HttpServletResponse response) {
 
         Member member = serviceRequest.toEntity();
+        throwIfExistEmail(member.getEmail());
 
         memberRepository.save(member);
 
@@ -200,6 +201,12 @@ public class MemberServiceImpl implements MemberService {
             return IsMatched.valueOf(isMatchedValue);
         } catch (IllegalArgumentException | NullPointerException e) {
             throw new MemberException(ErrorCode.INVALID_IS_MATCHED);
+        }
+    }
+
+    private void throwIfExistEmail(String email){
+        if(memberRepository.existsByEmail(email)){
+            throw new MemberException(ErrorCode.EXIST_EMAIL);
         }
     }
 }
