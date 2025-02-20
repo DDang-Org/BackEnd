@@ -62,7 +62,7 @@ class WalkDogRepositoryTest extends IntegrationTestSupport {
                 .address("test2Address")
                 .birthDate(LocalDate.of(2000,5,2))
                 .gender(Gender.FEMALE)
-                .familyRole(FamilyRole.ELDER_SISTER)
+                .familyRole(FamilyRole.SISTER)
                 .family(null)
                 .provider(Provider.GOOGLE)
                 .profileImg(1)

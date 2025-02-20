@@ -225,7 +225,7 @@ class FriendControllerTest extends ApiTestSupport {
                 .provider(Provider.GOOGLE)
                 .birthDate(LocalDate.of(1999,9,3))
                 .profileImg(1)
-                .familyRole(FamilyRole.ELDER_BROTHER)
+                .familyRole(FamilyRole.BROTHER)
                 .build();
 
         // Mock된 사용자 설정

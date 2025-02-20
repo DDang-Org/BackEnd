@@ -67,7 +67,7 @@ class WalkLogServiceImplTest extends IntegrationTestSupport {
                 .address("test2Address")
                 .birthDate(LocalDate.of(2000,5,2))
                 .gender(Gender.FEMALE)
-                .familyRole(FamilyRole.ELDER_SISTER)
+                .familyRole(FamilyRole.SISTER)
                 .family(null)
                 .provider(Provider.GOOGLE)
                 .profileImg(1)
@@ -240,7 +240,7 @@ class WalkLogServiceImplTest extends IntegrationTestSupport {
         assertThat(response).hasSize(1)
                 .extracting("familyRole", "memberName", "count")
                 .containsExactlyInAnyOrder(
-                        tuple(FamilyRole.ELDER_SISTER, "test2", 1)
+                        tuple(FamilyRole.SISTER, "test2", 1)
                 );
     }
 
