@@ -40,5 +40,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT COUNT(m) FROM Member m WHERE m.family.familyId = :familyId AND m.isDeleted = 'FALSE'")
     int countByFamilyId(@Param("familyId") Long familyId);
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndIsDeletedFalse(String email);
 }
