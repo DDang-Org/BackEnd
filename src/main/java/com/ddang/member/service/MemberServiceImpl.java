@@ -205,7 +205,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private void throwIfExistEmail(String email){
-        if(memberRepository.existsByEmail(email)){
+        if(memberRepository.existsByEmailAndIsDeletedFalse(email)){
             throw new MemberException(ErrorCode.EXIST_EMAIL);
         }
     }

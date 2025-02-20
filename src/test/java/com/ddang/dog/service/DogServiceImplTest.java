@@ -57,7 +57,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
                 .isMatched(IsMatched.TRUE)
                 .address("testAddress")
                 .gender(Gender.MALE)
-                .familyRole(FamilyRole.ELDER_BROTHER)
+                .familyRole(FamilyRole.BROTHER)
                 .provider(Provider.KAKAO)
                 .profileImg(1)
                 .build();
@@ -87,7 +87,7 @@ class DogServiceImplTest extends IntegrationTestSupport {
                 .address("test2Address")
                 .birthDate(LocalDate.of(2000,5,2))
                 .gender(Gender.FEMALE)
-                .familyRole(FamilyRole.ELDER_SISTER)
+                .familyRole(FamilyRole.SISTER)
                 .family(family)
                 .provider(Provider.GOOGLE)
                 .profileImg(1)

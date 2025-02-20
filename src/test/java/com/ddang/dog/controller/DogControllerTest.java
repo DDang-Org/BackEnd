@@ -319,7 +319,7 @@ class DogControllerTest extends ApiTestSupport {
                 .gender(Gender.MALE)
                 .provider(Provider.GOOGLE)
                 .profileImg(1)
-                .familyRole(FamilyRole.ELDER_BROTHER)
+                .familyRole(FamilyRole.BROTHER)
                 .build();
 
         // Mock된 사용자 설정

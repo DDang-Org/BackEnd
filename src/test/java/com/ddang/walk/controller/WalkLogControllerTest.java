@@ -148,7 +148,7 @@ class WalkLogControllerTest extends ApiTestSupport {
                 .andExpect(jsonPath("$.code").value("SUC"))
                 .andExpect(jsonPath("$.status").value("OK"))
                 .andExpect(jsonPath("$.message").value("SUCCESS"))
-                .andExpect(jsonPath("$.data[0].familyRole").value(FamilyRole.ELDER_BROTHER.name()))
+                .andExpect(jsonPath("$.data[0].familyRole").value(FamilyRole.BROTHER.name()))
                 .andExpect(jsonPath("$.data[0].memberName").value("mjk"))
                 .andExpect(jsonPath("$.data[0].count").value(5));
     }
@@ -213,7 +213,7 @@ class WalkLogControllerTest extends ApiTestSupport {
                 .gender(Gender.MALE)
                 .provider(Provider.GOOGLE)
                 .profileImg(1)
-                .familyRole(FamilyRole.ELDER_BROTHER)
+                .familyRole(FamilyRole.BROTHER)
                 .build();
 
         // Mock된 사용자 설정
