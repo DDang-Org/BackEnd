@@ -4,7 +4,7 @@ name: CI/CD using github actions & docker
 # event trigger
 on:
   push:
-    branches: [ "fix/#66-github-action" ]
+    branches: [ "develop" ]
 
 permissions:
   contents: read
