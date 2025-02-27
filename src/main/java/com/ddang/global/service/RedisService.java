@@ -73,13 +73,15 @@ public class RedisService {
 
     public void deleteValues(String key) {
         if(Boolean.FALSE.equals(redisTemplate.delete(key))){
-            throw new RedisException(ErrorCode.REDIS_DATA_DELETE_ERROR);
+            //throw new RedisException(ErrorCode.REDIS_DATA_DELETE_ERROR);
+            log.error("Redis 데이터를 삭제하지 못했습니다.");
         }
     }
 
     public void deleteGeoValues(String key, String id){
         if (redisTemplate.opsForGeo().remove(key, id) != 1) {
-            throw new IllegalArgumentException("위치 정보를 삭제하지 못했습니다.");
+            //throw new IllegalArgumentException("위치 정보를 삭제하지 못했습니다.");
+            log.error("위치 정보를 삭제하지 못했습니다.");
         }
     }
 
