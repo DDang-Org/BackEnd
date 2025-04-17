@@ -69,6 +69,9 @@ dependencies {
 
     // WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    //encryption
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'
 }
 
 sonar {
@@ -98,4 +101,9 @@ jacocoTestReport {
 
 tasks.test {
     finalizedBy tasks.jacocoTestReport
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty "jasypt.encryptor.password", project.getProperties().get("jasypt.encryptor.password")
 }
