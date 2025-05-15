@@ -64,6 +64,8 @@ public class OAuth2Attributes {
             return Provider.GOOGLE;
         } else if ("KAKAO".equals(registrationId)) {
             return Provider.KAKAO;
+        } else if ("APPLE".equals(registrationId)){
+            return Provider.APPLE;
         }
         return null;
     }
