@@ -3,6 +3,7 @@ package com.ddang.member.oauth2;
 import com.ddang.member.entity.Member;
 import com.ddang.member.entity.Provider;
 import com.ddang.member.entity.Role;
+import com.ddang.member.oauth2.userinfo.AppleOAuth2UserInfo;
 import com.ddang.member.oauth2.userinfo.GoogleOAuth2UserInfo;
 import com.ddang.member.oauth2.userinfo.KakaoOAuth2UserInfo;
 import com.ddang.member.oauth2.userinfo.OAuth2UserInfo;
@@ -29,6 +30,10 @@ public class OAuth2Attributes {
         if (provider == Provider.KAKAO) {
             return ofKakao(userNameAttributeName, attributes);
         }
+
+        if(provider == Provider.APPLE) {
+            return ofApple(userNameAttributeName, attributes);
+        }
         return ofGoogle(userNameAttributeName, attributes);
     }
 
@@ -43,6 +48,13 @@ public class OAuth2Attributes {
         return OAuth2Attributes.builder()
                 .nameAttributeKey(userNameAttributeName)
                 .oauth2UserInfo(new GoogleOAuth2UserInfo(attributes))
+                .build();
+    }
+
+    public static OAuth2Attributes ofApple(String userNameAttributeName, Map<String, Object> attributes) {
+        return OAuth2Attributes.builder()
+                .nameAttributeKey(userNameAttributeName)
+                .oauth2UserInfo(new AppleOAuth2UserInfo(attributes))
                 .build();
     }
 

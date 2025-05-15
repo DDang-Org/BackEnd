@@ -7,6 +7,8 @@ import com.ddang.member.oauth2.CustomOAuth2User;
 import com.ddang.member.oauth2.OAuth2Attributes;
 import com.ddang.member.oauth2.userinfo.OAuth2UserInfo;
 import com.ddang.member.repository.MemberRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,10 +16,14 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.ddang.member.oauth2.OAuth2Attributes.getProvider;
@@ -37,6 +43,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
+
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
@@ -46,8 +53,34 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         log.info("userNameAttributeName={}", userNameAttributeName);
         log.info("provider={}", provider);
 
-        Map<String, Object> attributes = oAuth2User.getAttributes();
 
+        if(registrationId.contains("apple")){
+            Map<String, Object> attributes;
+            Map<String, Object> userAttributes = new HashMap<>();
+
+            String idToken = userRequest.getAdditionalParameters().get("id_token").toString();
+            attributes = decodeJwtTokenPayload(idToken);
+            attributes.put("id_token", idToken);
+            userAttributes.put("resultcode", "00");
+            userAttributes.put("message", "success");
+            userAttributes.put("response", attributes);
+
+            OAuth2Attributes oAuth2Attributes = OAuth2Attributes.of(provider, userNameAttributeName, userAttributes);
+            OAuth2UserInfo oauth2UserInfo = oAuth2Attributes.getOauth2UserInfo();
+            String email = oauth2UserInfo.getEmail();
+
+            Member member = memberRepository.findByEmail(email)
+                    .orElse(Member.builder().email(email).role(Role.GUEST).provider(provider).build());
+
+            return new CustomOAuth2User(
+                    Collections.singleton(new SimpleGrantedAuthority(member.getRole().getKey())),
+                    attributes,
+                    oAuth2Attributes.getNameAttributeKey(),
+                    member
+            );
+        }
+
+        Map<String, Object> attributes = oAuth2User.getAttributes();
         OAuth2Attributes oAuth2Attributes = OAuth2Attributes.of(provider, userNameAttributeName, attributes);
 
         OAuth2UserInfo oauth2UserInfo = oAuth2Attributes.getOauth2UserInfo();
@@ -65,4 +98,25 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 member
         );
     }
+
+    public Map<String, Object> decodeJwtTokenPayload(String jwtToken) {
+        Map<String, Object> jwtClaims = new HashMap<>();
+
+        try {
+            String[] parts = jwtToken.split("\\.");
+            Base64.Decoder decoder = Base64.getUrlDecoder();
+
+            byte[] decodedBytes = decoder.decode(parts[1].getBytes(StandardCharsets.UTF_8));
+            String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
+            ObjectMapper mapper = new ObjectMapper();
+
+            Map<String, Object> map = mapper.readValue(decodedString, Map.class);
+            jwtClaims.putAll(map);
+
+        } catch (JsonProcessingException e) {
+            log.error("decodeJwtToken: {}-{} / jwtToken : {}", e.getMessage(), e.getCause(), jwtToken);
+        }
+        return jwtClaims;
+    }
+
 }
