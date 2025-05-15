@@ -64,7 +64,6 @@ jobs:
 
       - name: Build with Gradle Wrapper
         run: ./gradlew clean build -x test --no-build-cache \
-            -Dspring.profiles.active=dep \
             -Djasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }}
 
       - name: Docker build & Push
