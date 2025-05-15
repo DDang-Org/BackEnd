@@ -4,7 +4,7 @@ name: CI/CD using github actions & docker
 # event trigger
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "feat/#73-apple-login" ]
 
 permissions:
   contents: read
