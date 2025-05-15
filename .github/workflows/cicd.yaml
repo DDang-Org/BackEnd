@@ -63,8 +63,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle Wrapper
-        run: ./gradlew clean build -x test --no-build-cache \
-            -Djasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }}
+        run: ./gradlew clean build -x test -Djasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }}
 
       - name: Docker build & Push
         run: |
