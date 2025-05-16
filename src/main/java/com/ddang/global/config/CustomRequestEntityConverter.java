@@ -41,10 +41,10 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
     @Value("${spring.security.oauth2.client.registration.apple.client-id}")
     private String APPLE_CLIENT_ID;
 
-    @Value("${spring.apple.team-id}")
+    @Value("${apple.team-id}")
     private String APPLE_TEAM_ID;
 
-    @Value("${spring.apple.key-id}")
+    @Value("${apple.key-id}")
     private String APPLE_KEY_ID;
 
 
