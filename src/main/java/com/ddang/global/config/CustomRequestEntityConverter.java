@@ -2,6 +2,7 @@ package com.ddang.global.config;
 
 import com.amazonaws.util.IOUtils;
 import io.jsonwebtoken.Jwts;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.PEMParser;
@@ -25,20 +26,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
+@RequiredArgsConstructor
 public class CustomRequestEntityConverter implements Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<?>> {
 
     private OAuth2AuthorizationCodeGrantRequestEntityConverter defaultConverter;
-
-    public CustomRequestEntityConverter() {
-        defaultConverter = new OAuth2AuthorizationCodeGrantRequestEntityConverter();
-    }
-
     private final String APPLE_URL = "https://appleid.apple.com";
 
-    @Value("${spring.security.oauth2.client.registration.apple.client-secret}")
+    @Value("${apple.key-name}")
     private String APPLE_KEY_PATH;
 
-    @Value("${spring.security.oauth2.client.registration.apple.client-id}")
+    @Value("${apple.client-id}")
     private String APPLE_CLIENT_ID;
 
     @Value("${apple.team-id}")
@@ -68,6 +65,9 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
         ClassPathResource resource = new ClassPathResource("/home/ec2-user/app/" + APPLE_KEY_PATH);
         // 배포시 jar 파일을 찾지 못함
         //String privateKey = new String(Files.readAllBytes(Paths.get(resource.getURI())));
+        log.info(APPLE_CLIENT_ID);
+        log.info(APPLE_KEY_PATH);
+        log.info(APPLE_URL);
 
         InputStream in = resource.getInputStream();
         PEMParser pemParser = new PEMParser(new StringReader(IOUtils.toString(in)));
