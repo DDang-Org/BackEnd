@@ -41,20 +41,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         log.info("CustomOAuth2UserService.loadUser() 실행 - OAuth2 로그인 요청 진입");
 
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
-        OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        String userNameAttributeName = userRequest.getClientRegistration()
-                .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
         Provider provider = getProvider(registrationId);
 
         log.info("registrationId={}", registrationId);
-        log.info("userNameAttributeName={}", userNameAttributeName);
         log.info("provider={}", provider);
 
 
-        if(registrationId.contains("apple")){
+        if(provider.equals(Provider.APPLE)){
             Map<String, Object> attributes;
             Map<String, Object> userAttributes = new HashMap<>();
 
@@ -65,7 +61,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             userAttributes.put("message", "success");
             userAttributes.put("response", attributes);
 
-            OAuth2Attributes oAuth2Attributes = OAuth2Attributes.of(provider, userNameAttributeName, userAttributes);
+            OAuth2Attributes oAuth2Attributes = OAuth2Attributes.of(provider, "sub", userAttributes);
             OAuth2UserInfo oauth2UserInfo = oAuth2Attributes.getOauth2UserInfo();
             String email = oauth2UserInfo.getEmail();
 
@@ -79,6 +75,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     member
             );
         }
+
+        OAuth2User oAuth2User = delegate.loadUser(userRequest);
+        String userNameAttributeName = userRequest.getClientRegistration()
+                .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+
+        log.info("userNameAttributeName={}", userNameAttributeName);
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
         OAuth2Attributes oAuth2Attributes = OAuth2Attributes.of(provider, userNameAttributeName, attributes);
