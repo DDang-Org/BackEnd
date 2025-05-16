@@ -65,7 +65,7 @@ public class CustomRequestEntityConverter implements Converter<OAuth2Authorizati
     }
 
     public PrivateKey getPrivateKey() throws IOException {
-        ClassPathResource resource = new ClassPathResource("key/" + APPLE_KEY_PATH);
+        ClassPathResource resource = new ClassPathResource("/home/ec2-user/app/" + APPLE_KEY_PATH);
         // 배포시 jar 파일을 찾지 못함
         //String privateKey = new String(Files.readAllBytes(Paths.get(resource.getURI())));
 
