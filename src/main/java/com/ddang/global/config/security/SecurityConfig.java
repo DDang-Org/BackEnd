@@ -32,6 +32,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
+    private final CustomRequestEntityConverter customRequestEntityConverter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -73,7 +74,7 @@ public class SecurityConfig {
     @Bean
     public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
         DefaultAuthorizationCodeTokenResponseClient accessTokenResponseClient = new DefaultAuthorizationCodeTokenResponseClient();
-        accessTokenResponseClient.setRequestEntityConverter(new CustomRequestEntityConverter());
+        accessTokenResponseClient.setRequestEntityConverter(customRequestEntityConverter);
 
         return accessTokenResponseClient;
     }
